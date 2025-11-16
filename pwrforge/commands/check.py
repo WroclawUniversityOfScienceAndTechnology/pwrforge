@@ -465,20 +465,27 @@ class CppcheckChecker(CheckerFixer):
 
     def _collect_cppcheck_issues(self, output: str) -> List[str]:
         """
-        Collect cppcheck issues and return a list of all problems found.
+        Collect cppcheck issues and return a list of all real problems found.
         """
-        issues = []
+        issues: List[str] = []
         issue_pattern = re.compile(r"(.+):(\d+):\d+: (.+) \[(.+)\]")
 
         for line in output.splitlines():
             match = issue_pattern.match(line)
-            if match:
-                file_path = match.group(1)
-                line_number = match.group(2)
-                message = match.group(3)
-                category = match.group(4)
-                formatted_issue = f"{file_path}:{line_number}: {message} [{category}]"
-                issues.append(formatted_issue)
+            if not match:
+                continue
+
+            file_path = match.group(1)
+            line_number = match.group(2)
+            message = match.group(3)
+            category = match.group(4)
+
+            # Ignore informational cppcheck report about active checkers
+            if category == "checkersReport":
+                continue
+
+            formatted_issue = f"{file_path}:{line_number}: {message} [{category}]"
+            issues.append(formatted_issue)
 
         return issues
 

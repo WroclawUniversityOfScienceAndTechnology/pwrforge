@@ -85,7 +85,6 @@ Checks:           '-*,
                   hicpp-undelegated-constructor'
 WarningsAsErrors: '*'
 HeaderFilterRegex: ''
-AnalyzeTemporaryDtors: false
 FormatStyle:     none
 CheckOptions:
     - key:             readability-inconsistent-declaration-parameter-name.Strict
