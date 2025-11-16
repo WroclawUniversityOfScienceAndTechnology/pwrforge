@@ -16,10 +16,10 @@ from pwrforge.config import (
     DocConfig,
     ProfileConfig,
     ProjectConfig,
-    pwrforgeConfig,
-    pwrforgeTarget,
     TestConfig,
     TodoCheckConfig,
+    pwrforgeConfig,
+    pwrforgeTarget,
 )
 
 TARGET_X86 = pwrforgeTarget.x86

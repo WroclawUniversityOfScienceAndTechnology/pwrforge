@@ -6,7 +6,7 @@ from typing import Optional
 import tomlkit
 
 from pwrforge import __version__
-from pwrforge.config import Config, ConfigError, pwrforgeTarget, Target, parse_config
+from pwrforge.config import Config, ConfigError, Target, parse_config, pwrforgeTarget
 from pwrforge.global_values import PWRFORGE_LOCK_FILE
 from pwrforge.logger import get_logger
 from pwrforge.utils.docker_utils import run_pwrforge_again_in_docker

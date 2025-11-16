@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Dict, List, Optional
 
 from pwrforge import __version__
-from pwrforge.config import CHIP_DEFAULTS, TARGETS, pwrforgeTarget, Target
+from pwrforge.config import CHIP_DEFAULTS, TARGETS, Target, pwrforgeTarget
 from pwrforge.config_utils import get_pwrforge_config_or_exit
 from pwrforge.file_generators.cpp_gen import generate_cpp
 from pwrforge.file_generators.toml_gen import generate_toml

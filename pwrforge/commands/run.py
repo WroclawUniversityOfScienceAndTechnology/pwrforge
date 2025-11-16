@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import List, Optional
 
 from pwrforge.commands.build import pwrforge_build
-from pwrforge.config import pwrforgeTarget, Target
+from pwrforge.config import Target, pwrforgeTarget
 from pwrforge.config_utils import prepare_config
 from pwrforge.logger import get_logger
 

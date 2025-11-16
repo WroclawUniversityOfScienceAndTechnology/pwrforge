@@ -8,7 +8,11 @@ from pytest_subprocess import FakeProcess
 from pytest_subprocess.fake_popen import FakePopen
 
 from pwrforge.config import Config
-from pwrforge.utils.conan_utils import conan_add_remote, conan_remote_login, conan_source
+from pwrforge.utils.conan_utils import (
+    conan_add_remote,
+    conan_remote_login,
+    conan_source,
+)
 from tests.ut.ut_pwrforge_publish import (
     ENV_CONAN_PASSWORD,
     ENV_CONAN_USER,

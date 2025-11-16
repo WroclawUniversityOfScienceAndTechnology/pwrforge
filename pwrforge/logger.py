@@ -3,7 +3,7 @@ from typing import Tuple
 
 import coloredlogs
 
-from pwrforge.config import pwrforgeConfig, parse_config
+from pwrforge.config import parse_config, pwrforgeConfig
 from pwrforge.global_values import PWRFORGE_LOCK_FILE
 from pwrforge.utils.path_utils import get_config_file_path, get_project_root_or_none
 

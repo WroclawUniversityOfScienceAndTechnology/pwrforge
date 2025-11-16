@@ -70,7 +70,9 @@ def test_pwrforge_run_with_build(
 
 
 @pytest.mark.parametrize("target", [pwrforgeTarget.stm32, pwrforgeTarget.esp32, pwrforgeTarget.atsam])
-def test_pwrforge_run_parametrized(target: pwrforgeTarget, mocker: MockerFixture, caplog: pytest.LogCaptureFixture) -> None:
+def test_pwrforge_run_parametrized(
+    target: pwrforgeTarget, mocker: MockerFixture, caplog: pytest.LogCaptureFixture
+) -> None:
     config = get_test_project_config(target.value)
     mocker.patch(f"{pwrforge_run.__module__}.prepare_config", return_value=config)
     with pytest.raises(SystemExit):

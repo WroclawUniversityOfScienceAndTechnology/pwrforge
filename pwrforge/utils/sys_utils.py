@@ -21,7 +21,7 @@ def find_program_path(program_name: str) -> Path:
 
 def removeprefix(text: str, prefix: str) -> str:
     if hasattr(str, "removeprefix"):
-        text = text.removeprefix(prefix)  # type: ignore[attr-defined]
+        text = text.removeprefix(prefix)
     else:
         if text.startswith(prefix):
             text = text[len(prefix) :]

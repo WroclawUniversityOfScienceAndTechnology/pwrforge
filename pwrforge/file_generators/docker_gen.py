@@ -73,13 +73,6 @@ class _DockerComposeTemplate:
         pwrforge_package_version = self._set_up_package_version()
 
         self._create_file_from_template(
-            "docker/requirements.txt.j2",
-            "requirements.txt",
-            template_params={},
-            overwrite=True,
-        )
-
-        self._create_file_from_template(
             "docker/Dockerfile.j2",
             "Dockerfile",
             template_params={

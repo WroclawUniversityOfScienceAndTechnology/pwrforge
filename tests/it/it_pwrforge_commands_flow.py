@@ -10,7 +10,7 @@ import pytest
 from pytest import FixtureRequest, TempPathFactory
 
 from pwrforge.cli import cli
-from pwrforge.config import pwrforgeTarget, Target
+from pwrforge.config import Target, pwrforgeTarget
 from pwrforge.config_utils import get_pwrforge_config_or_exit
 from pwrforge.file_generators.docker_gen import _DockerComposeTemplate
 from pwrforge.utils.sys_utils import text_in_file
@@ -20,8 +20,8 @@ from tests.it.conftest import (
     TEST_DATA_PATH,
 )
 from tests.it.utils import (
-    pwrforgeTestRunner,
     add_profile_to_toml,
+    pwrforgeTestRunner,
     run_custom_command_in_docker,
 )
 

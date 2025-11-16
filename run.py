@@ -326,7 +326,7 @@ def main() -> None:  # pylint: disable=R0912
 
     if args.program:
         ar = [i.split() for i in args.program]
-        scargo_cli(ar[0])
+        pwrforge_cli(ar[0])
 
     if args.doc:
         create_doc()

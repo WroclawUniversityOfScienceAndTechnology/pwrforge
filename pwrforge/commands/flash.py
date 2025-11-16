@@ -5,7 +5,7 @@ import sys
 from pathlib import Path
 from typing import List, Optional, Tuple
 
-from pwrforge.config import pwrforgeTarget, Target
+from pwrforge.config import Target, pwrforgeTarget
 from pwrforge.config_utils import prepare_config
 from pwrforge.file_generators.vscode_gen import generate_launch_json
 from pwrforge.logger import get_logger

@@ -5,7 +5,7 @@ import sys
 from pathlib import Path
 from typing import List, Optional
 
-from pwrforge.config import Config, pwrforgeTarget, Target
+from pwrforge.config import Config, Target, pwrforgeTarget
 from pwrforge.config_utils import get_target_or_default, prepare_config
 from pwrforge.file_generators.conan_gen import conan_add_default_profile_if_missing
 from pwrforge.logger import get_logger

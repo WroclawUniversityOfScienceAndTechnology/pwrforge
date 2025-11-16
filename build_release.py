@@ -95,7 +95,6 @@ def generate_requirements() -> None:
     )
 
 
-
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Build helper for pwrforge.")
     parser.add_argument("--wheel", action="store_true", help="Build wheel only.")

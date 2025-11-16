@@ -5,7 +5,10 @@ import subprocess
 from pathlib import Path
 
 from pwrforge.commands.docker import get_docker_compose_command, pwrforge_docker_build
-from pwrforge.config_utils import add_version_to_pwrforge_lock, get_pwrforge_config_or_exit
+from pwrforge.config_utils import (
+    add_version_to_pwrforge_lock,
+    get_pwrforge_config_or_exit,
+)
 from pwrforge.file_generators.cicd_gen import generate_cicd
 from pwrforge.file_generators.cmake_gen import generate_cmake
 from pwrforge.file_generators.conan_gen import generate_conanfile, generate_conanprofile
@@ -22,14 +25,20 @@ logger = get_logger()
 
 def copy_file_if_not_exists(project_path: Path) -> None:
     """
-    Copy file from pwrforge pkg
-
-    :return: None
+    Copy files from pwrforge templates folder, preserving directory structure.
+    Only copy files that do not exist in target project.
     """
-    files_to_copy = Path(PWRFORGE_PKG_PATH, "templates").glob("*")
-    for file in files_to_copy:
-        if not Path(project_path, file.name).exists():
-            shutil.copy2(file, project_path)
+    templates_root = Path(PWRFORGE_PKG_PATH, "templates")
+
+    for src in templates_root.rglob("*"):
+        if src.is_file():
+            rel_path = src.relative_to(templates_root)
+            dst = project_path / rel_path
+
+            if not dst.exists():
+                dst.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(src, dst)
+                logger.info("Copied %s -> %s", src, dst)
 
 
 def pwrforge_update(config_file_path: Path) -> None:
