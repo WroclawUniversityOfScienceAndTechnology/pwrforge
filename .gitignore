@@ -17,6 +17,7 @@ package-lock.json
 pwrforge.egg-info
 .venv/
 temp/
+
 ### Linux ###
 *~
 *.orig

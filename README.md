@@ -61,7 +61,7 @@ Copyright (c) 2022 pwrforge Solution S.A.-Soft/pwrforge/develop/docs/source/_sta
 ## Working with docker (recommended)
 - docker with docker-compose - https://docs.docker.com/engine/install/ubuntu/
 - pip
-- python3 - `sudo apt install python3.10-venv python3.10-distutils -y`
+- python3 - `sudo apt install python3.12-venv python3.12-distutils -y`
 
 # Work environment
 You can always change work environment between docker or native after project is created.
@@ -70,7 +70,7 @@ For it may be needed dependencies manually which are included in `.devcontainer/
 
 Its recommended to work in virtual environment (venv) or conda environment e.g.:
 - pip install virtualenv
-- virtualenv -p /usr/bin/python3.10 venv
+- virtualenv -p /usr/bin/python3.12 venv
 - source venv/bin/activate
 
 
@@ -100,13 +100,16 @@ To test the custom pwrforge version and have this custom pwrforge available also
 
       - ..:/workspace
       - /dev:/dev
-      - ~/.local/lib/python3.10/site-packages/pwrforge:/usr/local/lib/python3.8/dist-packages/pwrforge
+      - ~/.local/lib/python3.12/site-packages/pwrforge:/usr/local/lib/python3.12/dist-packages/pwrforge
 
-Where ```~/.local/lib/python3.10/site-packages/pwrforge``` is a path to pwrforge on your local machine. It the following path is not working, find installation dir using ```pip show pwrforge```.
+Where ```~/.local/lib/python3.12/site-packages/pwrforge``` is a path to pwrforge on your local machine. It the following path is not working, find installation dir using ```pip show pwrforge```.
 
 To keep this setup between ```pwrforge update``` commands, in pwrforge.toml file update also ```update-exclude``` as in following example:
 
     update-exclude = [".devcontainer/docker-compose.yaml"]
+
+pip install --upgrade build
+python -m build --wheel
 
 # Known Issues
 
@@ -119,6 +122,8 @@ To keep this setup between ```pwrforge update``` commands, in pwrforge.toml file
 
 # Potential issues
 
+pip install -e ".[dev]"
+
 ## Docker permissions on Ubuntu
 
 When using the `docker-compose` command, you may encounter permission errors due to insufficient permissions for accessing the Docker daemon socket. To resolve this issue, ensure that your user has the necessary permissions by adding your user to the `docker` group or granting appropriate access rights to the Docker daemon socket.
@@ -130,3 +135,5 @@ To add your user to the `docker` group, run the following command:
 # Contributing
 
 See contributing guide on https://pwr.github.io/pwrforge/contributing.html
+
+

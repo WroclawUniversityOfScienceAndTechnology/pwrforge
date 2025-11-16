@@ -4,7 +4,7 @@ FROM ${DOCKER_IMAGE_ROOT} as base
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt update --fix-missing && \
-    apt -y install python3.8 python3-pip git build-essential pkg-config graphviz plantuml && \
+    apt -y install python3.12 python3-pip git build-essential pkg-config graphviz plantuml && \
     update-alternatives --install /usr/bin/python python /usr/bin/python3 1
 
 ADD https://github.com/plantuml/plantuml/releases/download/v1.2022.13/plantuml-1.2022.13.jar /usr/local/share/

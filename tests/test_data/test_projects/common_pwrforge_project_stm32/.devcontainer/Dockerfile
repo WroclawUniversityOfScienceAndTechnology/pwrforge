@@ -2,13 +2,13 @@
 # THIS FILE WAS GENERATED AUTOMATICALLY. DO NOT CHANGE IT.
 ###
 
-ARG DOCKER_IMAGE_ROOT=ubuntu:22.04
+ARG DOCKER_IMAGE_ROOT=ubuntu:24.04
 FROM ${DOCKER_IMAGE_ROOT} as base
 
 ENV DEBIAN_FRONTEND noninteractive
 
 RUN apt update --fix-missing && \
-    apt -y install python3.8 python3.8-venv python3-pip \
+    apt -y install python3.12 python3.12-venv python3-pip \
     binutils git wget \
     scons build-essential pkg-config \
     unzip graphviz nano vim && \

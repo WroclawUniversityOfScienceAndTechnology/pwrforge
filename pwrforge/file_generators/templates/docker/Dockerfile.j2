@@ -2,7 +2,7 @@
 # THIS FILE WAS GENERATED AUTOMATICALLY. DO NOT CHANGE IT.
 ###
 
-ARG DOCKER_IMAGE_ROOT=ubuntu:22.04
+ARG DOCKER_IMAGE_ROOT=ubuntu:24.04
 FROM ${DOCKER_IMAGE_ROOT} AS base
 
 ENV DEBIAN_FRONTEND noninteractive
@@ -66,21 +66,33 @@ EXPOSE $SSH_PORT
 
 RUN printf "\n\nADDING USER $USER_NAME TO SUDOERS - DEV ENV ONLY!\n\n" >&2 && \
     apt -y install sudo && \
-    groupadd $USER_NAME -g $GID_NUMBER; \
-    useradd -m -s /bin/bash -N -u $UID_NUMBER $USER_NAME -g $GID_NUMBER && \
+    # utwórz grupę tylko jeśli GID nie istnieje
+    if ! getent group "$GID_NUMBER" >/dev/null; then \
+        groupadd -g "$GID_NUMBER" "$USER_NAME"; \
+    fi && \
+    # utwórz użytkownika z wymuszonym UID (może się duplikować, -o)
+    if ! id -u "$USER_NAME" >/dev/null 2>&1; then \
+        useradd -m -s /bin/bash -N -o -u "$UID_NUMBER" -g "$GID_NUMBER" "$USER_NAME"; \
+    fi && \
     echo "$USER_NAME:$USER_PASSWORD" | chpasswd && \
     echo "$USER_NAME ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
-# install pwrforge from spyro rep (temporarly before pip repo will be available)
+# install pwrforge from rep (temporarly before pip repo will be available)
 # still needed for ci/cd which directy use pre-build docker image
 {% if pwrforge_package_version.endswith(".whl")  %}
 COPY {{ pwrforge_package_version }} /opt/{{ pwrforge_package_version }}
 {% endif %}
-RUN pip3 install {{ pwrforge_package_version }}
+# RUN pip3 install {{ pwrforge_package_version }}
 
 COPY requirements.txt requirements.txt
-RUN pip3 install -r requirements.txt && \
+RUN python3 -m venv /opt/venv && \
+    /opt/venv/bin/pip install --upgrade pip && \
+    /opt/venv/bin/pip install -r requirements.txt && \
     rm requirements.txt
+ENV PATH="/opt/venv/bin:${PATH}"
+
+COPY pwrforge-0.0.1-py3-none-any.whl /opt/pwrforge-0.0.1-py3-none-any.whl
+RUN /opt/venv/bin/pip install /opt/pwrforge-0.0.1-py3-none-any.whl
 
 RUN usermod -a -G dialout ${USER_NAME}
 USER ${USER_NAME}
