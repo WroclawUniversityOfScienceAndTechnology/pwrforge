@@ -5,6 +5,6 @@ from importlib.metadata import version as pkg_version
 try:
     _installed_version = pkg_version("pwrforge")
 except PackageNotFoundError:
-    _installed_version = None
+    _installed_version = "0.0.0"
 
 __version__ = _installed_version or "0.0.0"

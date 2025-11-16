@@ -78,12 +78,12 @@ def add_version_to_pwrforge_lock(pwrforge_lock: Path) -> None:
     """
     :return: project configuration as dict
     """
-    with open(pwrforge_lock, encoding="utf-8") as PWRFORGE_LOCK_FILE:
-        config = tomlkit.load(PWRFORGE_LOCK_FILE)
+    with open(pwrforge_lock, encoding="utf-8") as pwr_lock_file:
+        config = tomlkit.load(pwr_lock_file)
 
     config.setdefault("pwrforge", tomlkit.table())["version"] = __version__
-    with open(pwrforge_lock, "w", encoding="utf-8") as PWRFORGE_LOCK_FILE:
-        tomlkit.dump(config, PWRFORGE_LOCK_FILE)
+    with open(pwrforge_lock, "w", encoding="utf-8") as pwr_lock_file:
+        tomlkit.dump(config, pwr_lock_file)
 
 
 def get_target_or_default(config: Config, target: Optional[pwrforgeTarget]) -> Target:
