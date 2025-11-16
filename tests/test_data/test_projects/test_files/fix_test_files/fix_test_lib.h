@@ -2,11 +2,11 @@
  * @brief This is example function which prints hello in std output
  *
  */
-namespace spyro
+namespace pwr
 {
 class FixTestLib
 {
 public:
                   FixTestLib();
          }                              ;
-}  // namespace spyro
+}  // namespace pwr

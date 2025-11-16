@@ -1,9 +1,13 @@
+//
+// Copyright
+//
+
 #include <iostream>
-#include "{{ lib_name }}.h"
+#include "test_lib.h"
 
 using namespace pwr;
 
-{{ class_name }}::{{class_name}}()
+TestLib::TestLib()
 {
     std::cout << "Hello from lib1" << std::endl;
 }

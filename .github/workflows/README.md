@@ -127,4 +127,4 @@ To add your user to the `docker` group, run the following command:
 
 # Contributing
 
-See contributing guide on https://spyro-soft.github.io/pwrforge/contributing.html
+See contributing guide on https://pwr.github.io/pwrforge/contributing.html

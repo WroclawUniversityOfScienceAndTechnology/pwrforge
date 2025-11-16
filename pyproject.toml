@@ -87,9 +87,9 @@ doc = [
 ]
 
 [project.urls]
-Documentation = "https://spyro-soft.github.io/pwrforge/index.html"
-Source = "https://github.com/spyro-soft/pwrforge"
-Tracker = "https://github.com/Spyro-Soft/pwrforge/issues"
+Documentation = "https://pwr.github.io/pwrforge/index.html"
+Source = "https://github.com/pwr/pwrforge"
+Tracker = "https://github.com/pwr/pwrforge/issues"
 
 [project.scripts]
 pwrforge = "pwrforge.cli:cli"

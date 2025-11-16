@@ -1,5 +1,5 @@
 # pwrforge
-pwrforge project was written by PWR team and is continuation of Spyrosoft Solutions S.A scargo project. Find more information at [tft.pwr.edu.pl/](https://tft.pwr.edu.pl/).
+pwrforge project was written by PWR team and is continuation of pwr Solutions S.A scargo project. Find more information at [tft.pwr.edu.pl/](https://tft.pwr.edu.pl/).
 <p align="center">
     <img src="https://pwr.edu.pl/fcp/PGBUKOQtTKlQhbx08SlkTUhZeUTgtCgg9ACFDC0RDTnlBG1gnBVcoFW8SBDRKHg/_users/code_eCVYRPgYXNVg5Xh09GgBLGl9XR3g8Gh9MDCEUHxYb/logotyp/logotypy-pwr.png" alt="pwr" width="200"/>
 </p>
@@ -52,8 +52,10 @@ Then add to PATH e.g.:
 ```$ export PATH=~/.local/bin:${PATH}```
 
 # Working with pwrforge
-You can find all information on how to work with pwrforge on official documentation webpage: https://spyro-soft.github.io/pwrforge/index.html
-![pwrforge flow animation](https://raw.githubusercontent.com/Spyro-Soft/pwrforge/develop/docs/source/_static/pwrforge_flow_docker.svg)
+You can find all information on how to work with pwrforge on official documentation webpage: https://Copyright (c) 2025 Wroclaw University of Science and Technology.
+Copyright (c) 2022 pwrforge Solution S.A.-soft.github.io/pwrforge/index.html
+![pwrforge flow animation](https://raw.githubusercontent.com/Copyright (c) 2025 Wroclaw University of Science and Technology.
+Copyright (c) 2022 pwrforge Solution S.A.-Soft/pwrforge/develop/docs/source/_static/pwrforge_flow_docker.svg)
 
 # Project dependencies
 ## Working with docker (recommended)
@@ -127,4 +129,4 @@ To add your user to the `docker` group, run the following command:
 
 # Contributing
 
-See contributing guide on https://spyro-soft.github.io/pwrforge/contributing.html
+See contributing guide on https://pwr.github.io/pwrforge/contributing.html

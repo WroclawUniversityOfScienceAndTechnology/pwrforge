@@ -1,7 +1,7 @@
 #include <iostream>
 #include "fix_test_lib.h"
 
-using namespace spyro;
+using namespace pwr;
 
 FixTestLib::FixTestLib()
         {

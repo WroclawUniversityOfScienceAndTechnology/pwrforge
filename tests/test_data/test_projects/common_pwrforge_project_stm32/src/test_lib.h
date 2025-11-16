@@ -1,3 +1,7 @@
+//
+// Copyright
+//
+
 #pragma once
 
 /**
@@ -6,9 +10,9 @@
  */
 namespace pwr
 {
-class {{ class_name }}
+class TestLib
 {
 public:
-    {{ class_name }}();
+    TestLib();
 };
 }  // namespace pwr
