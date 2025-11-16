@@ -5,6 +5,7 @@ from typing import List, Set
 import pytest
 from pytest_subprocess import FakeProcess
 
+from pwrforge import __version__
 from pwrforge.commands.docker import get_docker_compose_command
 from pwrforge.commands.new import pwrforge_new
 from pwrforge.commands.update import pwrforge_update
@@ -17,6 +18,8 @@ TEST_PROJECT_NAME = "test_project"
 
 
 def get_expected_files(target: List[pwrforgeTarget]) -> Set[str]:
+    wheel_filename = f".devcontainer/pwrforge-{__version__}-py3-none-any.whl"
+
     project_files = {
         "LICENSE",
         "CMakeLists.txt",
@@ -45,6 +48,7 @@ def get_expected_files(target: List[pwrforgeTarget]) -> Set[str]:
         ".devcontainer/requirements.txt",
         "src/CMakeLists.txt",
         "src/test_project.cpp",
+        wheel_filename,
     }
 
     for t in target:
