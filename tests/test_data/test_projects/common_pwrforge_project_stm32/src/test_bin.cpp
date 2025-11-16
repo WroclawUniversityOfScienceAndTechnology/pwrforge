@@ -2,7 +2,6 @@
 // Copyright
 //
 
-#include <cstdio>
 /**
  * @brief This is example function doc
  *

@@ -1,4 +1,3 @@
-#include <cstdio>
 #include <sam.h>
 /**
  * @brief This is example function doc

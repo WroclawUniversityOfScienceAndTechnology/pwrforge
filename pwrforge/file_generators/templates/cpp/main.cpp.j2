@@ -1,4 +1,6 @@
+{% if project.is_x86() %}
 #include <cstdio>
+{% endif %}
 {% if project.is_atsam() %}
 #include <sam.h>
 {% endif %}
@@ -16,7 +18,6 @@ extern "C"
  * @brief Main freeRTOS task
  *
  */
-// cppcheck-suppress unusedFunction
 void app_main(void)  // NOLINT(readability-identifier-naming): name required by freertos
 {
     for (;;)
