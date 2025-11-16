@@ -1,0 +1,12 @@
+name: pull request ci
+on:
+  pull_request:
+    branches:
+      - develop
+      - main
+      - 'releases/**'
+      - 'env/test'
+
+jobs:
+  call-workflow:
+    uses: ./.github/workflows/workflow-common.yml

@@ -1,0 +1,208 @@
+name: Common workflow steps
+on:
+  workflow_call:
+    inputs:
+      config-path:
+        required: false
+        type: string
+
+jobs:
+  prepare_matrix:
+    runs-on: ubuntu-22.04
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - id: set-matrix
+        run: |
+          if [ ${{ github.event_name }} == "schedule" ]; then
+            envs="["
+            envs+="\"develop\", "
+            envs+="\"main\", "
+            envs+="]"
+          else
+             envs="[\"${{ github.ref }}\"]"
+          fi
+          echo "matrix=$envs" >> $GITHUB_OUTPUT
+
+  check:
+    name: Checks
+    runs-on: ubuntu-22.04
+    needs: prepare_matrix
+    strategy:
+      matrix:
+        branch: ${{fromJson(needs.prepare_matrix.outputs.matrix)}}
+    steps:
+        - name: Checkout
+          uses: actions/checkout@v3
+          with:
+            ref: "${{ matrix.branch }}"
+        - name: Apt install dependencies
+          run: |
+            sudo apt-get update --fix-missing
+            sudo apt-get install doxygen
+            sudo apt-get clean
+            sudo apt-get autoremove --yes
+            sudo rm -rf /var/lib/{cache,log}
+            sudo rm -rf /var/lib/apt/lists/*
+        - name: Pip install dependencies
+          run: |
+            pip install --upgrade pip
+            pip install -r ci/requirements.txt
+        - name: Check copyright
+          continue-on-error: true
+          run: ./common_dev/scripts/copyrights.py -C scargo/
+        - name: Check TODO
+          continue-on-error: true
+          run: ./common_dev/scripts/todo_check.py -C scargo -C tests
+        - name: Check with Black
+          run: black --check --diff scargo tests common_dev run.py clean.py
+        - name: Check isort
+          run: isort --profile=black --check --diff scargo tests common_dev run.py clean.py
+        - name: Check Cyclomatic
+          continue-on-error: true
+          run: ./common_dev/scripts/cyclomatic.py
+        - name: Run pylint
+          run: pylint scargo run.py clean.py
+        - name: Check typing with mypy
+          run: mypy scargo tests common_dev run.py clean.py
+  unit_tests:
+    name: Unit Tests
+    runs-on: ubuntu-22.04
+    needs: prepare_matrix
+    strategy:
+      matrix:
+        branch: ${{fromJson(needs.prepare_matrix.outputs.matrix)}}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+        with:
+          submodules: recursive
+          ref: "${{ matrix.branch }}"
+
+
+      - name: Apt install dependencies
+        run: |
+          sudo apt-get update --fix-missing
+          sudo apt-get install doxygen
+          sudo apt-get clean
+          sudo apt-get autoremove --yes
+          sudo rm -rf /var/lib/{cache,log}
+          sudo rm -rf /var/lib/apt/lists/*
+
+      - name: Pip install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r ci/requirements.txt
+
+      - name: Unit tests
+        run: |
+          # Clean docker before test (github like to go out of memory)
+          # Also there is need for repeatable results with docker (cache is faster but it can give some false positives and false negatives while testing)
+          docker system prune -af --volumes
+          ./run.py -u
+
+      - name: Define artifacts file name
+        run: |
+          echo "report_file_name=unit-${{ matrix.target }}-${{ matrix.branch }}-${{ github.run_id }}-test-report" >> $GITHUB_ENV
+
+      - name: Archive unit-tests results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: $report_file_name
+          path: build/test_doc
+          overwrite: true
+
+  integration_tests:
+    name: Integration Tests - ${{ matrix.target }}
+    runs-on: ubuntu-22.04
+    needs: prepare_matrix
+    strategy:
+      fail-fast: false
+      matrix:
+        branch: ${{fromJson(needs.prepare_matrix.outputs.matrix)}}
+        target:
+          - esp32
+          - x86
+          - stm32
+          - atsam
+          # optional target, should be added for new tests in case of introducing markers
+          # - not esp32 and not x86 and not stm32
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+          ref: "${{ matrix.branch }}"
+
+      - name: Apt install dependencies
+        run: |
+          sudo apt-get update --fix-missing
+          sudo apt-get install doxygen
+          sudo apt-get clean
+          sudo apt-get autoremove --yes
+          sudo rm -rf /var/lib/{cache,log}
+          sudo rm -rf /var/lib/apt/lists/*
+
+      - name: Pip install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r ci/requirements.txt
+
+        # Clean docker before test (GitHub like to go out of memory)
+        # Also there is need for repeatable results with docker
+        # (cache is faster, but it can give some false positives and false negatives while testing)
+      - name: Clean docker images
+        run: |
+          docker system prune -af --volumes
+
+      - name: Build wheel to use inside docker
+        run: |
+          rm -rf dist
+          flit build
+          echo "SCARGO_DOCKER_INSTALL_LOCAL=$(find dist -name "*.whl")" >> $GITHUB_ENV
+
+      - name: Integration tests
+        run: |
+          ./run.py -c "${{ matrix.target }}"
+
+      - name: Define artifacts file name
+        run: |
+          echo "report_file_name=integration-${{ matrix.target }}-${{ matrix.branch }}-${{ github.run_id }}-test-report" >> $GITHUB_ENV
+
+      - name: Archive integration-tests results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: $report_file_name
+          path: build/test_doc
+          overwrite: true
+  documentation:
+    name: Generate documentation
+    runs-on: ubuntu-22.04
+    needs: prepare_matrix
+    strategy:
+      matrix:
+        branch: ${{fromJson(needs.prepare_matrix.outputs.matrix)}}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: "${{ matrix.branch }}"
+      - name: Apt install dependencies
+        run: |
+          sudo apt-get update --fix-missing
+          sudo apt-get install doxygen
+          sudo apt-get clean
+          sudo apt-get autoremove --yes
+          sudo rm -rf /var/lib/{cache,log}
+          sudo rm -rf /var/lib/apt/lists/*
+      - name: Pip install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r ci/requirements.txt
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Generate HTML documentation
+        run: ./run.py --doc
