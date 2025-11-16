@@ -77,13 +77,6 @@ RUN printf "\n\nADDING USER $USER_NAME TO SUDOERS - DEV ENV ONLY!\n\n" >&2 && \
     echo "$USER_NAME:$USER_PASSWORD" | chpasswd && \
     echo "$USER_NAME ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
-# install pwrforge from rep (temporarly before pip repo will be available)
-# still needed for ci/cd which directy use pre-build docker image
-{% if pwrforge_package_version.endswith(".whl")  %}
-COPY {{ pwrforge_package_version }} /opt/{{ pwrforge_package_version }}
-{% endif %}
-# RUN pip3 install {{ pwrforge_package_version }}
-
 COPY requirements.txt requirements.txt
 RUN python3 -m venv /opt/venv && \
     /opt/venv/bin/pip install --upgrade pip && \
@@ -91,8 +84,8 @@ RUN python3 -m venv /opt/venv && \
     rm requirements.txt
 ENV PATH="/opt/venv/bin:${PATH}"
 
-COPY pwrforge-0.0.1-py3-none-any.whl /opt/pwrforge-0.0.1-py3-none-any.whl
-RUN /opt/venv/bin/pip install /opt/pwrforge-0.0.1-py3-none-any.whl
+COPY pwrforge-*-py3-none-any.whl /opt/pwrforge-0-py3-none-any.whl
+RUN /opt/venv/bin/pip install /opt/pwrforge-0-py3-none-any.whl
 
 RUN usermod -a -G dialout ${USER_NAME}
 USER ${USER_NAME}

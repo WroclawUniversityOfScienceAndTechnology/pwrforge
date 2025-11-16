@@ -7,7 +7,7 @@ from typing import Any, Dict
 from pwrforge import __version__
 from pwrforge.config import Config
 from pwrforge.file_generators.base_gen import create_file_from_template
-from pwrforge.global_values import pwrforge_PKG_PATH
+from pwrforge.global_values import PWRFORGE_PKG_PATH
 from pwrforge.logger import get_logger
 from pwrforge.target_helpers import atsam_helper, stm32_helper
 
@@ -112,8 +112,8 @@ class _DockerComposeTemplate:
         return ""
 
     def _set_up_package_version(self) -> str:
-        if whl_path_str := os.getenv("pwrforge_DOCKER_INSTALL_LOCAL"):
-            repo_root = pwrforge_PKG_PATH.parent
+        if whl_path_str := os.getenv("PWRFORGE_DOCKER_INSTALL_LOCAL"):
+            repo_root = PWRFORGE_PKG_PATH.parent
             whl_path = repo_root / whl_path_str
             shutil.copy(whl_path, self.docker_path)
             return whl_path.name

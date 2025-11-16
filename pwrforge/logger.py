@@ -4,7 +4,7 @@ from typing import Tuple
 import coloredlogs
 
 from pwrforge.config import pwrforgeConfig, parse_config
-from pwrforge.global_values import pwrforge_LOCK_FILE
+from pwrforge.global_values import PWRFORGE_LOCK_FILE
 from pwrforge.utils.path_utils import get_config_file_path, get_project_root_or_none
 
 
@@ -12,7 +12,7 @@ def __get_logging_config() -> Tuple[int, int]:
     console_log_level = logging.INFO
     file_log_level = logging.WARNING
     try:
-        lock_file = get_config_file_path(pwrforge_LOCK_FILE)
+        lock_file = get_config_file_path(PWRFORGE_LOCK_FILE)
         if not lock_file:
             return console_log_level, file_log_level
         config = parse_config(lock_file)

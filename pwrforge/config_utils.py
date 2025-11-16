@@ -7,7 +7,7 @@ import tomlkit
 
 from pwrforge import __version__
 from pwrforge.config import Config, ConfigError, pwrforgeTarget, Target, parse_config
-from pwrforge.global_values import pwrforge_LOCK_FILE
+from pwrforge.global_values import PWRFORGE_LOCK_FILE
 from pwrforge.logger import get_logger
 from pwrforge.utils.docker_utils import run_pwrforge_again_in_docker
 from pwrforge.utils.path_utils import get_config_file_path
@@ -29,9 +29,9 @@ def get_pwrforge_config_or_exit(
     :return: project configuration as dict
     """
     if config_file_path is None:
-        config_file_path = get_config_file_path(pwrforge_LOCK_FILE)
+        config_file_path = get_config_file_path(PWRFORGE_LOCK_FILE)
     if config_file_path is None or not config_file_path.exists():
-        logger.error("File `%s` does not exist.", pwrforge_LOCK_FILE)
+        logger.error("File `%s` does not exist.", PWRFORGE_LOCK_FILE)
         logger.info("Did you run `pwrforge update`?")
         sys.exit(1)
 
@@ -78,12 +78,12 @@ def add_version_to_pwrforge_lock(pwrforge_lock: Path) -> None:
     """
     :return: project configuration as dict
     """
-    with open(pwrforge_lock, encoding="utf-8") as pwrforge_lock_file:
-        config = tomlkit.load(pwrforge_lock_file)
+    with open(pwrforge_lock, encoding="utf-8") as PWRFORGE_LOCK_FILE:
+        config = tomlkit.load(PWRFORGE_LOCK_FILE)
 
     config.setdefault("pwrforge", tomlkit.table())["version"] = __version__
-    with open(pwrforge_lock, "w", encoding="utf-8") as pwrforge_lock_file:
-        tomlkit.dump(config, pwrforge_lock_file)
+    with open(pwrforge_lock, "w", encoding="utf-8") as PWRFORGE_LOCK_FILE:
+        tomlkit.dump(config, PWRFORGE_LOCK_FILE)
 
 
 def get_target_or_default(config: Config, target: Optional[pwrforgeTarget]) -> Target:

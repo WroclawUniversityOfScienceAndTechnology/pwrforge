@@ -9,7 +9,7 @@ from pwrforge.commands.docker import get_docker_compose_command
 from pwrforge.commands.new import pwrforge_new
 from pwrforge.commands.update import pwrforge_update
 from pwrforge.config import pwrforgeTarget
-from pwrforge.global_values import pwrforge_DEFAULT_CONFIG_FILE
+from pwrforge.global_values import PWRFORGE_DEFAULT_CONFIG_FILE
 from pwrforge.utils.conan_utils import DEFAULT_PROFILES
 from tests.ut.utils import get_all_files_recursively
 
@@ -92,7 +92,7 @@ def test_update_project_content(target: pwrforgeTarget, tmp_path: Path) -> None:
     )
     os.chdir(TEST_PROJECT_NAME)
 
-    pwrforge_update(Path(pwrforge_DEFAULT_CONFIG_FILE))
+    pwrforge_update(Path(PWRFORGE_DEFAULT_CONFIG_FILE))
 
     all_files = get_all_files_recursively()
     expected_files = get_expected_files([target])
@@ -119,7 +119,7 @@ def test_update_multitarget_project_content(tmp_path: Path) -> None:
     )
     os.chdir(TEST_PROJECT_NAME)
 
-    pwrforge_update(Path(pwrforge_DEFAULT_CONFIG_FILE))
+    pwrforge_update(Path(PWRFORGE_DEFAULT_CONFIG_FILE))
 
     all_files = get_all_files_recursively()
     expected_files = get_expected_files(targets)
@@ -138,7 +138,7 @@ def test_update_project_with_docker(tmp_path: Path, fp: FakeProcess) -> None:
     fp.register(["conan", "profile", "detect"])
     fp.register(["pip", "show", "pwrforge"])
 
-    pwrforge_update(Path(pwrforge_DEFAULT_CONFIG_FILE))
+    pwrforge_update(Path(PWRFORGE_DEFAULT_CONFIG_FILE))
 
 
 def test_update_project_docker_pull_fails(tmp_path: Path, fp: FakeProcess) -> None:
@@ -156,4 +156,4 @@ def test_update_project_docker_pull_fails(tmp_path: Path, fp: FakeProcess) -> No
 
     cmd_build.extend(["build"])
     fp.register(cmd_build)
-    pwrforge_update(Path(pwrforge_DEFAULT_CONFIG_FILE))
+    pwrforge_update(Path(PWRFORGE_DEFAULT_CONFIG_FILE))

@@ -12,10 +12,10 @@ from pwrforge.config_utils import get_pwrforge_config_or_exit
 from pwrforge.file_generators.cpp_gen import generate_cpp
 from pwrforge.file_generators.toml_gen import generate_toml
 from pwrforge.global_values import (
-    pwrforge_DEFAULT_CONFIG_FILE,
-    pwrforge_DOCKER_ENV,
-    pwrforge_HEADER_EXTENSIONS_DEFAULT,
-    pwrforge_SRC_EXTENSIONS_DEFAULT,
+    PWRFORGE_DEFAULT_CONFIG_FILE,
+    PWRFORGE_DOCKER_ENV,
+    PWRFORGE_HEADER_EXTENSIONS_DEFAULT,
+    PWRFORGE_SRC_EXTENSIONS_DEFAULT,
 )
 from pwrforge.logger import get_logger
 from pwrforge.target_helpers.atsam_helper import create_atsam_config
@@ -106,7 +106,7 @@ def pwrforge_new(
     if len(targets_ids) > 1:
         targets_ids = f"[{targets_ids}]"
 
-    toml_path = project_dir / pwrforge_DEFAULT_CONFIG_FILE
+    toml_path = project_dir / PWRFORGE_DEFAULT_CONFIG_FILE
     generate_toml(
         toml_path,
         project_name=name,
@@ -117,8 +117,8 @@ def pwrforge_new(
         docker_image_tag=f"{name.lower()}-dev:1.0",
         lib_name=lib_name,
         bin_name=bin_name,
-        src_extensions=pwrforge_SRC_EXTENSIONS_DEFAULT,
-        header_extensions=pwrforge_HEADER_EXTENSIONS_DEFAULT,
+        src_extensions=PWRFORGE_SRC_EXTENSIONS_DEFAULT,
+        header_extensions=PWRFORGE_HEADER_EXTENSIONS_DEFAULT,
         atsam_config=create_atsam_config(targets_chips.get("atsam")),
         esp32_config=create_esp32_config(targets_chips.get("esp32")),
         stm32_config=create_stm32_config(targets_chips.get("stm32")),
@@ -144,7 +144,7 @@ def get_build_env(create_docker: bool) -> str:
     :return: build env
     """
     if create_docker:
-        build_env = f"{pwrforge_DOCKER_ENV}"
+        build_env = f"{PWRFORGE_DOCKER_ENV}"
     else:
         build_env = "native"
     return build_env

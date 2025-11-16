@@ -27,7 +27,7 @@ from pwrforge.commands.test import pwrforge_test
 from pwrforge.commands.update import pwrforge_update
 from pwrforge.commands.version import pwrforge_version
 from pwrforge.config import pwrforgeTarget
-from pwrforge.global_values import DESCRIPTION, pwrforge_DEFAULT_CONFIG_FILE
+from pwrforge.global_values import DESCRIPTION, PWRFORGE_DEFAULT_CONFIG_FILE
 from pwrforge.logger import get_logger
 from pwrforge.utils.path_utils import get_config_file_path
 
@@ -399,7 +399,7 @@ def new(
         git,
         chip,
     )
-    pwrforge_update(Path(project_name, pwrforge_DEFAULT_CONFIG_FILE).absolute())
+    pwrforge_update(Path(project_name, PWRFORGE_DEFAULT_CONFIG_FILE).absolute())
 
 
 ###############################################################################
@@ -478,7 +478,7 @@ def update(
     if base_dir:
         os.chdir(base_dir)
     if config_file_path is None:
-        config_file_path = get_config_file_path(pwrforge_DEFAULT_CONFIG_FILE)
+        config_file_path = get_config_file_path(PWRFORGE_DEFAULT_CONFIG_FILE)
         if not config_file_path:
             logger.error("Config file not found.")
             sys.exit(1)

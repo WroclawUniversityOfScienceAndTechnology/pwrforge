@@ -5,8 +5,8 @@ from pwrforge.config import Config
 from pwrforge.file_generators.base_gen import create_file_from_template
 from pwrforge.file_generators.clang_parser.header_parser import parse_file
 from pwrforge.global_values import (
-    pwrforge_HEADER_EXTENSIONS_DEFAULT,
-    pwrforge_SRC_EXTENSIONS_DEFAULT,
+    PWRFORGE_HEADER_EXTENSIONS_DEFAULT,
+    PWRFORGE_SRC_EXTENSIONS_DEFAULT,
 )
 from pwrforge.utils.sys_utils import removeprefix
 
@@ -29,7 +29,7 @@ class _UnitTestsGen:
             self._generate_cmake(input_path.parent, ut_path.parent)
 
         elif input_path.is_dir():
-            headers = self._get_paths_with_ext(input_path, pwrforge_HEADER_EXTENSIONS_DEFAULT)
+            headers = self._get_paths_with_ext(input_path, PWRFORGE_HEADER_EXTENSIONS_DEFAULT)
             ut_path = None
             for hdr in headers:
                 ut_path = self._get_unit_test_path(hdr)
@@ -65,7 +65,7 @@ class _UnitTestsGen:
             cmake_dir_path = cmake_dir_path.parent
 
         ut_name = self._get_cmake_tests_name(ut_dir_path)
-        ut_files = [p.name for p in self._get_paths_with_ext(ut_dir_path, pwrforge_SRC_EXTENSIONS_DEFAULT)]
+        ut_files = [p.name for p in self._get_paths_with_ext(ut_dir_path, PWRFORGE_SRC_EXTENSIONS_DEFAULT)]
 
         src_path = removeprefix(
             str(src_dir_path.absolute()),
@@ -77,7 +77,7 @@ class _UnitTestsGen:
 
         src_files = [
             p.relative_to(self._project_path)
-            for p in self._get_paths_with_ext(src_dir_path, pwrforge_SRC_EXTENSIONS_DEFAULT)
+            for p in self._get_paths_with_ext(src_dir_path, PWRFORGE_SRC_EXTENSIONS_DEFAULT)
             if p.name != main_cpp
         ]
 

@@ -5,7 +5,7 @@ from typing import Any, Dict, List, Optional, Sequence, Union
 import toml
 from pydantic import BaseModel, Extra, Field, root_validator
 
-from pwrforge.global_values import pwrforge_DEFAULT_BUILD_ENV, pwrforge_DOCKER_ENV
+from pwrforge.global_values import PWRFORGE_DEFAULT_BUILD_ENV, PWRFORGE_DOCKER_ENV
 
 
 class pwrforgeTarget(Enum):
@@ -133,7 +133,7 @@ class ProjectConfig(BaseModel):
     bin_name: Optional[str]
     lib_name: Optional[str]
     target_id: Union[str, List[str]] = Field(..., alias="target")
-    build_env: str = Field(pwrforge_DEFAULT_BUILD_ENV, alias="build-env")
+    build_env: str = Field(PWRFORGE_DEFAULT_BUILD_ENV, alias="build-env")
     docker_file: Path = Field(..., alias="docker-file")
     docker_image_tag: str = Field(..., alias="docker-image-tag")
     in_repo_conan_cache: bool = Field(..., alias="in-repo-conan-cache")
@@ -164,7 +164,7 @@ class ProjectConfig(BaseModel):
         return Target.get_target_by_id(self.target_id)
 
     def is_docker_buildenv(self) -> bool:
-        return self.build_env == pwrforge_DOCKER_ENV
+        return self.build_env == PWRFORGE_DOCKER_ENV
 
     def is_x86(self) -> bool:
         return "x86" in self.target_id  # pylint: disable=unsupported-membership-test

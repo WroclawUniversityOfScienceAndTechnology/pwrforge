@@ -12,7 +12,7 @@ from pytest import FixtureRequest, TempPathFactory
 from pwrforge.cli import cli
 from pwrforge.config import pwrforgeTarget
 from pwrforge.config_utils import get_pwrforge_config_or_exit
-from pwrforge.global_values import pwrforge_UT_COV_FILES_PREFIX
+from pwrforge.global_values import PWRFORGE_UT_COV_FILES_PREFIX
 from tests.it.conftest import TEST_DATA_PATH, UT_FILES_PATH
 from tests.it.utils import pwrforgeTestRunner
 
@@ -49,7 +49,7 @@ class pwrforgeCommandTestState:
         errmsg = f"Build directory '{test_build_dir}' does not exist"
         assert test_build_dir.is_dir(), errmsg
 
-        gcov_report_htmlfile = test_build_dir / Path(f"{pwrforge_UT_COV_FILES_PREFIX}.html")
+        gcov_report_htmlfile = test_build_dir / Path(f"{PWRFORGE_UT_COV_FILES_PREFIX}.html")
 
         errmsg = f"File '{gcov_report_htmlfile}' does not exist"
         assert gcov_report_htmlfile.is_file(), errmsg
@@ -57,12 +57,12 @@ class pwrforgeCommandTestState:
         if not detailed_coverage:
             return
 
-        gcov_report_htmlfile = test_build_dir / Path(f"{pwrforge_UT_COV_FILES_PREFIX}.details.html")
+        gcov_report_htmlfile = test_build_dir / Path(f"{PWRFORGE_UT_COV_FILES_PREFIX}.details.html")
 
         errmsg = f"File '{gcov_report_htmlfile}' does not exist"
         assert gcov_report_htmlfile.is_file(), errmsg
 
-        gcov_report_jsonfile = test_build_dir / Path(f"{pwrforge_UT_COV_FILES_PREFIX}.json")
+        gcov_report_jsonfile = test_build_dir / Path(f"{PWRFORGE_UT_COV_FILES_PREFIX}.json")
 
         errmsg = f"File '{gcov_report_jsonfile}' does not exist"
         assert gcov_report_jsonfile.is_file(), errmsg
@@ -73,7 +73,7 @@ class pwrforgeCommandTestState:
         project_dir = config.project_root
         test_build_dir = project_dir / "build" / test_dir_name
 
-        gcov_json_file = Path(f"{test_build_dir}/{pwrforge_UT_COV_FILES_PREFIX}.json")
+        gcov_json_file = Path(f"{test_build_dir}/{PWRFORGE_UT_COV_FILES_PREFIX}.json")
         with open(gcov_json_file, encoding="utf-8") as gcov_json:
             gcov_data = json.load(gcov_json)
 
@@ -107,8 +107,8 @@ class pwrforgeCommandTestState:
             config_data = tomlkit.load(pwrforge_config_file)
 
         config_data["project"]["src_extensions"] = ext  # type: ignore
-        with open(config_path, "w", encoding="utf-8") as pwrforge_lock_file:
-            tomlkit.dump(config_data, pwrforge_lock_file)
+        with open(config_path, "w", encoding="utf-8") as PWRFORGE_LOCK_FILE:
+            tomlkit.dump(config_data, PWRFORGE_LOCK_FILE)
 
 
 @pytest.fixture

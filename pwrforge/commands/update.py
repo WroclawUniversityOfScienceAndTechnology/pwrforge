@@ -14,7 +14,7 @@ from pwrforge.file_generators.env_gen import generate_env
 from pwrforge.file_generators.readme_gen import generate_readme
 from pwrforge.file_generators.tests_gen import generate_tests
 from pwrforge.file_generators.vscode_gen import generate_vscode
-from pwrforge.global_values import pwrforge_LOCK_FILE, pwrforge_PKG_PATH
+from pwrforge.global_values import PWRFORGE_LOCK_FILE, PWRFORGE_PKG_PATH
 from pwrforge.logger import get_logger
 
 logger = get_logger()
@@ -26,7 +26,7 @@ def copy_file_if_not_exists(project_path: Path) -> None:
 
     :return: None
     """
-    files_to_copy = Path(pwrforge_PKG_PATH, "templates").glob("*")
+    files_to_copy = Path(PWRFORGE_PKG_PATH, "templates").glob("*")
     for file in files_to_copy:
         if not Path(project_path, file.name).exists():
             shutil.copy2(file, project_path)
@@ -48,7 +48,7 @@ def pwrforge_update(config_file_path: Path) -> None:
     copy_file_if_not_exists(project_path)
 
     # Copy config file and create lock file.
-    lock_path = project_path / pwrforge_LOCK_FILE
+    lock_path = project_path / PWRFORGE_LOCK_FILE
     shutil.copyfile(config_file_path, lock_path)
     ###########################################################################
     add_version_to_pwrforge_lock(lock_path)

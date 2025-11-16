@@ -4,12 +4,12 @@ from typing import Any, Dict, Union
 from jinja2 import Environment, FileSystemLoader
 
 from pwrforge.config import Config
-from pwrforge.global_values import pwrforge_PKG_PATH
+from pwrforge.global_values import PWRFORGE_PKG_PATH
 from pwrforge.logger import get_logger
 
 logger = get_logger()
 
-TEMPLATE_ROOT = Path(pwrforge_PKG_PATH, "file_generators", "templates")
+TEMPLATE_ROOT = Path(PWRFORGE_PKG_PATH, "file_generators", "templates")
 _JINJA_ENV = Environment(
     loader=FileSystemLoader(TEMPLATE_ROOT),
     trim_blocks=True,

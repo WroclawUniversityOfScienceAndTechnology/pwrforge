@@ -10,8 +10,8 @@ from pwrforge.config import Config
 from pwrforge.config_utils import prepare_config
 from pwrforge.file_generators.conan_gen import conan_add_default_profile_if_missing
 from pwrforge.global_values import (
-    pwrforge_SRC_EXTENSIONS_DEFAULT,
-    pwrforge_UT_COV_FILES_PREFIX,
+    PWRFORGE_SRC_EXTENSIONS_DEFAULT,
+    PWRFORGE_UT_COV_FILES_PREFIX,
 )
 from pwrforge.logger import get_logger
 from pwrforge.utils.conan_utils import conan_add_remote, conan_source
@@ -105,9 +105,9 @@ def _gcov_get_uncovered_src_files(config: Config, output_json: Dict[str, Any]) -
 
     accepted_extensions = config.project.src_extensions
     if not accepted_extensions:
-        accepted_extensions = pwrforge_SRC_EXTENSIONS_DEFAULT
+        accepted_extensions = PWRFORGE_SRC_EXTENSIONS_DEFAULT
         logger.warning("pwrforge: test: source file extensions not defined in the config file 'pwrforge.toml'.")
-        logger.warning(f"pwrforge: test: default extensions in use: '{pwrforge_SRC_EXTENSIONS_DEFAULT}'")
+        logger.warning(f"pwrforge: test: default extensions in use: '{PWRFORGE_SRC_EXTENSIONS_DEFAULT}'")
 
     uncovered_files: List[Path] = []
     for ff in config.source_dir_path.rglob("*"):
@@ -135,11 +135,11 @@ def run_ut(config: Config, verbose: bool, cwd: Path, detailed_coverage: bool) ->
         subprocess.run(cmd, cwd=cwd, check=False)
 
         output_option = (
-            f"--html-details={pwrforge_UT_COV_FILES_PREFIX}.details.html"
+            f"--html-details={PWRFORGE_UT_COV_FILES_PREFIX}.details.html"
             if detailed_coverage
-            else f"--html={pwrforge_UT_COV_FILES_PREFIX}.html"
+            else f"--html={PWRFORGE_UT_COV_FILES_PREFIX}.html"
         )
-        output_json_filename = f"{pwrforge_UT_COV_FILES_PREFIX}.json"
+        output_json_filename = f"{PWRFORGE_UT_COV_FILES_PREFIX}.json"
 
         # Run code coverage.
         cmd = [

@@ -8,7 +8,7 @@ import pytest
 from _pytest.config import Config
 from _pytest.nodes import Item
 
-from pwrforge.global_values import pwrforge_PKG_PATH
+from pwrforge.global_values import PWRFORGE_PKG_PATH
 
 TEST_DATA_PATH = Path(__file__).parent.parent / "test_data"
 FIX_TEST_FILES_PATH = TEST_DATA_PATH / "test_projects/test_files/fix_test_files"
@@ -21,16 +21,16 @@ UT_FILES_PATH = TEST_DATA_PATH / "test_projects/test_files/ut_files"
 def use_local_pwrforge() -> None:
     # This is necessary, so we can test latest changes in docker
     # Might be worth to rework with devpi later on
-    pwrforge_repo_root = pwrforge_PKG_PATH.parent
-    pwrforge_docker_env_name = "pwrforge_DOCKER_INSTALL_LOCAL"
+    pwrforge_repo_root = PWRFORGE_PKG_PATH.parent
+    PWRFORGE_DOCKER_ENV_name = "PWRFORGE_DOCKER_INSTALL_LOCAL"
 
     # If tests are run locally, wheel should be always rebuild to avoid using obsolete version
     # In case of running on CI, many workers should use the same version created earlier in workflow
     if "CI" in os.environ:
-        if pwrforge_docker_env_name in os.environ:
+        if PWRFORGE_DOCKER_ENV_name in os.environ:
             return
         else:
-            raise KeyError(f"{pwrforge_docker_env_name} not found in the env variables")
+            raise KeyError(f"{PWRFORGE_DOCKER_ENV_name} not found in the env variables")
 
     result = subprocess.run(
         ["flit", "build"],
@@ -42,7 +42,7 @@ def use_local_pwrforge() -> None:
     )
     match = re.search(r"Built\swheel:\s*(dist/pwrforge.*.whl)", result.stdout)
     assert match
-    os.environ[pwrforge_docker_env_name] = match.group(1)
+    os.environ[PWRFORGE_DOCKER_ENV_name] = match.group(1)
 
 
 def pytest_collection_modifyitems(config: Config, items: List[Item]) -> None:

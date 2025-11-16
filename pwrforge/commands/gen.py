@@ -8,7 +8,7 @@ from pwrforge.config import Config
 from pwrforge.config_utils import prepare_config
 from pwrforge.file_generators.mock_gen import generate_mocks
 from pwrforge.file_generators.ut_gen import generate_ut
-from pwrforge.global_values import pwrforge_PKG_PATH
+from pwrforge.global_values import PWRFORGE_PKG_PATH
 from pwrforge.logger import get_logger
 from pwrforge.target_helpers.esp32_helper import (
     OUT_FS_DIR,
@@ -61,7 +61,7 @@ def generate_certs(
     certs_passwd: Optional[str],
     project_path: Path,
 ) -> None:
-    internal_certs_dir = Path(pwrforge_PKG_PATH, "certs")
+    internal_certs_dir = Path(PWRFORGE_PKG_PATH, "certs")
     projects_builds_path = project_path / "build"
     certs_out_dir = projects_builds_path / "certs"
     if not certs_intermediate_dir:

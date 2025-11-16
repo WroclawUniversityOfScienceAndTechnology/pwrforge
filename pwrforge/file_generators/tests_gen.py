@@ -5,12 +5,12 @@ from shutil import copytree
 
 from pwrforge.config import Config
 from pwrforge.file_generators.base_gen import create_file_from_template
-from pwrforge.global_values import pwrforge_PKG_PATH
+from pwrforge.global_values import PWRFORGE_PKG_PATH
 
 
 def generate_tests(config: Config) -> None:
     """Generate dirs and files"""
-    tests_template_dir = Path(pwrforge_PKG_PATH, "file_generators", "templates", "tests")
+    tests_template_dir = Path(PWRFORGE_PKG_PATH, "file_generators", "templates", "tests")
 
     # List of files to generate once (template_path, output_path)
     gen_once_file_list = [
