@@ -1,14 +1,14 @@
-.. _scargo:
+.. _pwrforge:
 
-scargo commands
+pwrforge commands
 ===============
 
-Use ``scargo -h`` to see a summary of all available commands and command line options.
+Use ``pwrforge -h`` to see a summary of all available commands and command line options.
 
-To see all options for a particular command, append ``-h`` to the command name. ie ``scargo build -h``.
+To see all options for a particular command, append ``-h`` to the command name. ie ``pwrforge build -h``.
 ::
 
-   Usage: scargo [OPTIONS] COMMAND [ARGS]...
+   Usage: pwrforge [OPTIONS] COMMAND [ARGS]...
 
    C/C++ package and software development life cycle manager based on RUST
    cargo idea.
@@ -33,34 +33,34 @@ To see all options for a particular command, append ``-h`` to the command name. 
    new                 Create a new project template.
    publish             Upload conan pkg to repo
    run                 Build and run project
-   setup_autocomplete  Setup scargo autocomplete for shell
+   setup_autocomplete  Setup pwrforge autocomplete for shell
    test                Compile and run all tests in directory `test`.
    update              Read .toml config file and generate `CMakeLists.txt`.
-   version             Get scargo version
+   version             Get pwrforge version
 
 
-Scargo commands reference
+pwrforge commands reference
 -------------------------
 
 .. toctree::
    :maxdepth: 1
 
-   Build command <scargo-build>
-   Check command <scargo-check>
-   Clean command <scargo-clean>
-   Debug command <scargo-debug>
-   Doc command <scargo-documentation>
-   Docker command <scargo-docker>
-   Fix command <scargo-fix>
-   Flash command <scargo-flash>
-   Monitor command <scargo-monitor>
-   Gen command <scargo-gen>
-   New command <scargo-new>
-   Publish command <scargo-publish>
-   Run command <scargo-run>
-   Test command <scargo-test>
-   Update command <scargo-update>
-   Version command <scargo-version>
+   Build command <pwrforge-build>
+   Check command <pwrforge-check>
+   Clean command <pwrforge-clean>
+   Debug command <pwrforge-debug>
+   Doc command <pwrforge-documentation>
+   Docker command <pwrforge-docker>
+   Fix command <pwrforge-fix>
+   Flash command <pwrforge-flash>
+   Monitor command <pwrforge-monitor>
+   Gen command <pwrforge-gen>
+   New command <pwrforge-new>
+   Publish command <pwrforge-publish>
+   Run command <pwrforge-run>
+   Test command <pwrforge-test>
+   Update command <pwrforge-update>
+   Version command <pwrforge-version>
 
 
 See also
@@ -69,5 +69,5 @@ See also
 .. toctree::
    :maxdepth: 1
 
-   Scargo Toml file configuration <scargo-toml>
+   pwrforge Toml file configuration <pwrforge-toml>
 

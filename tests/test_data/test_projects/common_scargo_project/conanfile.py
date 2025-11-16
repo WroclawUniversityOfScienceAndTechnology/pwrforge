@@ -1,8 +1,8 @@
 from conans import CMake, ConanFile, tools  # type: ignore[import]
 
 
-class CommonScargoProjectConan(ConanFile):  # type: ignore[misc, no-any-unimported]
-    name = "common_scargo_project_path"
+class CommonpwrforgeProjectConan(ConanFile):  # type: ignore[misc, no-any-unimported]
+    name = "common_pwrforge_project_path"
     version = "0.1.0"
     settings = "os", "compiler", "build_type", "arch"
     description = "Project description."

@@ -18,7 +18,7 @@ RUN apt-get update && apt-get -y install cppcheck lib32z1 \
 
 WORKDIR /opt
 
-FROM cpp AS scargo
+FROM cpp AS pwrforge
 
 ARG USER_NAME
 ARG USER_PASSWORD
@@ -47,7 +47,7 @@ RUN printf "\n\nADDING USER $USER_NAME TO SUDOERS - DEV ENV ONLY!\n\n" >&2 && \
     echo "$USER_NAME:$USER_PASSWORD" | chpasswd && \
     echo "$USER_NAME ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
-# install scargo from spyro rep (temporarly before pip repo will be available)
+# install pwrforge from spyro rep (temporarly before pip repo will be available)
 COPY requirements.txt requirements.txt
 RUN pip3 install -r requirements.txt && \
     rm requirements.txt

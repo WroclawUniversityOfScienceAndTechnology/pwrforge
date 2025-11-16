@@ -1,11 +1,11 @@
 from conans import CMake, ConanFile  # type: ignore[import]
 
 
-class Common_scargo_project_stm32TestConan(ConanFile):  # type: ignore[misc, no-any-unimported]
-    name = "common_scargo_project_stm32_test"
+class Common_pwrforge_project_stm32TestConan(ConanFile):  # type: ignore[misc, no-any-unimported]
+    name = "common_pwrforge_project_stm32_test"
     version = "0.1.0"
     settings = "os", "compiler", "build_type", "arch"
-    description = "Tests for common_scargo_project_stm32"
+    description = "Tests for common_pwrforge_project_stm32"
     url = "www.hello-world.com"
     generators = "cmake_find_package", "cmake"
 

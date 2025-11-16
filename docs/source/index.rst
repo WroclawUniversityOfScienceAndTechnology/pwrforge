@@ -1,9 +1,9 @@
-scargo Documentation
+pwrforge Documentation
 ====================
 
-This is the documentation for scargo - a Python-based C/C++ package and software development life cycle manager based on RUST cargo idea.
+This is the documentation for pwrforge - a Python-based C/C++ package and software development life cycle manager based on RUST cargo idea.
 
-scargo can:
+pwrforge can:
 
 * Create a new project (binary or library)
 * Build the project
@@ -19,45 +19,45 @@ Quick Start
 
 Getting started is easy:
 
-1) Install ``scargo``:
+1) Install ``pwrforge``:
 
     ::
 
-        $ pip install scargo
+        $ pip install pwrforge
 
     For detailed instructions, see :ref:`installation`.
 
-2) Run ``scargo`` commands to create a new project:
+2) Run ``pwrforge`` commands to create a new project:
 
     ::
 
-        $ scargo new my_project_name
+        $ pwrforge new my_project_name
 
-3) Run ``scargo`` commands to check available options:
+3) Run ``pwrforge`` commands to check available options:
 
     ::
 
-        $ scargo --help/-h
+        $ pwrforge --help/-h
 
 For Windows
 -----------
 1) Install Python >=3.8 with pip from https://www.python.org/downloads/windows/
 2) Install Docker for Windows (e.g. https://desktop.docker.com/win/main/amd64/Docker%20Desktop%20Installer.exe)
-3) Install scargo (``pip install scargo``) and add the program to your env paths
+3) Install pwrforge (``pip install pwrforge``) and add the program to your env paths
 
 
-System Properties -> Environment Variables, double click on "Path" and add entry with your scargo installation e.g.
+System Properties -> Environment Variables, double click on "Path" and add entry with your pwrforge installation e.g.
 ::
 
     C:\Users\username\AppData\Roaming\Python\Python38\Scripts
 
 For Ubuntu
 -----------
-1) Install scargo (``pip install scargo``)
-2) If system does not find 'scargo' command add the installation directory to your env paths. You can find installation directory by running:
+1) Install pwrforge (``pip install pwrforge``)
+2) If system does not find 'pwrforge' command add the installation directory to your env paths. You can find installation directory by running:
     ::
 
-        $ find / -name "scargo"
+        $ find / -name "pwrforge"
 
     Then add it to the path, e.g.:
     ::
@@ -72,7 +72,7 @@ More Information
 
    Installation <installation>
    Guides <guides/index>
-   Reference <scargo/index>
+   Reference <pwrforge/index>
    Troubleshooting <troubleshooting>
    Versions <versions>
    Architecture model <arch/index>

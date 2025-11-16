@@ -28,7 +28,7 @@ WORKDIR /opt
 
 FROM x86 AS custom_example_project
 # user can add his docker code below which will be integrated with
-# main docker file and not overwritten by scargo update
+# main docker file and not overwritten by pwrforge update
 ENV DEBIAN_FRONTEND noninteractive
 
 FROM custom_example_project AS example_project_dev
@@ -61,7 +61,7 @@ RUN printf "\n\nADDING USER $USER_NAME TO SUDOERS - DEV ENV ONLY!\n\n" >&2 && \
     echo "$USER_NAME:$USER_PASSWORD" | chpasswd && \
     echo "$USER_NAME ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
-RUN pip3 install scargo==1.8.0
+RUN pip3 install pwrforge==1.8.0
 
 RUN usermod -a -G dialout ${USER_NAME}
 USER ${USER_NAME}

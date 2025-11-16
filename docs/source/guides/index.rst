@@ -4,8 +4,8 @@ Guides
 .. toctree::
    :maxdepth: 1
 
-   Scargo with x86 project <scargo-x86>
-   Scargo with ESP32 project <scargo-esp32>
-   Scargo with STM32 project <scargo-stm32>
-   Scargo with Atmel SAM series project <scargo-atsam>
-   Scargo with multitarget project <scargo-multitarget>
+   pwrforge with x86 project <pwrforge-x86>
+   pwrforge with ESP32 project <pwrforge-esp32>
+   pwrforge with STM32 project <pwrforge-stm32>
+   pwrforge with Atmel SAM series project <pwrforge-atsam>
+   pwrforge with multitarget project <pwrforge-multitarget>

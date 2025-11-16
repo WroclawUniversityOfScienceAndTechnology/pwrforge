@@ -3,11 +3,11 @@ from logging import LogRecord
 from pathlib import Path
 from typing import Iterable, List, Set, Tuple
 
-from scargo.config import Config, parse_config
+from pwrforge.config import Config, parse_config
 
 
 def get_test_project_config(target: str = "x86") -> Config:
-    config_path = Path(__file__).parent / f"data/scargo_test_{target}.toml"
+    config_path = Path(__file__).parent / f"data/pwrforge_test_{target}.toml"
     assert config_path.is_file()
     return parse_config(config_path)
 

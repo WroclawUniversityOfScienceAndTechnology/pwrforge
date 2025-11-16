@@ -1,13 +1,13 @@
-# Scargo
-Scargo project was written by Spyrosoft team. Find more information at [spyro-soft.com](https://spyro-soft.com/career).
+# pwrforge
+pwrforge project was written by PWR team and is continuation of Spyrosoft Solutions S.A scargo project. Find more information at [tft.pwr.edu.pl/](https://tft.pwr.edu.pl/).
 <p align="center">
-    <img src="https://raw.githubusercontent.com/Spyro-Soft/scargo/develop/docs/source/_static/spyrosoft_solutions_logo_color.png" alt="drawing" width="200"/>
+    <img src="https://pwr.edu.pl/fcp/PGBUKOQtTKlQhbx08SlkTUhZeUTgtCgg9ACFDC0RDTnlBG1gnBVcoFW8SBDRKHg/_users/code_eCVYRPgYXNVg5Xh09GgBLGl9XR3g8Gh9MDCEUHxYb/logotyp/logotypy-pwr.png" alt="pwr" width="200"/>
 </p>
 
 # Overview
-This is the documentation for scargo - a Python-based C/C++ package and software development life cycle manager inspired by RUST cargo idea.
+This is the documentation for pwrforge - a Python-based C/C++ package and software development life cycle manager inspired by RUST cargo idea.
 
-scargo can:
+pwrforge can:
 
 - Create a new project (binary or library)
 - Build the project
@@ -18,42 +18,42 @@ scargo can:
 - Work with the predefined docker environment depending on the chosen architecture
 
 # Installation
-## Installing scargo on Ubuntu 24.04+ (PEP 668-compliant systems)
+## Installing pwrforge on Ubuntu 24.04+ (PEP 668-compliant systems)
 
 Ubuntu 24.04 and newer follow PEP 668, which restricts the use of pip in the system Python environment to prevent accidental damage to system-managed packages.
 
-To safely install scargo, use a virtual environment:
+To safely install pwrforge, use a virtual environment:
 
 ```
 python3.12 -m venv .venv
 source .venv/bin/activate
 pip install --upgrade pip
-pip install scargo==3.2.0
+pip install pwrforge
 ```
 
-This ensures isolated and conflict-free usage of scargo without requiring elevated privileges or --break-system-packages.
+This ensures isolated and conflict-free usage of pwrforge without requiring elevated privileges or --break-system-packages.
 
 Alternatively, you may use pipx for global CLI installation:
 
 ```
-pipx install scargo==3.2.0
+pipx install pwrforge
 ```
 ## Install on ubuntu <=22.04, windows or macos
-Scargo is available on [pypi](https://pypi.org/project/scargo/), so you can install it with pip:
+pwrforge is available on [pypi](https://pypi.org/project/pwrforge/), so you can install it with pip:
 
-```pip install scargo```
+```pip install pwrforge```
 
-If system does not find 'scargo' command after installing, add the installation directory to your env paths. On Ubuntu you can find installation directory by running:
+If system does not find 'pwrforge' command after installing, add the installation directory to your env paths. On Ubuntu you can find installation directory by running:
 
-```$ pip show "scargo"```
+```$ pip show "pwrforge"```
 
 Then add to PATH e.g.:
 
 ```$ export PATH=~/.local/bin:${PATH}```
 
-# Working with scargo
-You can find all information on how to work with scargo on official documentation webpage: https://spyro-soft.github.io/scargo/index.html
-![Scargo flow animation](https://raw.githubusercontent.com/Spyro-Soft/scargo/develop/docs/source/_static/scargo_flow_docker.svg)
+# Working with pwrforge
+You can find all information on how to work with pwrforge on official documentation webpage: https://spyro-soft.github.io/pwrforge/index.html
+![pwrforge flow animation](https://raw.githubusercontent.com/Spyro-Soft/pwrforge/develop/docs/source/_static/pwrforge_flow_docker.svg)
 
 # Project dependencies
 ## Working with docker (recommended)
@@ -63,7 +63,7 @@ You can find all information on how to work with scargo on official documentatio
 
 # Work environment
 You can always change work environment between docker or native after project is created.
-Just edit the scargo.toml file ([project] -> build-env = "docker" or build-env = "native").
+Just edit the pwrforge.toml file ([project] -> build-env = "docker" or build-env = "native").
 For it may be needed dependencies manually which are included in `.devcontainer/Dockerfile`
 
 Its recommended to work in virtual environment (venv) or conda environment e.g.:
@@ -73,36 +73,36 @@ Its recommended to work in virtual environment (venv) or conda environment e.g.:
 
 
 ## Working in docker
-1) If you create a new project, run `docker compose run scargo-dev` to run project development image depending on chosen architecture. All dependencies should be already there.
-Run scargo commands as you would do natively.
+1) If you create a new project, run `docker compose run pwrforge-dev` to run project development image depending on chosen architecture. All dependencies should be already there.
+Run pwrforge commands as you would do natively.
 
-2) If you create a project with --docker flag (`scargo new <my_proj> --docker ...`) or with any docker flag, by default each scargo command will be triggered in docker.
+2) If you create a project with --docker flag (`pwrforge new <my_proj> --docker ...`) or with any docker flag, by default each pwrforge command will be triggered in docker.
 
 ## Working natively
-1) Create a project with --no-docker flag (`scargo new <my_proj> --no-docker ...`).
+1) Create a project with --no-docker flag (`pwrforge new <my_proj> --no-docker ...`).
 
 ## Create the requirements for docker env
-From version 2.3.2 the scargo is install in docker but overload by docker compose volume data, to get present version from your native env.
+From version 2.3.2 the pwrforge is install in docker but overload by docker compose volume data, to get present version from your native env.
 During deployment the requirements file is created using following command
 
  - `pip-compile --all-extras --output-file=ci/requirements.txt pyproject.toml`
- - `pip-compile --output-file=scargo/file_generators/templates/docker/requirements.txt.j2 pyproject.toml`
+ - `pip-compile --output-file=pwrforge/file_generators/templates/docker/requirements.txt.j2 pyproject.toml`
 
-to have all newest dependencies. This solutions allow as to have scargo install in docker for ci/cd and be able to use newest features without official releases.  
+to have all newest dependencies. This solutions allow as to have pwrforge install in docker for ci/cd and be able to use newest features without official releases.  
 
-## Testing custom scargo generated project locally
-You can make changes in scargo and install it locally using ```pip install .``` command when you are in the main project folder.
-To test the custom scargo version and have this custom scargo available also inside the docker (crucial for testing), in created project update  docker-compose.yaml:
+## Testing custom pwrforge generated project locally
+You can make changes in pwrforge and install it locally using ```pip install .``` command when you are in the main project folder.
+To test the custom pwrforge version and have this custom pwrforge available also inside the docker (crucial for testing), in created project update  docker-compose.yaml:
 
     volumes:
 
       - ..:/workspace
       - /dev:/dev
-      - ~/.local/lib/python3.10/site-packages/scargo:/usr/local/lib/python3.8/dist-packages/scargo
+      - ~/.local/lib/python3.10/site-packages/pwrforge:/usr/local/lib/python3.8/dist-packages/pwrforge
 
-Where ```~/.local/lib/python3.10/site-packages/scargo``` is a path to scargo on your local machine. It the following path is not working, find installation dir using ```pip show scargo```.
+Where ```~/.local/lib/python3.10/site-packages/pwrforge``` is a path to pwrforge on your local machine. It the following path is not working, find installation dir using ```pip show pwrforge```.
 
-To keep this setup between ```scargo update``` commands, in scargo.toml file update also ```update-exclude``` as in following example:
+To keep this setup between ```pwrforge update``` commands, in pwrforge.toml file update also ```update-exclude``` as in following example:
 
     update-exclude = [".devcontainer/docker-compose.yaml"]
 
@@ -127,4 +127,4 @@ To add your user to the `docker` group, run the following command:
 
 # Contributing
 
-See contributing guide on https://spyro-soft.github.io/scargo/contributing.html
+See contributing guide on https://spyro-soft.github.io/pwrforge/contributing.html

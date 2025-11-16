@@ -7,9 +7,9 @@ import pytest
 from pytest_subprocess import FakeProcess
 from pytest_subprocess.fake_popen import FakePopen
 
-from scargo.config import Config
-from scargo.utils.conan_utils import conan_add_remote, conan_remote_login, conan_source
-from tests.ut.ut_scargo_publish import (
+from pwrforge.config import Config
+from pwrforge.utils.conan_utils import conan_add_remote, conan_remote_login, conan_source
+from tests.ut.ut_pwrforge_publish import (
     ENV_CONAN_PASSWORD,
     ENV_CONAN_USER,
     EXAMPLE_URL,

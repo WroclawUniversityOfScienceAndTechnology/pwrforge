@@ -8,7 +8,7 @@ compiler.cppstd=17
 build_type=RelWithDebInfo
 
 [buildenv]
-SCARGO_BUILD_TARGET=atsam
+pwrforge_BUILD_TARGET=atsam
 CONAN_CMAKE_FIND_ROOT_PATH=/opt/gcc-arm-none-eabi/lib/
 CC=arm-none-eabi-gcc
 CXX=arm-none-eabi-g++

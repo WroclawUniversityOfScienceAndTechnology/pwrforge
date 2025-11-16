@@ -16,14 +16,14 @@ from typing import List
 
 sys.path.insert(0, str(Path(__file__).parents[2]))
 # Extend sys.path with sources folders
-src_root = Path(__file__).parents[2] / "scargo"
+src_root = Path(__file__).parents[2] / "pwrforge"
 src_paths = [
     str(f) for f in src_root.rglob("**") if f.is_dir() and f.name != "__pycache__"
 ]
 sys.path.extend(src_paths)
 
 # -- Project information -----------------------------------------------------
-project = "scargo"  # pylint: disable=redefined-builtin
+project = "pwrforge"  # pylint: disable=redefined-builtin
 copyright = "2022, Spyrosoft Solution S.A."  # pylint: disable=redefined-builtin
 author = "Spyrosoft Solution S.A."
 

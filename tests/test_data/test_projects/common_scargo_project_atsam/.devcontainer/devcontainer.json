@@ -1,7 +1,7 @@
 {
-    "name": "common_scargo_project_atsam_dev",
+    "name": "common_pwrforge_project_atsam_dev",
     "dockerComposeFile": "docker-compose.yaml",
-    "service": "common_scargo_project_atsam_dev",
+    "service": "common_pwrforge_project_atsam_dev",
     "workspaceFolder": "/workspace",
     "customizations": {
         "vscode": {
@@ -17,7 +17,7 @@
                     "cppcheck",
                     "lvgl",
                     "gpio",
-                    "scargo",
+                    "pwrforge",
                     "devcontainer",
                     "usbip",
                     "cyclomatic",

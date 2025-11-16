@@ -1,4 +1,4 @@
-image: spyrosoftsa/scargo-dev:1.4
+image: pwr/pwrforge-dev:1.4
 
 stages:
   - build
@@ -72,7 +72,7 @@ copy rights:
   extends: .merge_request
   allow_failure: true
   script:
-    -  ./common_dev/scripts/copyrights.py -C scargo/
+    -  ./common_dev/scripts/copyrights.py -C pwrforge/
 
 #______________________________________________________________________________________________TODO
 todo:
@@ -80,7 +80,7 @@ todo:
   extends: .merge_request
   allow_failure: true
   script:
-    -  ./common_dev/scripts/todo_check.py -C scargo -C tests
+    -  ./common_dev/scripts/todo_check.py -C pwrforge -C tests
 
 #______________________________________________________________________________________________FORMAT
 black:
@@ -88,14 +88,14 @@ black:
   extends: .merge_request
   allow_failure: false
   script:
-    - black --check --diff scargo tests common_dev run.py clean.py
+    - black --check --diff pwrforge tests common_dev run.py clean.py
 
 isort:
   stage: check
   extends: .merge_request
   allow_failure: false
   script:
-    - isort --profile=black --check --diff scargo tests common_dev run.py clean.py
+    - isort --profile=black --check --diff pwrforge tests common_dev run.py clean.py
 #______________________________________________________________________________________________CYCLOMATIC
 cyclomatic:
   stage: check
@@ -118,7 +118,7 @@ pylint:
   extends: .merge_request
   allow_failure: false
   script:
-    - ./common_dev/scripts/pylintchecker.py -c scargo/ -s 9.95 --exclude=tests/
+    - ./common_dev/scripts/pylintchecker.py -c pwrforge/ -s 9.95 --exclude=tests/
 #______________________________________________________________________________________________CHECK_TAG
 check_tag:
   stage: publish
@@ -126,7 +126,7 @@ check_tag:
   script:
     - git config --global --add safe.directory "${CI_PROJECT_DIR}"
     - git fetch --tags
-    - tag=release_$(grep -w __version__ scargo/__init__.py | grep -Eo "[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+")
+    - tag=release_$(grep -w __version__ pwrforge/__init__.py | grep -Eo "[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+")
     - if [[ $(git tag -l "$tag") ]]; then echo "tag $tag exist"; exit 1; else echo "tag $tag does not exist "; fi
 
 #______________________________________________________________________________________________RELEASING
@@ -137,7 +137,7 @@ releasing:
     - master
     - main
   script:
-    - tag=release_$(grep -w __version__ scargo/__init__.py | grep -Eo "[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+")
+    - tag=release_$(grep -w __version__ pwrforge/__init__.py | grep -Eo "[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+")
     - echo "this is release"
     - echo $tag
     - release-cli create --name "${tag}" --description "${CI_COMMIT_TAG_MESSAGE:-No release notes.}" --tag-name "${tag}"

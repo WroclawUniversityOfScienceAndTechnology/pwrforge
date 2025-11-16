@@ -3,7 +3,7 @@
 import lizard  # type: ignore[import-untyped]
 
 # to exclude directory use -x <dir_path> param
-params = ["lizard", "/scargo/", "-C", "25", "-w"]
+params = ["lizard", "/pwrforge/", "-C", "25", "-w"]
 
 if __name__ == "__main__":
     lizard.main(params)

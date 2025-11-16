@@ -41,10 +41,10 @@ ENV PATH $PATH:/opt/gcc-arm-none-eabi/bin
 ENV LC_ALL=C
 WORKDIR /opt
 
-FROM atsam AS custom_common_scargo_project_atsam
+FROM atsam AS custom_common_pwrforge_project_atsam
 # user can add his docker code below which will be integrated with
-# main docker file and not overwritten by scargo update
-FROM custom_common_scargo_project_atsam AS common_scargo_project_atsam_dev
+# main docker file and not overwritten by pwrforge update
+FROM custom_common_pwrforge_project_atsam AS common_pwrforge_project_atsam_dev
 
 ARG USER_NAME=user
 ARG USER_PASSWORD=user
@@ -74,7 +74,7 @@ RUN printf "\n\nADDING USER $USER_NAME TO SUDOERS - DEV ENV ONLY!\n\n" >&2 && \
     echo "$USER_NAME:$USER_PASSWORD" | chpasswd && \
     echo "$USER_NAME ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
-RUN pip3 install scargo==2.1.1
+RUN pip3 install pwrforge==2.1.1
 
 RUN usermod -a -G dialout ${USER_NAME}
 USER ${USER_NAME}

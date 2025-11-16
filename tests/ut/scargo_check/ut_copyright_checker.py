@@ -4,9 +4,9 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from scargo.commands.check import CopyrightChecker
-from scargo.config import Config
-from scargo.logger import get_logger
+from pwrforge.commands.check import CopyrightChecker
+from pwrforge.config import Config
+from pwrforge.logger import get_logger
 from tests.ut.utils import get_log_data, get_test_project_config
 
 FILE_CONTENTS_WITHOUT_COPYRIGHT = [
@@ -75,7 +75,7 @@ def test_check_copyright_no_description(config: Config, caplog: pytest.LogCaptur
     assert get_log_data(caplog.records) == [
         (
             "WARNING",
-            "No copyright line defined in scargo.toml at check.copyright.description",
+            "No copyright line defined in pwrforge.toml at check.copyright.description",
         )
     ]
 

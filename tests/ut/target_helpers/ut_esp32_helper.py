@@ -4,8 +4,8 @@ from unittest.mock import MagicMock
 import pytest
 from pytest_subprocess import FakeProcess
 
-from scargo.target_helpers.esp32_helper import gen_fs_esp32, gen_single_binary_esp32
-from tests.ut.ut_scargo_gen import mock_prepare_config_esp32  # noqa: F401
+from pwrforge.target_helpers.esp32_helper import gen_fs_esp32, gen_single_binary_esp32
+from tests.ut.ut_pwrforge_gen import mock_prepare_config_esp32  # noqa: F401
 
 
 def test_gen_fs_esp32(fp: FakeProcess, mock_prepare_config_esp32: MagicMock) -> None:  # noqa: F811
@@ -48,7 +48,7 @@ def test_gen_single_bin_esp32_flash_args_not_exists(
         gen_single_binary_esp32("Debug", mock_prepare_config_esp32.return_value)
 
         assert "flash_args does not exists" in caplog.text
-        assert "Did you run scargo build --profile Debug" in caplog.text
+        assert "Did you run pwrforge build --profile Debug" in caplog.text
         assert e.type == SystemExit
 
 

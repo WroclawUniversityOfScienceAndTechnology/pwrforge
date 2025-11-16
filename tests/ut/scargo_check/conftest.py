@@ -4,7 +4,7 @@ from unittest.mock import MagicMock, mock_open
 import pytest
 from pytest_mock import MockerFixture
 
-from scargo.commands.check import CheckerFixer, find_files
+from pwrforge.commands.check import CheckerFixer, find_files
 
 
 @pytest.fixture

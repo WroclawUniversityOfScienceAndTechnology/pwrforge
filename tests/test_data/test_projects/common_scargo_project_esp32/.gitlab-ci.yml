@@ -37,7 +37,7 @@ debug:
   extends: .merge_request
   script:
     - source /opt/esp/entrypoint.sh
-    - scargo build
+    - pwrforge build
   artifacts:
     paths:
       - build/Debug/bin
@@ -50,7 +50,7 @@ tests:
   extends: .merge_request
   allow_failure: true
   script:
-    - scargo test
+    - pwrforge test
   artifacts:
     paths:
       - build/doc/ut_coverage_html
@@ -61,7 +61,7 @@ clang format:
   extends: .merge_request
   allow_failure: false
   script:
-    - scargo check --clang-format
+    - pwrforge check --clang-format
   artifacts:
     paths:
       - build/clang_format.log
@@ -73,7 +73,7 @@ cpp check:
   extends: .merge_request
   allow_failure: false
   script:
-    - scargo check --cppcheck
+    - pwrforge check --cppcheck
   artifacts:
     paths:
       - build/cpp_check.log
@@ -85,7 +85,7 @@ clang tidy:
    extends: .merge_request
    allow_failure: true
    script:
-    - scargo check --clang-tidy
+    - pwrforge check --clang-tidy
    artifacts:
      paths:
        - build/filtered_compile_commands
@@ -96,7 +96,7 @@ todo:
   extends: .merge_request
   allow_failure: true
   script:
-    - scargo check --todo
+    - pwrforge check --todo
   artifacts:
     paths:
       - build/todo.log
@@ -108,7 +108,7 @@ cyclomatic:
   extends: .merge_request
   allow_failure: true
   script:
-    - scargo check --cyclomatic
+    - pwrforge check --cyclomatic
   artifacts:
     paths:
       - build/cyclomatic.log
@@ -120,7 +120,7 @@ pragma once:
   extends: .merge_request
   allow_failure: false
   script:
-    - scargo check --pragma
+    - pwrforge check --pragma
   artifacts:
     paths:
       - build/pragma_once.log
@@ -132,7 +132,7 @@ copy rights:
   extends: .merge_request
   allow_failure: true
   script:
-    - scargo check --copyright
+    - pwrforge check --copyright
   artifacts:
     paths:
       - build/copy_rights.log
@@ -144,7 +144,7 @@ docu:
   extends: .merge_request
   allow_failure: true
   script:
-    - scargo doc
+    - pwrforge doc
   artifacts:
     paths:
       - build/doc
@@ -157,7 +157,7 @@ check_tag:
   script:
     - git config --global --add safe.directory "${CI_PROJECT_DIR}"
     - git fetch --tags
-    - tag=release_$(grep -w "project" scargo.lock -A 3 | grep version | grep -Eo "[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+")
+    - tag=release_$(grep -w "project" pwrforge.lock -A 3 | grep version | grep -Eo "[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+")
     - if [[ $(git tag -l "$tag") ]]; then echo "tag $tag exist"; exit 1; else echo "tag $tag does not exist "; fi
 
 #______________________________________________________________________________________________RELEASING
@@ -168,7 +168,7 @@ releasing:
     - master
     - main
   script:
-    - tag=release_$(grep -w "project" scargo.lock -A 3 | grep version | grep -Eo "[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+")
+    - tag=release_$(grep -w "project" pwrforge.lock -A 3 | grep version | grep -Eo "[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+")
     - echo "this is release"
     - echo $tag
     - release-cli create --name "${tag}" --description "${CI_COMMIT_TAG_MESSAGE:-No release notes.}" --tag-name "${tag}"

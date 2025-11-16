@@ -4,7 +4,7 @@ from unittest.mock import MagicMock
 import pytest
 from pytest_mock import MockerFixture
 
-from scargo.commands.check import find_files
+from pwrforge.commands.check import find_files
 from tests.ut.utils import get_log_data
 
 

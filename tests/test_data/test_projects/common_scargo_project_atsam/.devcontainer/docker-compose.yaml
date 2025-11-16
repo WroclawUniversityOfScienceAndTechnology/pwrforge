@@ -4,8 +4,8 @@
 version: '3.9'
 
 services:
-  common_scargo_project_atsam_dev:
-    image: common_scargo_project_atsam-dev:1.0
+  common_pwrforge_project_atsam_dev:
+    image: common_pwrforge_project_atsam-dev:1.0
     platform: linux/amd64
     build:
       context: .

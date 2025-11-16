@@ -4,8 +4,8 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from scargo.commands.check import CheckerFixer, CheckResult
-from scargo.config import CheckConfig, Config
+from pwrforge.commands.check import CheckerFixer, CheckResult
+from pwrforge.config import CheckConfig, Config
 from tests.ut.utils import get_log_data
 
 

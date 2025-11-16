@@ -76,7 +76,7 @@ WORKDIR /opt
 
 FROM esp32 AS custom_esp32project
 # user can add his docker code below which will be integrated with
-# main docker file and not overwritten by scargo update
+# main docker file and not overwritten by pwrforge update
 ENV DEBIAN_FRONTEND noninteractive
 
 FROM custom_esp32project AS esp32project_dev
@@ -108,7 +108,7 @@ RUN printf "\n\nADDING USER $USER_NAME TO SUDOERS - DEV ENV ONLY!\n\n" >&2 && \
     echo "$USER_NAME:$USER_PASSWORD" | chpasswd && \
     echo "$USER_NAME ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
-RUN pip3 install scargo
+RUN pip3 install pwrforge
 
 RUN usermod -a -G dialout ${USER_NAME}
 USER ${USER_NAME}

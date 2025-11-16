@@ -6,7 +6,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 from pyfakefs.fake_filesystem import FakeFilesystem
 
-from scargo.config import (
+from pwrforge.config import (
     CheckConfig,
     ChecksConfig,
     ConanConfig,
@@ -16,19 +16,19 @@ from scargo.config import (
     DocConfig,
     ProfileConfig,
     ProjectConfig,
-    ScargoConfig,
-    ScargoTarget,
+    pwrforgeConfig,
+    pwrforgeTarget,
     TestConfig,
     TodoCheckConfig,
 )
 
-TARGET_X86 = ScargoTarget.x86
-TARGET_ESP32 = ScargoTarget.esp32
-TARGET_STM32 = ScargoTarget.stm32
+TARGET_X86 = pwrforgeTarget.x86
+TARGET_ESP32 = pwrforgeTarget.esp32
+TARGET_STM32 = pwrforgeTarget.stm32
 
-TEST_PROJECT_NAME = "common_scargo_project"
-TEST_PROJECT_STM32_NAME = "common_scargo_project_stm32"
-TEST_PROJECT_ESP32_NAME = "common_scargo_project_esp32"
+TEST_PROJECT_NAME = "common_pwrforge_project"
+TEST_PROJECT_STM32_NAME = "common_pwrforge_project_stm32"
+TEST_PROJECT_ESP32_NAME = "common_pwrforge_project_esp32"
 TEST_DATA_PATH = Path(os.path.dirname(os.path.realpath(__file__))).parent / "test_data"
 TEST_PROJECT_PATH = Path(TEST_DATA_PATH, "test_projects", TEST_PROJECT_NAME)
 TEST_PROJECT_ESP32_PATH = Path(TEST_DATA_PATH, "test_projects", TEST_PROJECT_ESP32_NAME)
@@ -91,7 +91,7 @@ def config(fs: FakeFilesystem) -> Config:
         atsam=None,
         stm32=None,
         esp32=None,
-        scargo=ScargoConfig(  # type: ignore
+        pwrforge=pwrforgeConfig(  # type: ignore
             console_log_level="INFO",
             file_log_level="WARNING",
             update_exclude=[],

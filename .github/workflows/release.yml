@@ -24,7 +24,7 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-22.04
     container:
-        image: spyrosoftsa/scargo-dev:1.4
+        image: pwrforge/pwrforge-dev:1.4
         options: --user root
     steps:
       - name: Checkout
@@ -58,7 +58,7 @@ jobs:
           fetch-depth: 0
     - name: Get tag from source code
       id: source-code-tag
-      run: echo "TAG_NAME=release_$(grep -w __version__ scargo/__init__.py | grep -Eo "[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+")" >> $GITHUB_ENV
+      run: echo "TAG_NAME=release_$(grep -w __version__ pwrforge/__init__.py | grep -Eo "[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+")" >> $GITHUB_ENV
 
     - name: Create Release
       uses: softprops/action-gh-release@v1
@@ -75,7 +75,7 @@ jobs:
     needs: create-release
     runs-on: ubuntu-22.04
     container:
-        image: spyrosoftsa/scargo-dev:1.4
+        image: pwrforge/pwrforge-dev:1.4
         options: --user root
     steps:
     - name: Checkout code
@@ -93,7 +93,7 @@ jobs:
 
     - name: Build and upload to PyPI
       run: |
-        git config --global --add safe.directory /__w/scargo/scargo
+        git config --global --add safe.directory /__w/pwrforge/pwrforge
         flit build
         flit publish
       env:

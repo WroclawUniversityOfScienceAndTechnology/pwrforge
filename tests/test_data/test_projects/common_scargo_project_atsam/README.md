@@ -63,42 +63,42 @@ printenv | grep CONAN # In case of correct config this should print your user an
 
 ## Work with project (compilation)
 
-### Scargo flow (local development)
+### pwrforge flow (local development)
 ```bash
 #!/bin/bash
-scargo clean;                 # Clean build directory.
-scargo update;                # GENERATE files using toml file as instruction (scargo is code generator). IT IS REQUIRED AFTER CHANGES IN *.toml FILE
-scargo build --profile Debug; # Compile project with debug profile
-scargo test -v;               # Run tests with verbose output
+pwrforge clean;                 # Clean build directory.
+pwrforge update;                # GENERATE files using toml file as instruction (pwrforge is code generator). IT IS REQUIRED AFTER CHANGES IN *.toml FILE
+pwrforge build --profile Debug; # Compile project with debug profile
+pwrforge test -v;               # Run tests with verbose output
 ```
 
-### Scargo full flow (tools and checks)
+### pwrforge full flow (tools and checks)
 ```bash
 #!/bin/bash
-scargo clean;                 # Clean build directory.
-scargo update;                # GENERATE files using toml file as instruction (scargo is code generator). IT IS REQUIRED AFTER CHANGES IN scargo.toml FILE
-scargo test -v;               # Run tests with verbose output
-scargo build --profile Debug; # Compile project with debug profile
-scargo check --clang-format;  # Check sources with clang format (autoformatter)
-scargo check --cppcheck;      # Check sources with cppcheck (static analysis)
-scargo check --clang-tidy;    # Check sources with clang format (naming convention and light static analysis)
-scargo check --todo;          # Check for todo comments
-scargo check --cyclomatic;    # Calculate cyclomatic complexity
-scargo check --pragma;        # Check for existence of pragma directive in headers
-scargo check --copyright;     # Check for existence of copyright in files
-scargo fix --clang-format;    # Run automate clang formatting for files with issues
-scargo fix --copyright;       # Add copyright notice at start of source files (if missing)
-scargo fix --pragma;          # Add pragma directive in headers if missing
-scargo doc;                   # Generate documentation
-scargo publish;               # Publish conan package to artifacts repository
-scargo flash;                 # Flash microcontroller board
+pwrforge clean;                 # Clean build directory.
+pwrforge update;                # GENERATE files using toml file as instruction (pwrforge is code generator). IT IS REQUIRED AFTER CHANGES IN pwrforge.toml FILE
+pwrforge test -v;               # Run tests with verbose output
+pwrforge build --profile Debug; # Compile project with debug profile
+pwrforge check --clang-format;  # Check sources with clang format (autoformatter)
+pwrforge check --cppcheck;      # Check sources with cppcheck (static analysis)
+pwrforge check --clang-tidy;    # Check sources with clang format (naming convention and light static analysis)
+pwrforge check --todo;          # Check for todo comments
+pwrforge check --cyclomatic;    # Calculate cyclomatic complexity
+pwrforge check --pragma;        # Check for existence of pragma directive in headers
+pwrforge check --copyright;     # Check for existence of copyright in files
+pwrforge fix --clang-format;    # Run automate clang formatting for files with issues
+pwrforge fix --copyright;       # Add copyright notice at start of source files (if missing)
+pwrforge fix --pragma;          # Add pragma directive in headers if missing
+pwrforge doc;                   # Generate documentation
+pwrforge publish;               # Publish conan package to artifacts repository
+pwrforge flash;                 # Flash microcontroller board
 ```
 
-### Other scargo commands (not mandatory for all projects)
+### Other pwrforge commands (not mandatory for all projects)
 
 ```bash
 #!/bin/bash
-scargo gen #Generate certificate and other artifacts for chosen targets
+pwrforge gen #Generate certificate and other artifacts for chosen targets
 ```
 
 

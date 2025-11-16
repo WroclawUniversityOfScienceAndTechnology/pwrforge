@@ -1,8 +1,8 @@
 import pytest
 from pytest_subprocess import FakeProcess
 
-from scargo.commands.check import CppcheckChecker
-from scargo.config import Config
+from pwrforge.commands.check import CppcheckChecker
+from pwrforge.config import Config
 from tests.ut.utils import get_log_data, log_contains
 
 CPPCHECK_COMMAND = [

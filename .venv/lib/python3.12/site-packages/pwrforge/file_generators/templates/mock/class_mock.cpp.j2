@@ -1,0 +1,26 @@
+#include "mock_{{header.name}}"
+
+{% if header.namespaces %}
+{% for namespace in header.namespaces %}
+using namespace {{namespace.name}};
+{% endfor %}
+{% endif %}
+
+{% for cls in header.classes %}
+{% for method in cls.methods %}
+{% if cls.name %}
+{{method.return_type|replace("static", "")|trim}} {{cls.name}}::{{method.name}}({{method.get_typed_args()|trim}})
+{% else %}
+{{method.return_type|replace("static", "")|trim}} {{method.name}}({{method.get_typed_args()|trim}})
+{% endif %}
+{
+    {% if method.return_type != 'void' %}
+    return {{cls.mock_name}}::instance().{{method.name}}({{method.get_arg_names()}});
+    {% else %}
+    {{cls.mock_name}}::instance().{{method.name}}({{method.get_arg_names()}});
+    {% endif %}
+}
+
+{% endfor %}
+{% endfor %}
+

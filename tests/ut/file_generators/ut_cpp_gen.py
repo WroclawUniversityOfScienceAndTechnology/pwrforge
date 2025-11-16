@@ -4,9 +4,9 @@ from unittest.mock import MagicMock, call
 import pytest
 from pytest_mock import MockerFixture
 
-from scargo.config import Config
-from scargo.file_generators.base_gen import create_file_from_template
-from scargo.file_generators.cpp_gen import generate_cpp
+from pwrforge.config import Config
+from pwrforge.file_generators.base_gen import create_file_from_template
+from pwrforge.file_generators.cpp_gen import generate_cpp
 
 
 def test_generate_cpp_bin_only(config: Config, mock_create_file_from_template: MagicMock) -> None:

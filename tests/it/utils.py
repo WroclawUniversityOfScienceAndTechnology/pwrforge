@@ -7,14 +7,14 @@ from click.testing import Result
 from typer import Typer
 from typer.testing import CliRunner
 
-from scargo.config import Config
-from scargo.logger import get_logger
-from scargo.utils.docker_utils import prepare_docker
+from pwrforge.config import Config
+from pwrforge.logger import get_logger
+from pwrforge.utils.docker_utils import prepare_docker
 
 logger = get_logger()
 
 
-class ScargoTestRunner(CliRunner):
+class pwrforgeTestRunner(CliRunner):
     def invoke(  # type: ignore[override]
         self,
         use_cli: Typer,
@@ -27,11 +27,11 @@ class ScargoTestRunner(CliRunner):
     ) -> Result:
         temp = sys.argv
         if not args:
-            sys.argv = ["scargo"]
+            sys.argv = ["pwrforge"]
         elif isinstance(args, str):
-            sys.argv = ["scargo", args]
+            sys.argv = ["pwrforge", args]
         else:
-            sys.argv = ["scargo", *args]
+            sys.argv = ["pwrforge", *args]
         result = super().invoke(
             use_cli,
             args=args,
@@ -51,7 +51,7 @@ def add_profile_to_toml(
     var2: str,
     value: str,
     value2: str,
-    toml_path: Path = Path("scargo.toml"),
+    toml_path: Path = Path("pwrforge.toml"),
 ) -> None:
     data = toml.load(toml_path)
     temp_dict = dict()
@@ -66,7 +66,7 @@ def run_custom_command_in_docker(command: List[str], config: Config) -> str:
     Run command in docker
 
     :param List[str] command: command to execute
-    :param Config config: config loaded from scargo.lock or scargo.toml
+    :param Config config: config loaded from pwrforge.lock or pwrforge.toml
     :return str: output from command
     """
     if not config.project.is_docker_buildenv() or Path("/.dockerenv").exists():

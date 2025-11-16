@@ -4,8 +4,8 @@ from unittest.mock import MagicMock
 import pytest
 from pytest_subprocess import FakeProcess
 
-from scargo.commands.check import ClangFormatChecker
-from scargo.config import Config
+from pwrforge.commands.check import ClangFormatChecker
+from pwrforge.config import Config
 from tests.ut.utils import get_log_data
 
 CLANG_FORMAT_COMMAND = [

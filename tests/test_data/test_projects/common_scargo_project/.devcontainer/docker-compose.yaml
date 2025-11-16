@@ -13,8 +13,8 @@ x-project_config: &project_config
   CONAN_PASSWORD: ${CONAN_PASSWORD}
 
 services:
-  common_scargo_project_path_dev:
-    image: common_scargo_project_path-dev:1.0
+  common_pwrforge_project_path_dev:
+    image: common_pwrforge_project_path-dev:1.0
     platform: linux/amd64
     build:
       context: .

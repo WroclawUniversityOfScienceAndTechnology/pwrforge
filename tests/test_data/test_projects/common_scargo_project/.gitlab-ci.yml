@@ -1,4 +1,4 @@
-image: common_scargo_project-dev:1.0
+image: common_pwrforge_project-dev:1.0
 stages:
   - build
   - test
@@ -19,7 +19,7 @@ debug:
   stage: build
   extends: .merge_request
   script:
-    - scargo build
+    - pwrforge build
   artifacts:
     paths:
       - build/Debug/
@@ -31,7 +31,7 @@ tests:
   extends: .merge_request
   allow_failure: true
   script:
-    - scargo test
+    - pwrforge test
   artifacts:
     paths:
       - build/doc/ut_coverage_html
@@ -42,7 +42,7 @@ clang format:
   extends: .merge_request
   allow_failure: false
   script:
-    - scargo check --clang-format
+    - pwrforge check --clang-format
   artifacts:
     paths:
       - build/clang_format.log
@@ -54,7 +54,7 @@ cpp check:
   extends: .merge_request
   allow_failure: false
   script:
-    - scargo check --cppcheck
+    - pwrforge check --cppcheck
   artifacts:
     paths:
       - build/cpp_check.log
@@ -66,7 +66,7 @@ clang tidy:
    extends: .merge_request
    allow_failure: true
    script:
-    - scargo check --clang-tidy
+    - pwrforge check --clang-tidy
    artifacts:
      paths:
        - build/filtered_compile_commands
@@ -77,7 +77,7 @@ todo:
   extends: .merge_request
   allow_failure: true
   script:
-    - scargo check --todo
+    - pwrforge check --todo
   artifacts:
     paths:
       - build/todo.log
@@ -89,7 +89,7 @@ cyclomatic:
   extends: .merge_request
   allow_failure: true
   script:
-    - scargo check --cyclomatic
+    - pwrforge check --cyclomatic
   artifacts:
     paths:
       - build/cyclomatic.log
@@ -101,7 +101,7 @@ pragma once:
   extends: .merge_request
   allow_failure: false
   script:
-    - scargo check --pragma
+    - pwrforge check --pragma
   artifacts:
     paths:
       - build/pragma_once.log
@@ -113,7 +113,7 @@ copy rights:
   extends: .merge_request
   allow_failure: true
   script:
-    - scargo check --copyright
+    - pwrforge check --copyright
   artifacts:
     paths:
       - build/copy_rights.log
@@ -125,7 +125,7 @@ docu:
   extends: .merge_request
   allow_failure: true
   script:
-    - scargo doc
+    - pwrforge doc
   artifacts:
     paths:
       - build/doc

@@ -19,7 +19,7 @@ find_file(
   NO_DEFAULT_PATH)
 
 add_executable(${PROJECT_NAME}
-  common_scargo_project_atsam.cpp
+  common_pwrforge_project_atsam.cpp
   ${STARTUP_SRC}
   ${SYSTEM_SRC}
 )

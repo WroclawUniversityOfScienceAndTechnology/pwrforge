@@ -1,22 +1,22 @@
-Contributing to scargo
+Contributing to pwrforge
 ======================
 
 This guide assumes working on Linux with ``apt`` package manager.
 
-All shell commands should be executed in the ``scargo`` repository root, unless stated otherwise.
+All shell commands should be executed in the ``pwrforge`` repository root, unless stated otherwise.
 
 
 Install dependencies
 --------------------
 
-While ``scargo`` can run in a docker container with all its dependencies,
+While ``pwrforge`` can run in a docker container with all its dependencies,
 for testing and debugging it's often beneficial to have it working without docker.
-In order to use ``scargo`` without docker in a new project,
-you need to pass the ``--no-docker`` option to ``scargo new``.
+In order to use ``pwrforge`` without docker in a new project,
+you need to pass the ``--no-docker`` option to ``pwrforge new``.
 
 Look through the ``ci/Dockerfile`` and install all packages from ``apt install`` and ``apt-get install`` lines.
 
-Install scargo in editable mode with dev dependencies enabled:
+Install pwrforge in editable mode with dev dependencies enabled:
 
     ::
 
@@ -34,15 +34,15 @@ Dev setup for docker
 --------------------
 
 In some cases it's not possible to avoid working with a docker setup.
-By default, ``scargo`` is installed in docker from the PyPI repository,
+By default, ``pwrforge`` is installed in docker from the PyPI repository,
 which makes it impossible to include local changes.
-You can override it by setting the ``SCARGO_DOCKER_INSTALL_LOCAL``
+You can override it by setting the ``pwrforge_DOCKER_INSTALL_LOCAL``
 environment variable to the location of the wheel package
 (which can be generated with ``flit build``). e.g.:
 
     ::
 
-        export SCARGO_DOCKER_INSTALL_LOCAL=dist/scargo-1.1.0-py3-none-any.whl
+        export pwrforge_DOCKER_INSTALL_LOCAL=dist/pwrforge-1.1.0-py3-none-any.whl
 
 
 With this variable in the environment, any new or updated project will use the local wheel package.

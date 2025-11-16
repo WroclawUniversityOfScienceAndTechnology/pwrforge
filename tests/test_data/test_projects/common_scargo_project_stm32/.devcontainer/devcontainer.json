@@ -1,6 +1,6 @@
 {
-  "name": "common_scargo_project_stm32_dev",
+  "name": "common_pwrforge_project_stm32_dev",
   "dockerComposeFile": "docker-compose.yaml",
-  "service": "common_scargo_project_stm32_dev",
+  "service": "common_pwrforge_project_stm32_dev",
   "workspaceFolder": "/workspace"
 }

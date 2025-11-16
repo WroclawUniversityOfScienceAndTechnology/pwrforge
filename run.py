@@ -7,7 +7,7 @@ import sys
 from typing import List, Optional
 
 from common_dev.scripts.documentation import create_doc
-from scargo.cli import cli as scargo_cli
+from pwrforge.cli import cli as pwrforge_cli
 
 SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
 REPO_DIR = SCRIPT_DIR  # '/repo'
@@ -15,7 +15,7 @@ REPO_DIR = SCRIPT_DIR  # '/repo'
 SCRIPTS_DIR = SCRIPT_DIR + "/common_dev/scripts"
 SCRIPT_SH = ".sh"
 OUT = SCRIPT_DIR + "/build"
-SCARGO_DIR = REPO_DIR + "/scargo"
+SOURCE_DIR = REPO_DIR + "/pwrforge"
 UT_DIR = REPO_DIR + "/tests/ut"
 IT_DIR = REPO_DIR + "/tests/it"
 CHECKERS_EXCLUSIONS = ["-e", "common_dev"]
@@ -116,7 +116,7 @@ def perform_tests(
 
     try:
         # needed because of relative imports
-        os.environ["PYTHONPATH"] = SCARGO_DIR
+        os.environ["PYTHONPATH"] = SOURCE_DIR
 
         command = [
             "pytest",
@@ -127,7 +127,7 @@ def perform_tests(
             "html:" + out_test_doc_dir + "/coverage" + "_" + test_postfix,
             "--cov-report",
             f"xml:{cobertura_path}",
-            "--cov=scargo",
+            "--cov=pwrforge",
             "-v",
             test_path,
         ]
@@ -161,9 +161,9 @@ def run_all_code_checkers() -> bool:
     command = [
         SCRIPT_DIR + "/common_dev/scripts/copyrights.py",
         "-C",
-        "scargo/",
+        "pwrforge/",
         "-e",
-        "scargo/cfg/AppData/",
+        "pwrforge/cfg/AppData/",
     ]
     try:
         command.extend(CHECKERS_EXCLUSIONS)
@@ -175,7 +175,7 @@ def run_all_code_checkers() -> bool:
         command = [
             "common_dev/scripts/todo_check.py",
             "-C",
-            "scargo",
+            "pwrforge",
             "-C",
             "tests",
         ]
@@ -227,7 +227,7 @@ def run_pylint() -> None:
     # can add "tests",  optionally
     command = [
         "pylint",
-        "scargo",
+        "pwrforge",
         "run.py",
         "clean.py",
     ]
@@ -237,7 +237,7 @@ def run_pylint() -> None:
 def run_flake8() -> None:
     command = [
         "flake8",
-        "scargo",
+        "pwrforge",
         "tests",
         "common_dev",
         "run.py",
@@ -250,7 +250,7 @@ def run_isort(check: bool = False) -> None:
     isort_command = [
         "isort",
         "--profile=black",
-        "scargo",
+        "pwrforge",
         "tests",
         "common_dev",
         "run.py",

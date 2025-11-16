@@ -5,9 +5,9 @@ from unittest.mock import MagicMock
 import pytest
 from pytest_subprocess import FakeProcess
 
-from scargo.commands.check import ClangTidyChecker
-from scargo.config import Config
-from scargo.utils.conan_utils import DEFAULT_PROFILES
+from pwrforge.commands.check import ClangTidyChecker
+from pwrforge.config import Config
+from pwrforge.utils.conan_utils import DEFAULT_PROFILES
 from tests.ut.utils import get_log_data
 
 CLANG_TIDY_COMMAND = ["clang-tidy", "foo/bar.hpp"]

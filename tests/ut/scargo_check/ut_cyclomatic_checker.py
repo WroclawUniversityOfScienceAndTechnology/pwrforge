@@ -1,8 +1,8 @@
 import pytest
 from pytest_subprocess import FakeProcess
 
-from scargo.commands.check import CyclomaticChecker
-from scargo.config import Config
+from pwrforge.commands.check import CyclomaticChecker
+from pwrforge.config import Config
 from tests.ut.utils import get_log_data, log_contains
 
 LIZARD_COMMAND = ["lizard", "src", "-C", "25", "-w"]

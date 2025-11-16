@@ -1,37 +1,37 @@
 .. _arch-interaction:
 
-Interaction with Scargo
+Interaction with pwrforge
 =======================
 
-Scargo and other software
+pwrforge and other software
 -------------------------
 
 .. uml::
 
-   !include scargo_common_seq.puml
+   !include pwrforge_common_seq.puml
 
-   user -> scargo : scargo new my_project_1
-   scargo -> storage : generates new project tree
+   user -> pwrforge : pwrforge new my_project_1
+   pwrforge -> storage : generates new project tree
    return
    return
 
 
-   user -> scargo : scargo build
+   user -> pwrforge : pwrforge build
    alt project depends on other packages
-   scargo -> conan : download dependencies
+   pwrforge -> conan : download dependencies
    conan -> pkg_repo : download dependencies
    return
    return
    end
-   scargo -> cmake : build project
+   pwrforge -> cmake : build project
    cmake -> storage : create binary
    return
    return
    return
 
 
-   user -> scargo : scargo publish
-   scargo -> conan : conan upload
+   user -> pwrforge : pwrforge publish
+   pwrforge -> conan : conan upload
    conan -> storage : create package
    return
    conan -> pkg_repo : upload
@@ -40,26 +40,26 @@ Scargo and other software
    return
 
 
-Scargo and ESP-IDF
+pwrforge and ESP-IDF
 ------------------
 
 .. uml::
 
-   !include scargo_common_seq.puml
+   !include pwrforge_common_seq.puml
 
-   user -> scargo : scargo new --arch esp32 my_project_1
-   scargo -> sc_new : generate src/cpp, src/cmake
+   user -> pwrforge : pwrforge new --arch esp32 my_project_1
+   pwrforge -> sc_new : generate src/cpp, src/cmake
    sc_new -> storage : create src/cpp, src/cmake on disk
    return
    return
-   scargo -> sc_update : generate top level cmake
+   pwrforge -> sc_update : generate top level cmake
    sc_update -> storage: create top level cmake on disk
    return
    return
    return
 
-   user -> scargo : scargo build
-   scargo -> sc_build : execute build
+   user -> pwrforge : pwrforge build
+   pwrforge -> sc_build : execute build
    sc_build -> esp_idf : idf.py buildall (subprocess call)
    esp_idf -> storage : create binary
    return

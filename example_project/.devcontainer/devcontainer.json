@@ -17,7 +17,7 @@
                     "cppcheck",
                     "lvgl",
                     "gpio",
-                    "scargo",
+                    "pwrforge",
                     "devcontainer",
                     "usbip",
                     "cyclomatic",

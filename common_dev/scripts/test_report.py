@@ -61,7 +61,7 @@ def app(
     coverage_data = parse_cobertura(cobertura_path)
     plt.rcParams.update({"font.size": 7})
     fig, axs = plt.subplots(2, 2, width_ratios=(1, 2))
-    fig.suptitle(f"Scargo {test_type.title()} Test Report {date.today().isoformat()}")
+    fig.suptitle(f"pwrforge {test_type.title()} Test Report {date.today().isoformat()}")
     add_test_info(axs[0, 0], test_data)
     add_test_pie_chart(axs[0, 1], test_data)
     add_coverage_info(axs[1, 0], coverage_data)

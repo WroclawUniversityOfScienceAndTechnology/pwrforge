@@ -1,5 +1,4 @@
 ---
-version: '3.9'
 
 x-project_config: &project_config
   USER_NAME: ${USER_NAME}
@@ -11,8 +10,8 @@ x-project_config: &project_config
   CONAN_PASS_KEY: ${CONAN_PASS_KEY}
 
 services:
-  scargo-dev:
-    image: spyrosoftsa/scargo-dev:1.4
+  pwrforge-dev:
+    image: pwr/pwrforge-dev:1.4
     platform: linux/amd64
     build:
       context: ./ci/

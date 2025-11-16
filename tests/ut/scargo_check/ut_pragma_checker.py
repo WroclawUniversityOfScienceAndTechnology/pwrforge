@@ -2,8 +2,8 @@ from unittest.mock import MagicMock, call
 
 import pytest
 
-from scargo.commands.check import PragmaChecker
-from scargo.config import Config
+from pwrforge.commands.check import PragmaChecker
+from pwrforge.config import Config
 from tests.ut.utils import get_log_data
 
 FILE_CONTENTS_WITHOUT_PRAGMA = [

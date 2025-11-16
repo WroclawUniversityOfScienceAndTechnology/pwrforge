@@ -1,6 +1,6 @@
 import pytest
 
-from scargo.target_helpers.atsam_helper import get_atsam_cpu
+from pwrforge.target_helpers.atsam_helper import get_atsam_cpu
 
 
 @pytest.mark.parametrize(

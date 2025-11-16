@@ -3,14 +3,14 @@
 Generators
 ==========
 
-Output of Scargo generators
+Output of pwrforge generators
 ---------------------------
 
 .. uml::
 
    actor user
 
-   node scargo {
+   node pwrforge {
        component sc_new
        component sc_update
        component toml_gen
@@ -20,23 +20,23 @@ Output of Scargo generators
    }
 
    folder my_project_1 {
-       file scargo.toml
+       file pwrforge.toml
        file conanfile.py
        file CMakeLists.txt
        folder src {
        file CMakeLists.txt as src_cmake
-       file example_project_scargo.cpp
+       file example_project_pwrforge.cpp
        }
    }
 
-   user --> scargo : executes new ...
+   user --> pwrforge : executes new ...
 
    sc_new -down-> cpp_gen : generate_cpp
-   cpp_gen -down-> example_project_scargo.cpp
+   cpp_gen -down-> example_project_pwrforge.cpp
    cpp_gen -down-> src_cmake
 
    sc_new -down-> toml_gen : generate_toml
-   toml_gen -down-> scargo.toml
+   toml_gen -down-> pwrforge.toml
 
    sc_update -down-> conan_gen : generate_conanfile
    conan_gen -down-> conanfile.py
