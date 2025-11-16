@@ -16,30 +16,39 @@ if os.environ.get("PWRFORGE_BUILD_RUNNING") == "1":
 ROOT = Path(__file__).resolve().parent
 DIST_DIR = ROOT / "dist"
 
-DOCKER_TEMPLATES_DIR = (
-    ROOT / "pwrforge" / "file_generators" / "templates" / "docker"
-)
+DOCKER_TEMPLATES_DIR = ROOT / "pwrforge" / "templates" / ".devcontainer"
 
 PYPROJECT = ROOT / "pyproject.toml"
 CI_REQUIREMENTS = ROOT / "ci" / "requirements.txt"
-DOCKER_REQUIREMENTS_TEMPLATE = DOCKER_TEMPLATES_DIR / "requirements.txt.j2"
+DOCKER_REQUIREMENTS_TEMPLATE = DOCKER_TEMPLATES_DIR / "requirements.txt"
 
 
-def run(cmd: list[str]) -> None:
+def run(
+    cmd: list[str],
+    env: dict[str, str] | None = None,
+    cwd: str | Path | None = None,
+) -> None:
     """Run a subprocess command and print it."""
-    print(f"--> RUN: {' '.join(cmd)}")
-    subprocess.check_call(cmd)
+    cmd_str = " ".join(cmd)
+    print(f"--> RUN: {cmd_str}")
+    subprocess.check_call(cmd, env=env, cwd=str(cwd) if cwd is not None else None)
 
 
 def build_wheel_and_copy() -> None:
     """Build pwrforge wheel and copy it into docker templates."""
-    os.environ["PWRFORGE_BUILD_RUNNING"] = "1"
-
     DIST_DIR.mkdir(parents=True, exist_ok=True)
     DOCKER_TEMPLATES_DIR.mkdir(parents=True, exist_ok=True)
 
-    # 1) Build wheel
-    run([sys.executable, "-m", "build", "--wheel"])
+    # Prepare env only for the build subprocess to avoid recursion
+    build_env = os.environ.copy()
+    build_env["PWRFORGE_BUILD_RUNNING"] = "1"
+
+    # 1) Build wheel (must run in project root so python -m build widzi pyproject.toml)
+    run(
+        [sys.executable, "-m", "build", "--wheel"],
+        env=build_env,
+        cwd=ROOT,
+    )
 
     # 2) Locate newest wheel
     wheels = sorted(DIST_DIR.glob("pwrforge-*-py3-none-any.whl"))
@@ -59,33 +68,32 @@ def build_wheel_and_copy() -> None:
 
 
 def generate_requirements() -> None:
-    """Generate requirements for CI and docker."""
     CI_REQUIREMENTS.parent.mkdir(parents=True, exist_ok=True)
+    DOCKER_TEMPLATES_DIR.mkdir(parents=True, exist_ok=True)
+
+    safe_cwd = ROOT  # tu akurat nazwa pliku nie przeszkadza dla pip-compile
 
     run(
         [
-            sys.executable,
-            "-m",
-            "piptools",
-            "compile",
+            "pip-compile",
             "--all-extras",
             "--output-file",
             str(CI_REQUIREMENTS),
             str(PYPROJECT),
-        ]
+        ],
+        cwd=safe_cwd,
     )
 
     run(
         [
-            sys.executable,
-            "-m",
-            "piptools",
-            "compile",
+            "pip-compile",
             "--output-file",
             str(DOCKER_REQUIREMENTS_TEMPLATE),
             str(PYPROJECT),
-        ]
+        ],
+        cwd=safe_cwd,
     )
+
 
 
 def parse_args() -> argparse.Namespace:

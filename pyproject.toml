@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [project]
 name = "pwrforge"
-version = "0.0.1"
+version = "0.0.2"
 description = "C/C++ package and software development life cycle manager. Continuation of scargo project."
 authors = [
     { name = "Andrzej Aksenczuk", email = "andrzej.aksenczuk@pwr.edu.pl" },
@@ -77,7 +77,7 @@ dev = [
     "pyopenssl==23.2.0",
     "types-pyOpenSSL==23.2.0",
     "types-PyYAML==6.0.12.12",
-    "pip-tools==7.4.1",
+    "pip-tools==7.5.2",
 ]
 doc = [
     "recommonmark",
