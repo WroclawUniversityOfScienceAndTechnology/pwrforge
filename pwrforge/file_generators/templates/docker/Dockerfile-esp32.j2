@@ -1,10 +1,11 @@
 # esp-idf dependencies, https://docs.espressif.com/projects/esp-idf/en/latest/esp32/get-started/linux-macos-setup.html
-# libpython2.7 required by xtensa-esp32-elf-gdb
-RUN apt update --fix-missing && apt -y --no-install-recommends install git wget flex bison gperf python3 python3-venv cmake ninja-build ccache libffi-dev libssl-dev dfu-util libusb-1.0-0 libpython2.7 \
+RUN apt update --fix-missing && apt -y --no-install-recommends install \
+    git wget flex bison gperf python3 python3-venv cmake ninja-build ccache \
+    libffi-dev libssl-dev dfu-util libusb-1.0-0 \
     curl openocd && \
     rm -rf /var/lib/apt/lists/*
 
-ARG ESPRESSIF_IDF_TAG="v5.3.1"
+ARG ESPRESSIF_IDF_TAG="v5.5.1"
 ARG ESPRESSIF_IDF_VERSION="${ESPRESSIF_IDF_TAG}"
 ARG ESPRESSIF_IDF_PATH="/opt/esp-idf"
 ARG ESPRESSIF_REQUIREMENTS_FILE_PATH="${ESPRESSIF_IDF_PATH}/tools/requirements/requirements.core.txt"
@@ -31,6 +32,6 @@ set -e\n\
 \n\
 exec "$@"' >  /opt/esp/entrypoint.sh && chmod 775 /opt/esp/entrypoint.sh
 
-RUN umask 0002 && /opt/esp-idf/python_env/idf5.3_py3.10_env/bin/pip install pyclang
+RUN umask 0002 && /opt/esp-idf/python_env/idf5.5_py3.12_env/bin/pip install pyclang
 RUN umask 0002 &&  curl -o /usr/bin/run-clang-tidy.py  ${RUN_CLANG_TIDY_SCRIPT_URL} && \
 chmod 775 /usr/bin/run-clang-tidy.py
