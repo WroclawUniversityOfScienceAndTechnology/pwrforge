@@ -1,7 +1,7 @@
 # pwrforge
-pwrforge project was written by PWR team and is continuation of pwr Solutions S.A scargo project. Find more information at [tft.pwr.edu.pl/](https://tft.pwr.edu.pl/).
+pwrforge project was written by PWR team and is continuation of Spyrosoft Solutions S.A. scargo project. Find more information at [tft.pwr.edu.pl](https://tft.pwr.edu.pl/).
 <p align="center">
-    <img src="https://pwr.edu.pl/fcp/PGBUKOQtTKlQhbx08SlkTUhZeUTgtCgg9ACFDC0RDTnlBG1gnBVcoFW8SBDRKHg/_users/code_eCVYRPgYXNVg5Xh09GgBLGl9XR3g8Gh9MDCEUHxYb/logotyp/logotypy-pwr.png" alt="pwr" width="200"/>
+    <img src="docs/source/_static/pwr_logo_color.png" alt="pwr" width="200"/>
 </p>
 
 # Overview
@@ -9,13 +9,14 @@ This is the documentation for pwrforge - a Python-based C/C++ package and softwa
 
 pwrforge can:
 
-- Create a new project (binary or library)
+- Create a new project (binary or library) for embedded systems and x86
 - Build the project
 - Run static code analyzers
 - Fix chosen problem automatically based on the checker analysis
 - Run unit tests
 - Generate documentation from the source code
 - Work with the predefined docker environment depending on the chosen architecture
+- Generate mocks and test skeletetons
 
 # Installation
 ## Installing pwrforge on Ubuntu 24.04+ (PEP 668-compliant systems)
@@ -33,11 +34,6 @@ pip install pwrforge
 
 This ensures isolated and conflict-free usage of pwrforge without requiring elevated privileges or --break-system-packages.
 
-Alternatively, you may use pipx for global CLI installation:
-
-```
-pipx install pwrforge
-```
 ## Install on ubuntu <=22.04, windows or macos
 pwrforge is available on [pypi](https://pypi.org/project/pwrforge/), so you can install it with pip:
 
@@ -52,10 +48,7 @@ Then add to PATH e.g.:
 ```$ export PATH=~/.local/bin:${PATH}```
 
 # Working with pwrforge
-You can find all information on how to work with pwrforge on official documentation webpage: https://Copyright (c) 2025 Wroclaw University of Science and Technology.
-Copyright (c) 2022 pwrforge Solution S.A.-soft.github.io/pwrforge/index.html
-![pwrforge flow animation](https://raw.githubusercontent.com/Copyright (c) 2025 Wroclaw University of Science and Technology.
-Copyright (c) 2022 pwrforge Solution S.A.-Soft/pwrforge/develop/docs/source/_static/pwrforge_flow_docker.svg)
+![pwrforge flow animation](docs/source/_static/pwrforge_flow_docker.svg)
 
 # Project dependencies
 ## Working with docker (recommended)

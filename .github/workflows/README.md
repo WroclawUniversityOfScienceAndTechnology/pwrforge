@@ -1,5 +1,5 @@
 # pwrforge
-pwrforge project was written by PWR team and is continuation of pwr Solutions S.A scargo project. Find more information at [tft.pwr.edu.pl/](https://tft.pwr.edu.pl/).
+pwrforge project was written by PWR team and is continuation of Spyrosoft Solutions S.A scargo project. Find more information at [tft.pwr.edu.pl/](https://tft.pwr.edu.pl/).
 <p align="center">
     <img src="https://pwr.edu.pl/fcp/PGBUKOQtTKlQhbx08SlkTUhZeUTgtCgg9ACFDC0RDTnlBG1gnBVcoFW8SBDRKHg/_users/code_eCVYRPgYXNVg5Xh09GgBLGl9XR3g8Gh9MDCEUHxYb/logotyp/logotypy-pwr.png" alt="pwr" width="200"/>
 </p>
