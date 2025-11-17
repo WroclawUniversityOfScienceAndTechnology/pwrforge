@@ -31,6 +31,7 @@ def get_expected_files(target: List[pwrforgeTarget]) -> Set[str]:
         "README.md",
         ".gitignore",
         ".gitlab-ci.yml",
+        "setup.sh",
         "tests/CMakeLists.txt",
         "tests/conanfile.py",
         "tests/mocks/CMakeLists.txt",

@@ -82,6 +82,15 @@ class _CicdTemplate:
             config=self._config,
         )
 
+        create_file_from_template(
+            "setup.sh.j2",
+            "setup.sh",
+            template_params={
+                "project": self._config.project,
+            },
+            config=self._config,
+        )
+
         project_path = self._config.project_root
         output_path = Path(project_path, ".devcontainer")
 
