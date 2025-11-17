@@ -1,7 +1,7 @@
 .. _pwrforge_version:
 
 Check pwrforge version
---------------------
+----------------------
 
 Usage
 ^^^^^

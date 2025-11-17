@@ -1,7 +1,7 @@
 .. _pwrforge:
 
 pwrforge commands
-===============
+=================
 
 Use ``pwrforge -h`` to see a summary of all available commands and command line options.
 
@@ -40,7 +40,7 @@ To see all options for a particular command, append ``-h`` to the command name. 
 
 
 pwrforge commands reference
--------------------------
+---------------------------
 
 .. toctree::
    :maxdepth: 1

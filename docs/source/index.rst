@@ -1,5 +1,5 @@
 pwrforge Documentation
-====================
+======================
 
 This is the documentation for pwrforge - a Python-based C/C++ package and software development life cycle manager based on RUST cargo idea.
 

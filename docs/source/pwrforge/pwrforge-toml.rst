@@ -1,7 +1,7 @@
 .. _pwrforge_toml:
 
 pwrforge.toml file basis
-======================
+========================
 .. image:: ../_static/pwrforge_toml_update.svg
    :alt: pwrforge update after pwrforge.toml modification
    :align: center
@@ -173,7 +173,7 @@ key-value pairs of short names and conan remote urls, e.g.
 **cpu** = (string)(e.g. cortex-m23)
 
 [pwrforge]
---------
+----------
 **console-log-level** = (string)(define pwrforge log level to console for project default:"INFO")
 
 **file-log-level** = (string)(define pwrforge log level to file for project default:"WARNING")
