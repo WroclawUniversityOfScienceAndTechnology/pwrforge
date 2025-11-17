@@ -4,9 +4,7 @@ set -e  # exit on error
 
 VENV_DIR=".venv"
 
-# -------------------------
-# 1) Create venv if missing
-# -------------------------
+# Create venv if missing
 if [ ! -d "$VENV_DIR" ]; then
     echo "[INFO] Creating virtual environment..."
     python3.12 -m venv "$VENV_DIR"
