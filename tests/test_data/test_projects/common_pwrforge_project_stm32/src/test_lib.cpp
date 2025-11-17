@@ -2,12 +2,11 @@
 // Copyright
 //
 
-#include <iostream>
 #include "test_lib.h"
 
 using namespace pwr;
 
-TestLib::TestLib()
+TestLib::TestLib(int& param)
 {
-    std::cout << "Hello from lib1" << std::endl;
+    param = 0;
 }

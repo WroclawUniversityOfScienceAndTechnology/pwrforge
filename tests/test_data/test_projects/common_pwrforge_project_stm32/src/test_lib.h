@@ -13,6 +13,6 @@ namespace pwr
 class TestLib
 {
 public:
-    TestLib();
+    explicit TestLib(int& param);
 };
 }  // namespace pwr

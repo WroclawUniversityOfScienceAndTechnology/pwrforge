@@ -4,11 +4,12 @@ import abc
 import glob
 import os
 import re
+import shutil
 import subprocess
 import sys
 from itertools import chain
 from pathlib import Path
-from typing import Iterable, List, NamedTuple, Optional, Sequence, Type
+from typing import Iterable, List, NamedTuple, Optional, Sequence, Set, Type
 
 from pwrforge.config import CheckConfig, Config, TodoCheckConfig
 from pwrforge.config_utils import prepare_config
@@ -314,7 +315,21 @@ class ClangTidyChecker(CheckerFixer):
             return CheckResult(1)
         return CheckResult(0)
 
+    # pylint: disable=too-many-locals
     def __get_cmd_esp32(self, file_path: Path) -> List[str]:
+        """
+        Prepare clang-tidy command for ESP32 target.
+
+        This function:
+        1. Creates a copy of compile_commands.json with ESP-IDF-only flags stripped.
+        2. Detects ESP32 toolchain include paths (GCC builtin, include-fixed, sysroot).
+        3. Adds ESP-IDF newlib platform includes.
+        4. Builds a clang-tidy command with proper -extra-arg=-I... options.
+        """
+        # mypy: make sure build_path is not None here
+        assert self.build_path is not None, "build_path must be set before calling __get_cmd_esp32"
+        build_path: Path = self.build_path
+
         # These flags are added by esp-idf, however they are not recognized by clang-tidy:
         strings_to_substitute = [
             "-mlongcalls",
@@ -323,24 +338,104 @@ class ClangTidyChecker(CheckerFixer):
             "-fno-shrink-wrap",
         ]
 
-        with open(str(self.build_path) + "/compile_commands.json", encoding="utf-8") as fin:
-            file_contents = fin.read()
+        compile_db = build_path / "compile_commands.json"
+        if not compile_db.is_file():
+            logger.error("Compilation database does not exist.")
+            logger.info("Did you run `pwrforge build`?")
+            sys.exit(1)
 
-        for string in strings_to_substitute:
-            file_contents = file_contents.replace(string, "")
+        # Prepare a copy of compilation database with stripped flags
+        file_contents = compile_db.read_text(encoding="utf-8")
+        for flag in strings_to_substitute:
+            file_contents = file_contents.replace(flag, "")
 
-        db_path_for_check = str(self.build_path) + "/compilation_db_for_check" + "/compile_commands.json"
+        db_dir_for_check = build_path / "compilation_db_for_check"
+        db_dir_for_check.mkdir(parents=True, exist_ok=True)
+        db_path_for_check = db_dir_for_check / "compile_commands.json"
+        db_path_for_check.write_text(file_contents, encoding="utf-8")
 
-        os.makedirs(os.path.dirname(db_path_for_check), exist_ok=True)
-        with open(db_path_for_check, "w", encoding="utf-8") as fout:
-            fout.write(file_contents)
+        include_dirs: Set[Path] = set()
 
-        return [
-            "run-clang-tidy.py",
+        def _add_include_dir(path_str: str, log_prefix: str) -> None:
+            """Add include dir if it exists."""
+            if not path_str:
+                return
+            path = Path(path_str).resolve()
+            if path.is_dir():
+                logger.info(log_prefix, path)
+                include_dirs.add(path)
+
+        def _add_sysroot_includes(root: Path) -> None:
+            """Add typical sysroot include locations."""
+            logger.info("Using ESP32 GCC sysroot for clang-tidy: %s", root)
+            for suffix in ("include", "usr/include"):
+                candidate = root / suffix
+                if candidate.is_dir():
+                    logger.info("Adding ESP32 sysroot include for clang-tidy: %s", candidate)
+                    include_dirs.add(candidate)
+
+        # Collect extra include paths for clang-tidy from xtensa-esp32-elf-gcc
+        gcc_path = shutil.which("xtensa-esp32-elf-gcc")
+        if gcc_path:
+            try:
+                _add_include_dir(
+                    subprocess.check_output(
+                        [gcc_path, "-print-file-name=include"],
+                        text=True,
+                        encoding="utf-8",
+                    ).strip(),
+                    "Using ESP32 GCC include dir for clang-tidy: %s",
+                )
+
+                _add_include_dir(
+                    subprocess.check_output(
+                        [gcc_path, "-print-file-name=include-fixed"],
+                        text=True,
+                        encoding="utf-8",
+                    ).strip(),
+                    "Using ESP32 GCC include-fixed dir for clang-tidy: %s",
+                )
+
+                sysroot = subprocess.check_output(
+                    [gcc_path, "--print-sysroot"],
+                    text=True,
+                    encoding="utf-8",
+                ).strip()
+                if sysroot:
+                    _add_sysroot_includes(Path(sysroot).resolve())
+
+            except (subprocess.CalledProcessError, OSError) as exc:
+                # We do not want to fail the whole check if detection fails,
+                # we just log it and continue with whatever we have.
+                logger.debug("Failed to detect ESP32 toolchain includes for clang-tidy: %s", exc)
+
+        # ESP-IDF newlib platform includes (assert.h, stdlib.h chain)
+        newlib_platform_include = (
+            Path(os.environ.get("IDF_PATH", "/opt/esp-idf")) / "components" / "newlib" / "platform_include"
+        )
+        if newlib_platform_include.is_dir():
+            logger.info(
+                "Adding ESP-IDF newlib platform_include for clang-tidy: %s",
+                newlib_platform_include,
+            )
+            include_dirs.add(newlib_platform_include)
+
+        # Build extra-arg list
+        extra_args = [f"-extra-arg=-I{inc_dir}" for inc_dir in sorted(include_dirs)]
+
+        # Prefer esp-clang clang-tidy, fall back to system one
+        cmd: List[str] = [
+            shutil.which("/opt/esp-idf/tools/esp-clang/esp-19.1.2_20250312/esp-clang/bin/clang-tidy")
+            or shutil.which("clang-tidy")
+            or "/opt/esp-idf/tools/esp-clang/esp-19.1.2_20250312/esp-clang/bin/clang-tidy",
+            "-header-filter=^/workspace/src(/|$)",
+            *extra_args,
             "-p",
-            str(os.path.dirname(db_path_for_check)),
+            str(db_dir_for_check),
             str(file_path),
         ]
+
+        return cmd
 
     def __get_cmd_x86(self, file_path: Path) -> List[str]:
         return ["clang-tidy", str(file_path), "-p", str(self.build_path)]

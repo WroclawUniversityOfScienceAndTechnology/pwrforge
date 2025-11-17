@@ -15,7 +15,6 @@ extern "C"
  * @brief Main freeRTOS task
  *
  */
-// cppcheck-suppress unusedFunction
 void app_main(void)  // NOLINT(readability-identifier-naming): name required by freertos
 {
     for (;;)

@@ -1,9 +1,9 @@
-#include <iostream>
 #include "fix_test_lib.h"
 
 using namespace pwr;
 
-FixTestLib::FixTestLib()
+FixTestLib::FixTestLib(int& param)
         {
-                std::cout << "Hello from fix_test_lib" << std::endl                        ;
+                param = 0;
+                // intentionally empty
 }

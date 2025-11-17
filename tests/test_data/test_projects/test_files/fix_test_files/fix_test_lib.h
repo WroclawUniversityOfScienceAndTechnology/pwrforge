@@ -7,6 +7,6 @@ namespace pwr
 class FixTestLib
 {
 public:
-                  FixTestLib();
+                explicit  FixTestLib(int& param);
          }                              ;
 }  // namespace pwr
