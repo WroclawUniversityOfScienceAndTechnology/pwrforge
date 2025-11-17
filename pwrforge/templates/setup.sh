@@ -10,19 +10,12 @@ VENV_DIR=".venv"
 if [ ! -d "$VENV_DIR" ]; then
     echo "[INFO] Creating virtual environment..."
     python3.12 -m venv "$VENV_DIR"
-
-    echo "[INFO] Activating virtual environment..."
     # shellcheck disable=SC1091
     source "$VENV_DIR/bin/activate"
-
-    echo "[INFO] Upgrading pip..."
     pip install --upgrade pip
-
-    echo "[INFO] Installing project dependencies..."
-    pip install -e ".[dev]"  # jeśli masz extras 'dev'; inaczej usuń
+    # pip install pwrforge
 else
-    echo "[INFO] Virtual environment exists."
-    echo "[INFO] Activating..."
+    echo "[INFO] Activating virtual environment..."
     # shellcheck disable=SC1091
     source "$VENV_DIR/bin/activate"
 fi
