@@ -1,4 +1,5 @@
 import os
+import subprocess
 import sys
 from pathlib import Path
 from typing import List, Optional
@@ -401,6 +402,27 @@ def new(
     )
     os.chdir(project_name)
     pwrforge_update(Path(PWRFORGE_DEFAULT_CONFIG_FILE))
+    jump_to_project_shell()
+
+
+def jump_to_project_shell() -> None:
+    """
+    Open an interactive subshell in the current project directory.
+    This is the closest possible behavior to "cd" from a CLI command.
+    """
+    if not sys.stdin.isatty() or not sys.stdout.isatty():
+        logger.info("Project is ready in: %s", Path.cwd())
+        logger.info("Run `cd %s` to enter it.", Path.cwd())
+        return
+
+    shell = os.environ.get("SHELL")
+    if not shell:
+        logger.info("Project is ready in: %s", Path.cwd())
+        logger.info("SHELL is not set. Run `cd %s` to enter it.", Path.cwd())
+        return
+
+    logger.info("Entering project shell in %s", Path.cwd())
+    subprocess.call([shell], cwd=Path.cwd())
 
 
 ###############################################################################
