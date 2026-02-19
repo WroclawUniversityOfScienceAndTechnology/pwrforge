@@ -1,7 +1,7 @@
 .. _pwrforge_multitarget:
 
 Multitarget support in pwrforge
-=============================
+===============================
 
 Creating a project
 ------------------

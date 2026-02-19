@@ -1,10 +1,10 @@
 .. _arch-interaction:
 
 Interaction with pwrforge
-=======================
+=========================
 
 pwrforge and other software
--------------------------
+---------------------------
 
 .. uml::
 
@@ -41,7 +41,7 @@ pwrforge and other software
 
 
 pwrforge and ESP-IDF
-------------------
+--------------------
 
 .. uml::
 

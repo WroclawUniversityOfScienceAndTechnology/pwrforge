@@ -4,7 +4,7 @@ Generators
 ==========
 
 Output of pwrforge generators
----------------------------
+-----------------------------
 
 .. uml::
 

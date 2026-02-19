@@ -1,5 +1,5 @@
 Contributing to pwrforge
-======================
+========================
 
 This guide assumes working on Linux with ``apt`` package manager.
 
