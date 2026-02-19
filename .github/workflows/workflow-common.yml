@@ -18,6 +18,7 @@ jobs:
             envs="["
             envs+="\"develop\", "
             envs+="\"main\", "
+            envs+="\"master\", "
             envs+="]"
           else
              envs="[\"${{ github.ref }}\"]"
@@ -176,7 +177,7 @@ jobs:
       - name: Apt install dependencies
         run: |
           sudo apt-get update --fix-missing
-          sudo apt-get install doxygen
+          sudo apt-get install doxygen plantuml default-jre
           sudo apt-get clean
           sudo apt-get autoremove --yes
           sudo rm -rf /var/lib/{cache,log}

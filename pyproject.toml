@@ -78,6 +78,7 @@ dev = [
     "types-PyYAML==6.0.12.12",
     "pip-tools==7.5.2",
     "twine==6.2.0",
+    "roman==5.2",
 ]
 doc = [
     "recommonmark",

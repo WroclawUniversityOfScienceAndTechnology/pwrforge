@@ -4,29 +4,31 @@
 #
 #    pip-compile --all-extras --output-file=/home/aak/rep/pwr/pwrforge/ci/requirements.txt /home/aak/rep/pwr/pwrforge/pyproject.toml
 #
-alabaster==0.7.13
+alabaster==0.7.16
     # via sphinx
 astroid==3.2.4
     # via pylint
-babel==2.12.1
+babel==2.18.0
     # via sphinx
-bcrypt==4.0.1
+bcrypt==5.0.0
     # via paramiko
-bitstring==4.0.1
+bitarray==3.8.0
+    # via bitstring
+bitstring==4.3.1
     # via esptool
 black==24.8.0
     # via pwrforge (/home/aak/rep/pwr/pwrforge/pyproject.toml)
-build==1.3.0
+build==1.4.0
     # via pip-tools
-certifi==2022.12.7
+certifi==2026.1.4
     # via requests
-cffi==1.17.1
+cffi==2.0.0
     # via
     #   cryptography
     #   pynacl
-cfgv==3.3.1
+cfgv==3.5.0
     # via pre-commit
-charset-normalizer==3.1.0
+charset-normalizer==3.4.4
     # via requests
 clang==17.0.6
     # via pwrforge (/home/aak/rep/pwr/pwrforge/pyproject.toml)
@@ -42,29 +44,30 @@ colorama==0.4.6
     # via conan
 coloredlogs==15.0.1
     # via pwrforge (/home/aak/rep/pwr/pwrforge/pyproject.toml)
-colorlog==6.9.0
+colorlog==6.10.1
     # via gcovr
 commonmark==0.9.1
     # via recommonmark
 conan==2.8.1
     # via pwrforge (/home/aak/rep/pwr/pwrforge/pyproject.toml)
-contourpy==1.0.7
+contourpy==1.3.3
     # via matplotlib
-coverage[toml]==7.6.1
+coverage[toml]==7.6.12
     # via
     #   pwrforge (/home/aak/rep/pwr/pwrforge/pyproject.toml)
     #   pytest-cov
-cryptography==39.0.2
+cryptography==41.0.7
     # via
     #   esptool
     #   paramiko
     #   pyopenssl
+    #   secretstorage
     #   types-pyopenssl
-cycler==0.11.0
+cycler==0.12.1
     # via matplotlib
-dill==0.3.7
+dill==0.4.1
     # via pylint
-distlib==0.3.9
+distlib==0.4.0
     # via virtualenv
 distro==1.8.0
     # via conan
@@ -73,38 +76,41 @@ docker==7.1.0
 docutils==0.17.1
     # via
     #   flit
+    #   readme-renderer
     #   recommonmark
     #   sphinx
     #   sphinx-rtd-theme
-ecdsa==0.18.0
+ecdsa==0.19.1
     # via esptool
 esptool==4.7.0
     # via pwrforge (/home/aak/rep/pwr/pwrforge/pyproject.toml)
-execnet==2.0.2
+execnet==2.1.2
     # via pytest-xdist
-fasteners==0.18
+fasteners==0.20
     # via conan
-filelock==3.16.1
+filelock==3.24.3
     # via virtualenv
-flake8==7.1.1
+flake8==7.3.0
     # via pwrforge (/home/aak/rep/pwr/pwrforge/pyproject.toml)
 flit==3.8.0
     # via pwrforge (/home/aak/rep/pwr/pwrforge/pyproject.toml)
-flit-core==3.8.0
+flit-core==3.12.0
     # via flit
-fonttools==4.39.3
+fonttools==4.61.1
     # via matplotlib
 gcovr==8.2
     # via pwrforge (/home/aak/rep/pwr/pwrforge/pyproject.toml)
 humanfriendly==10.0
     # via coloredlogs
-identify==2.5.20
+id==1.5.0
+    # via twine
+identify==2.6.16
     # via pre-commit
-idna==3.4
+idna==3.11
     # via requests
 imagesize==1.4.1
     # via sphinx
-iniconfig==2.0.0
+iniconfig==2.3.0
     # via pytest
 intelhex==2.3.0
     # via esptool
@@ -112,23 +118,37 @@ isort==5.11.4
     # via
     #   pwrforge (/home/aak/rep/pwr/pwrforge/pyproject.toml)
     #   pylint
+jaraco-classes==3.4.0
+    # via keyring
+jaraco-context==6.1.0
+    # via keyring
+jaraco-functools==4.4.0
+    # via keyring
+jeepney==0.9.0
+    # via
+    #   keyring
+    #   secretstorage
 jinja2==3.1.4
     # via
     #   conan
     #   gcovr
     #   pwrforge (/home/aak/rep/pwr/pwrforge/pyproject.toml)
     #   sphinx
-kiwisolver==1.4.4
+keyring==25.7.0
+    # via twine
+kiwisolver==1.4.9
     # via matplotlib
 libclang==18.1.1
     # via pwrforge (/home/aak/rep/pwr/pwrforge/pyproject.toml)
 lizard==1.17.10
     # via pwrforge (/home/aak/rep/pwr/pwrforge/pyproject.toml)
-lxml==5.4.0
+lxml==6.0.2
     # via
     #   gcovr
     #   unittest-xml-reporting
-markupsafe==2.1.5
+markdown-it-py==4.0.0
+    # via rich
+markupsafe==3.0.3
     # via jinja2
 matplotlib==3.7.5
     # via pwrforge (/home/aak/rep/pwr/pwrforge/pyproject.toml)
@@ -136,70 +156,82 @@ mccabe==0.7.0
     # via
     #   flake8
     #   pylint
+mdurl==0.1.2
+    # via markdown-it-py
+more-itertools==10.8.0
+    # via
+    #   jaraco-classes
+    #   jaraco-functools
 mypy==1.14.1
     # via pwrforge (/home/aak/rep/pwr/pwrforge/pyproject.toml)
-mypy-extensions==1.0.0
+mypy-extensions==1.1.0
     # via
     #   black
     #   mypy
-nodeenv==1.7.0
+nh3==0.3.3
+    # via readme-renderer
+nodeenv==1.10.0
     # via pre-commit
 numpy==1.26.4
     # via
     #   contourpy
     #   matplotlib
     #   pwrforge (/home/aak/rep/pwr/pwrforge/pyproject.toml)
-packaging==23.0
+packaging==26.0
     # via
     #   black
     #   build
     #   matplotlib
     #   pytest
     #   sphinx
+    #   twine
+    #   wheel
 paramiko==3.5.0
     # via pwrforge (/home/aak/rep/pwr/pwrforge/pyproject.toml)
 patch-ng==1.18.1
     # via conan
-pathspec==0.11.1
+pathspec==1.0.4
     # via black
-pillow==10.4.0
+pillow==12.1.1
     # via matplotlib
 pip-tools==7.5.2
     # via pwrforge (/home/aak/rep/pwr/pwrforge/pyproject.toml)
-platformdirs==4.3.6
+platformdirs==4.9.2
     # via
     #   black
     #   pylint
     #   virtualenv
-pluggy==1.0.0
+pluggy==1.6.0
     # via pytest
-pre-commit==3.1.1
+pre-commit==4.5.1
     # via pwrforge (/home/aak/rep/pwr/pwrforge/pyproject.toml)
 pyclean==3.0.0
     # via pwrforge (/home/aak/rep/pwr/pwrforge/pyproject.toml)
-pycodestyle==2.12.1
+pycodestyle==2.14.0
     # via flake8
-pycparser==2.21
+pycparser==3.0
     # via cffi
 pydantic==1.10.6
     # via pwrforge (/home/aak/rep/pwr/pwrforge/pyproject.toml)
-pyelftools==0.29
+pyelftools==0.32
     # via pwrforge (/home/aak/rep/pwr/pwrforge/pyproject.toml)
 pyfakefs==5.3.2
     # via pwrforge (/home/aak/rep/pwr/pwrforge/pyproject.toml)
-pyflakes==3.2.0
+pyflakes==3.4.0
     # via flake8
-pygments==2.14.0
+pygments==2.19.2
     # via
     #   gcovr
+    #   readme-renderer
+    #   rich
     #   sphinx
 pylint==3.2.7
     # via pwrforge (/home/aak/rep/pwr/pwrforge/pyproject.toml)
-pynacl==1.5.0
+pynacl==1.6.2
     # via paramiko
 pyopenssl==23.2.0
     # via pwrforge (/home/aak/rep/pwr/pwrforge/pyproject.toml)
-pyparsing==3.0.9
+pyparsing==3.3.2
     # via matplotlib
 pyproject-hooks==1.2.0
     # via
@@ -228,7 +260,7 @@ pytest-subprocess==1.5.0
     # via pwrforge (/home/aak/rep/pwr/pwrforge/pyproject.toml)
 pytest-xdist==3.5.0
     # via pwrforge (/home/aak/rep/pwr/pwrforge/pyproject.toml)
-python-dateutil==2.8.2
+python-dateutil==2.9.0.post0
     # via
     #   conan
     #   matplotlib
@@ -238,21 +270,36 @@ pyyaml==6.0.2
     #   esptool
     #   pre-commit
     #   pwrforge (/home/aak/rep/pwr/pwrforge/pyproject.toml)
+readme-renderer==43.0
+    # via twine
 recommonmark==0.7.1
     # via pwrforge (/home/aak/rep/pwr/pwrforge/pyproject.toml)
 reedsolo==1.7.0
     # via esptool
-requests==2.28.2
+requests==2.32.5
     # via
     #   conan
     #   docker
     #   flit
+    #   id
+    #   requests-toolbelt
     #   sphinx
-six==1.16.0
+    #   twine
+requests-toolbelt==1.0.0
+    # via twine
+rfc3986==2.0.0
+    # via twine
+rich==14.3.3
+    # via twine
+roman==5.2
+    # via pwrforge (/home/aak/rep/pwr/pwrforge/pyproject.toml)
+secretstorage==3.5.0
+    # via keyring
+six==1.17.0
     # via
     #   ecdsa
     #   python-dateutil
-snowballstemmer==2.2.0
+snowballstemmer==3.0.1
     # via sphinx
 sphinx==5.3.0
     # via
@@ -262,28 +309,30 @@ sphinx==5.3.0
     #   sphinxcontrib-plantuml
 sphinx-rtd-theme==1.1.1
     # via pwrforge (/home/aak/rep/pwr/pwrforge/pyproject.toml)
-sphinxcontrib-applehelp==1.0.4
+sphinxcontrib-applehelp==2.0.0
     # via sphinx
-sphinxcontrib-devhelp==1.0.2
+sphinxcontrib-devhelp==2.0.0
     # via sphinx
-sphinxcontrib-htmlhelp==2.0.1
+sphinxcontrib-htmlhelp==2.1.0
     # via sphinx
 sphinxcontrib-jsmath==1.0.1
     # via sphinx
 sphinxcontrib-plantuml==0.30
     # via pwrforge (/home/aak/rep/pwr/pwrforge/pyproject.toml)
-sphinxcontrib-qthelp==1.0.3
+sphinxcontrib-qthelp==2.0.0
     # via sphinx
-sphinxcontrib-serializinghtml==1.1.5
+sphinxcontrib-serializinghtml==2.0.0
     # via sphinx
 toml==0.10.2
     # via pwrforge (/home/aak/rep/pwr/pwrforge/pyproject.toml)
-tomli-w==1.0.0
+tomli-w==1.2.0
     # via flit
 tomlkit==0.13.2
     # via
     #   pwrforge (/home/aak/rep/pwr/pwrforge/pyproject.toml)
     #   pylint
+twine==6.2.0
+    # via pwrforge (/home/aak/rep/pwr/pwrforge/pyproject.toml)
 typer==0.9.0
     # via pwrforge (/home/aak/rep/pwr/pwrforge/pyproject.toml)
 types-clang==0.14.3
@@ -292,7 +341,7 @@ types-pyopenssl==23.2.0.0
     # via pwrforge (/home/aak/rep/pwr/pwrforge/pyproject.toml)
 types-pyyaml==6.0.12.12
     # via pwrforge (/home/aak/rep/pwr/pwrforge/pyproject.toml)
-types-toml==0.10.8.5
+types-toml==0.10.8.20240310
     # via pwrforge (/home/aak/rep/pwr/pwrforge/pyproject.toml)
 typing-extensions==4.6.0
     # via
@@ -300,16 +349,17 @@ typing-extensions==4.6.0
     #   pwrforge (/home/aak/rep/pwr/pwrforge/pyproject.toml)
     #   pydantic
     #   typer
-unittest-xml-reporting==3.2.0
+unittest-xml-reporting==4.0.0
     # via pwrforge (/home/aak/rep/pwr/pwrforge/pyproject.toml)
-urllib3==1.26.15
+urllib3==1.26.20
     # via
     #   conan
     #   docker
     #   requests
-virtualenv==20.31.2
+    #   twine
+virtualenv==20.38.0
     # via pre-commit
-wheel==0.45.1
+wheel==0.46.3
     # via pip-tools
 
 # The following packages are considered to be unsafe in a requirements file:

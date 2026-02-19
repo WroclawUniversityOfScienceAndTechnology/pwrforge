@@ -117,6 +117,15 @@ def generate_requirements() -> None:
 
     run(
         [
+            "rm",
+            "-f",
+            str(CI_REQUIREMENTS),
+        ],
+        cwd=safe_cwd,
+    )
+
+    run(
+        [
             "pip-compile",
             "--all-extras",
             "--output-file",
