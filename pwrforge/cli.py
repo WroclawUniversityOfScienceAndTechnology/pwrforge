@@ -399,7 +399,8 @@ def new(
         git,
         chip,
     )
-    pwrforge_update(Path(project_name, PWRFORGE_DEFAULT_CONFIG_FILE).absolute())
+    os.chdir(project_name)
+    pwrforge_update(Path(PWRFORGE_DEFAULT_CONFIG_FILE))
 
 
 ###############################################################################
