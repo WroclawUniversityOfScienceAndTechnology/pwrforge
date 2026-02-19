@@ -8,7 +8,7 @@ on:
 
 jobs:
   prepare_matrix:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
@@ -27,7 +27,7 @@ jobs:
 
   check:
     name: Checks
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs: prepare_matrix
     strategy:
       matrix:
@@ -68,7 +68,7 @@ jobs:
           run: mypy pwrforge tests common_dev run.py clean.py
   unit_tests:
     name: Unit Tests
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs: prepare_matrix
     strategy:
       matrix:
@@ -117,7 +117,7 @@ jobs:
 
   integration_tests:
     name: Integration Tests - ${{ matrix.target }}
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs: prepare_matrix
     strategy:
       fail-fast: false
@@ -164,7 +164,7 @@ jobs:
 
   documentation:
     name: Generate documentation
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs: prepare_matrix
     strategy:
       matrix:

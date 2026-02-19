@@ -22,7 +22,7 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     container:
         image: pwrforge/pwrforge-dev:1.4
         options: --user root
@@ -47,7 +47,7 @@ jobs:
           artifact_name: github-pages
 
   create-release:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     permissions:
       contents: write
 
@@ -73,7 +73,7 @@ jobs:
 
   release-to-pypi:
     needs: create-release
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     container:
         image: pwrforge/pwrforge-dev:1.4
         options: --user root
