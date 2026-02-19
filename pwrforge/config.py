@@ -93,7 +93,7 @@ class Config(BaseModel):
             raise ConfigError("No [esp32] section in config")
         return self.esp32
 
-    @root_validator
+    @root_validator(skip_on_failure=True)
     def validate_special_configs(cls, values: Dict[str, Any]) -> Dict[str, Any]:  # pylint: disable=no-self-argument
         if "project" in values:
             target_id = values["project"].target_id
