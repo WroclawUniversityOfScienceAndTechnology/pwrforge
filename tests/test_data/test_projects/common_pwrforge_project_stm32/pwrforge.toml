@@ -57,7 +57,7 @@ directories = [
 ]
 suppress = [
 #    "unusedFunction",
-    "missingIncludeSystem"
+#    "missingIncludeSystem"
 ]
 
 [check.clang-format]
