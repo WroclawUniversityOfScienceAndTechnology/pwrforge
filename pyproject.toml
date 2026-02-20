@@ -77,12 +77,16 @@ dev = [
     "types-pyOpenSSL==23.2.0",
     "types-PyYAML==6.0.12.12",
     "pip-tools==7.5.2",
+    "twine==6.2.0",
+    "roman==5.2",
 ]
 doc = [
     "recommonmark",
-    "sphinx-rtd-theme==1.1.1",
-    "Sphinx",
-    "sphinxcontrib-plantuml==0.30",
+    "sphinx>=7.2,<8",
+    "docutils>=0.20,<0.22",
+    "myst-parser>=2.0,<4",
+    "sphinx-rtd-theme>=2.0,<3",
+    "sphinxcontrib-plantuml>=0.30",
 ]
 
 [project.urls]

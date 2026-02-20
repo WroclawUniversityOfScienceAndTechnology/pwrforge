@@ -29,9 +29,9 @@ If you use windows and would like to have device access. You would be forced to 
 3. Change default WSL image to Ubuntu 22.04
     ```powershell
     wsl -l -v                      # check the names
-    wsl --set-default Ubuntu-22.04 # set default distribution
+    wsl --set-default ubuntu-24.04 # set default distribution
     ```
-4. Install usbip on windows and inside WSL Ubuntu-22.04
+4. Install usbip on windows and inside WSL ubuntu-24.04
 5. Attach device
     ```
     usbipd list                   # print all usb devices

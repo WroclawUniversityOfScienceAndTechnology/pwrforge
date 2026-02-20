@@ -1,4 +1,5 @@
 import os
+import subprocess
 import sys
 from pathlib import Path
 from typing import List, Optional
@@ -399,7 +400,29 @@ def new(
         git,
         chip,
     )
-    pwrforge_update(Path(project_name, PWRFORGE_DEFAULT_CONFIG_FILE).absolute())
+    project_dir = Path(project_name).absolute()
+    pwrforge_update(project_dir / PWRFORGE_DEFAULT_CONFIG_FILE)
+    jump_to_project_shell(project_dir)
+
+
+def jump_to_project_shell(project_dir: Path) -> None:
+    """
+    Open an interactive subshell in the current project directory.
+    This is the closest possible behavior to "cd" from a CLI command.
+    """
+    if not sys.stdin.isatty() or not sys.stdout.isatty():
+        logger.info("Project is ready in: %s", project_dir)
+        logger.info("Run `cd %s` to enter it.", project_dir)
+        return
+
+    shell = os.environ.get("SHELL")
+    if not shell:
+        logger.info("Project is ready in: %s", project_dir)
+        logger.info("SHELL is not set. Run `cd %s` to enter it.", project_dir)
+        return
+
+    logger.info("Entering project shell in %s", project_dir)
+    subprocess.call([shell], cwd=project_dir)
 
 
 ###############################################################################

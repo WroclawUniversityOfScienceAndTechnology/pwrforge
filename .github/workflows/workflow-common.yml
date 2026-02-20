@@ -8,7 +8,7 @@ on:
 
 jobs:
   prepare_matrix:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
@@ -18,6 +18,7 @@ jobs:
             envs="["
             envs+="\"develop\", "
             envs+="\"main\", "
+            envs+="\"master\", "
             envs+="]"
           else
              envs="[\"${{ github.ref }}\"]"
@@ -26,7 +27,7 @@ jobs:
 
   check:
     name: Checks
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs: prepare_matrix
     strategy:
       matrix:
@@ -67,7 +68,7 @@ jobs:
           run: mypy pwrforge tests common_dev run.py clean.py
   unit_tests:
     name: Unit Tests
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs: prepare_matrix
     strategy:
       matrix:
@@ -116,19 +117,13 @@ jobs:
 
   integration_tests:
     name: Integration Tests - ${{ matrix.target }}
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs: prepare_matrix
     strategy:
       fail-fast: false
       matrix:
         branch: ${{fromJson(needs.prepare_matrix.outputs.matrix)}}
-        target:
-          - esp32
-          - x86
-          - stm32
-          - atsam
-          # optional target, should be added for new tests in case of introducing markers
-          # - not esp32 and not x86 and not stm32
+        target: [esp32, x86, stm32, atsam]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -150,37 +145,26 @@ jobs:
           pip install --upgrade pip
           pip install -r ci/requirements.txt
 
-        # Clean docker before test (GitHub like to go out of memory)
-        # Also there is need for repeatable results with docker
-        # (cache is faster, but it can give some false positives and false negatives while testing)
       - name: Clean docker images
-        run: |
-          docker system prune -af --volumes
+        run: docker system prune -af --volumes
 
       - name: Build wheel to use inside docker
         run: |
           rm -rf dist
           flit build
-          echo "P_DOCKER_INSTALL_LOCAL=$(find dist -name "*.whl")" >> $GITHUB_ENV
+          echo "PWRFORGE_DOCKER_INSTALL_LOCAL=$(ls -1 dist/*.whl | head -n 1)" >> $GITHUB_ENV
+
+      - name: Debug wheel env
+        run: |
+          echo "PWRFORGE_DOCKER_INSTALL_LOCAL=$PWRFORGE_DOCKER_INSTALL_LOCAL"
+          ls -la dist || true
 
       - name: Integration tests
-        run: |
-          ./run.py -c "${{ matrix.target }}"
+        run: ./run.py -c "${{ matrix.target }}"
 
-      - name: Define artifacts file name
-        run: |
-          echo "report_file_name=integration-${{ matrix.target }}-${{ matrix.branch }}-${{ github.run_id }}-test-report" >> $GITHUB_ENV
-
-      - name: Archive integration-tests results
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: $report_file_name
-          path: build/test_doc
-          overwrite: true
   documentation:
     name: Generate documentation
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs: prepare_matrix
     strategy:
       matrix:
@@ -193,7 +177,7 @@ jobs:
       - name: Apt install dependencies
         run: |
           sudo apt-get update --fix-missing
-          sudo apt-get install doxygen
+          sudo apt-get install doxygen plantuml default-jre
           sudo apt-get clean
           sudo apt-get autoremove --yes
           sudo rm -rf /var/lib/{cache,log}

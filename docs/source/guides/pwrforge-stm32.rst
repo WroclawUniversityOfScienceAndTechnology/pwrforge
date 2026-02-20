@@ -1,7 +1,7 @@
 .. _pwrforge_stm32:
 
 STM32 support in pwrforge
-=======================
+=========================
 
 Creating a project
 ------------------

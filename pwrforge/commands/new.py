@@ -98,6 +98,15 @@ def pwrforge_new(
     try:
         project_dir.mkdir()
     except FileExistsError:
+        toml_path = project_dir / PWRFORGE_DEFAULT_CONFIG_FILE
+        if toml_path.exists():
+            logger.warning(
+                "Provided project name: %s already exists and contains `%s`.",
+                name,
+                PWRFORGE_DEFAULT_CONFIG_FILE,
+            )
+            logger.warning("Skipping project creation and continuing with update.")
+            return
         logger.error("Provided project name: %s already exist.", name)
         sys.exit(1)
 
