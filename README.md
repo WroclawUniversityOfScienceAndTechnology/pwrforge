@@ -1,8 +1,20 @@
 # pwrforge
 pwrforge project was written by PWR team and is continuation of Spyrosoft Solutions S.A. scargo project. Find more information at [tft.pwr.edu.pl](https://tft.pwr.edu.pl/).
-<p align="center">
-    <img src="docs/source/_static/pwr_logo_color.png" alt="pwr" width="200"/>
-</p>
+<table align="center">
+  <tr>
+    <td align="center">
+      <img src="docs/source/_static/tft-logo.png" alt="tft" width="200"/>
+    </td>
+    <td align="center">
+      <img src="docs/source/_static/w12-logo.png" alt="w12" width="105"/>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" align="center">
+      <img src="docs/source/_static/pwr_logo_color.png" alt="pwr" width="330"/>
+    </td>
+  </tr>
+</table>
 
 # Overview
 This is the documentation for pwrforge - a Python-based C/C++ package and software development life cycle manager inspired by RUST cargo idea.
@@ -128,5 +140,4 @@ To add your user to the `docker` group, run the following command:
 # Contributing
 
 See contributing guide on https://pwr.github.io/pwrforge/contributing.html
-
 
