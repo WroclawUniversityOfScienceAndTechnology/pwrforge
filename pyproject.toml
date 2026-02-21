@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [project]
 name = "pwrforge"
-version = "0.0.2"
+version = "0.0.3"
 description = "C/C++ package and software development life cycle manager. Continuation of scargo project."
 authors = [
     { name = "Andrzej Aksenczuk", email = "andrzej.aksenczuk@pwr.edu.pl" },

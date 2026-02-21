@@ -17,7 +17,6 @@ jobs:
           if [ ${{ github.event_name }} == "schedule" ]; then
             envs="["
             envs+="\"develop\", "
-            envs+="\"main\", "
             envs+="\"master\", "
             envs+="]"
           else
