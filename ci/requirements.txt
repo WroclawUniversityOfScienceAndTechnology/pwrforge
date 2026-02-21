@@ -221,7 +221,7 @@ pycodestyle==2.14.0
     # via flake8
 pycparser==3.0
     # via cffi
-pydantic==1.10.6
+pydantic==1.10.13
     # via pwrforge (/home/aak/rep/pwr/pwrforge/pyproject.toml)
 pyelftools==0.32
     # via pwrforge (/home/aak/rep/pwr/pwrforge/pyproject.toml)

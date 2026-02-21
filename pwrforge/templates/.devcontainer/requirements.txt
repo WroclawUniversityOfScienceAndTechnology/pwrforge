@@ -75,7 +75,7 @@ patch-ng==1.18.1
     # via conan
 pycparser==2.23
     # via cffi
-pydantic==1.10.6
+pydantic==1.10.13
     # via pwrforge (/home/aak/rep/pwr/pwrforge/pyproject.toml)
 pygments==2.19.2
     # via gcovr
