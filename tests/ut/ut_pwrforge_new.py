@@ -54,3 +54,20 @@ def test_without_git_dir_exist(tmpdir: Path) -> None:
     os.chdir(tmpdir)
     pwrforge_new("test_project", None, None, [pwrforgeTarget.x86], False, False, [])
     assert not os.path.exists("test_project/.git")
+
+
+def test_existing_project_with_config_does_not_fail(tmpdir: Path) -> None:
+    os.chdir(tmpdir)
+    os.mkdir("test_project")
+    with open(Path("test_project", "pwrforge.toml"), "w", encoding="utf-8") as file:
+        file.write('[project]\nname = "test_project"\n')
+
+    pwrforge_new("test_project", None, None, [pwrforgeTarget.x86], False, False, [])
+
+
+def test_existing_project_without_config_fails(tmpdir: Path) -> None:
+    os.chdir(tmpdir)
+    os.mkdir("test_project")
+
+    with pytest.raises(SystemExit):
+        pwrforge_new("test_project", None, None, [pwrforgeTarget.x86], False, False, [])

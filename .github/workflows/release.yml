@@ -1,102 +1,121 @@
 name: Release
-on:
-  pull_request:
-    branches:
-      - main
-    types: [closed]
 
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
 permissions:
   contents: read
-  pages: write
-  id-token: write
-
-env:
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  PYPI_API_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
 
 jobs:
+  create-release:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    outputs:
+      tag_name: ${{ steps.version.outputs.tag_name }}
+      should_release: ${{ steps.version.outputs.should_release }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Read version from pyproject.toml
+        id: version
+        run: |
+          VERSION=$(python -c "import tomllib; print(tomllib.load(open('pyproject.toml','rb'))['project']['version'])")
+          TAG_NAME="release_${VERSION}"
+          if git ls-remote --exit-code --tags origin "refs/tags/${TAG_NAME}" >/dev/null 2>&1; then
+            SHOULD_RELEASE="false"
+          else
+            SHOULD_RELEASE="true"
+          fi
+          echo "tag_name=${TAG_NAME}" >> "$GITHUB_OUTPUT"
+          echo "should_release=${SHOULD_RELEASE}" >> "$GITHUB_OUTPUT"
+
+      - name: Create release
+        if: steps.version.outputs.should_release == 'true'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.tag_name }}
+          target_commitish: ${{ github.sha }}
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+
+  release-to-pypi:
+    needs: create-release
+    if: needs.create-release.outputs.should_release == 'true'
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install build dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install build twine
+
+      - name: Build package
+        run: python -m build
+
+      - name: Upload package to PyPI
+        run: python -m twine upload dist/*
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+
   documentation-release:
     needs: create-release
-    if: ${{ github.event.pull_request.merged }}
+    if: needs.create-release.outputs.should_release == 'true'
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-22.04
-    container:
-        image: pwrforge/pwrforge-dev:1.4
-        options: --user root
+
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+
+      - name: Apt install dependencies
+        run: |
+          sudo apt-get update --fix-missing
+          sudo apt-get install --yes doxygen plantuml default-jre
+          sudo apt-get clean
+          sudo apt-get autoremove --yes
+          sudo rm -rf /var/lib/{cache,log}
+          sudo rm -rf /var/lib/apt/lists/*
+
+      - name: Pip install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r ci/requirements.txt
+
       - name: Generate HTML documentation
         run: ./run.py --doc
+
       - name: Setup Pages
-        uses: actions/configure-pages@v3
+        uses: actions/configure-pages@v5
 
       - name: Upload documentation artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-pages-artifact@v3
         with:
-          name: github-pages
           path: ./build/src_doc/html
 
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v3
-        with:
-          artifact_name: github-pages
-
-  create-release:
-    runs-on: ubuntu-22.04
-    permissions:
-      contents: write
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-      with:
-          fetch-depth: 0
-    - name: Get tag from source code
-      id: source-code-tag
-      run: echo "TAG_NAME=release_$(grep -w __version__ pwrforge/__init__.py | grep -Eo "[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+")" >> $GITHUB_ENV
-
-    - name: Create Release
-      uses: softprops/action-gh-release@v1
-      env:
-        GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ env.TAG_NAME }}
-        draft: false
-        prerelease: false
-        generate_release_notes: true
-
-
-  release-to-pypi:
-    needs: create-release
-    runs-on: ubuntu-22.04
-    container:
-        image: pwrforge/pwrforge-dev:1.4
-        options: --user root
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-      with:
-          fetch-depth: 0
-#    - name: Set up Python environment
-#      uses: actions/setup-python@v2
-#      with:
-#        python-version: 3.8
-    - name: Install dependencies
-      run: |
-        pip install --upgrade pip
-        pip install flit
-
-    - name: Build and upload to PyPI
-      run: |
-        git config --global --add safe.directory /__w/pwrforge/pwrforge
-        flit build
-        flit publish
-      env:
-        FLIT_USERNAME: __token__
-        FLIT_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
-
+        uses: actions/deploy-pages@v4
