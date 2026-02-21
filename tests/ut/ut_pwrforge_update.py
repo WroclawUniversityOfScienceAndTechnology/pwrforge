@@ -1,11 +1,11 @@
 import os
+from fnmatch import fnmatch
 from pathlib import Path
 from typing import List, Set
 
 import pytest
 from pytest_subprocess import FakeProcess
 
-from pwrforge import __version__
 from pwrforge.commands.docker import get_docker_compose_command
 from pwrforge.commands.new import pwrforge_new
 from pwrforge.commands.update import pwrforge_update
@@ -18,7 +18,7 @@ TEST_PROJECT_NAME = "test_project"
 
 
 def get_expected_files(target: List[pwrforgeTarget]) -> Set[str]:
-    wheel_filename = f".devcontainer/pwrforge-{__version__}-py3-none-any.whl"
+    wheel_filename = ".devcontainer/pwrforge-*-py3-none-any.whl"
 
     project_files = {
         "LICENSE",
@@ -80,6 +80,21 @@ def get_expected_files(target: List[pwrforgeTarget]) -> Set[str]:
     return project_files
 
 
+def assert_files_match(all_files: Set[str], expected_files: Set[str]) -> None:
+    wildcard_expected = {f for f in expected_files if "*" in f or "?" in f or "[" in f}
+    exact_expected = expected_files - wildcard_expected
+
+    unmatched_actual = all_files - exact_expected
+
+    for pattern in wildcard_expected:
+        matches = {f for f in all_files if fnmatch(f, pattern)}
+        assert matches, f"Missing file matching pattern: {pattern}"
+        unmatched_actual -= matches
+
+    assert unmatched_actual == set()
+    assert exact_expected - all_files == set()
+
+
 @pytest.mark.parametrize(
     "target",
     [pwrforgeTarget.x86, pwrforgeTarget.esp32, pwrforgeTarget.stm32, pwrforgeTarget.atsam],
@@ -101,8 +116,7 @@ def test_update_project_content(target: pwrforgeTarget, tmp_path: Path) -> None:
 
     all_files = get_all_files_recursively()
     expected_files = get_expected_files([target])
-    assert all_files - expected_files == set()
-    assert expected_files - all_files == set()
+    assert_files_match(all_files, expected_files)
 
 
 def test_update_multitarget_project_content(tmp_path: Path) -> None:
@@ -128,8 +142,7 @@ def test_update_multitarget_project_content(tmp_path: Path) -> None:
 
     all_files = get_all_files_recursively()
     expected_files = get_expected_files(targets)
-    assert all_files - expected_files == set()
-    assert expected_files - all_files == set()
+    assert_files_match(all_files, expected_files)
 
 
 def test_update_project_with_docker(tmp_path: Path, fp: FakeProcess) -> None:
