@@ -3,7 +3,7 @@
 Installation and Dependencies
 =============================
 
-You will need `Python 3.8 or newer <https://www.python.org/downloads/>`_ installed on your system to use the latest version of ``pwrforge``.
+You will need `Python 3.10 or newer <https://www.python.org/downloads/>`_ installed on your system to use the latest version of ``pwrforge``.
 
 The latest stable pwrforge release can be installed from `PyPI <https://pypi.org/project/pwrforge/>`_ via pip:
 
