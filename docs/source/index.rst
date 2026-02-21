@@ -41,7 +41,7 @@ Getting started is easy:
 
 For Windows
 -----------
-1) Install Python >=3.8 with pip from https://www.python.org/downloads/windows/
+1) Install Python >=3.10 with pip from https://www.python.org/downloads/windows/
 2) Install Docker for Windows (e.g. https://desktop.docker.com/win/main/amd64/Docker%20Desktop%20Installer.exe)
 3) Install pwrforge (``pip install pwrforge``) and add the program to your env paths
 
