@@ -76,7 +76,6 @@ def run_command_in_docker(  # type: ignore[no-any-unimported]
         # INFO: IT tests and their checks rely on stdout value and this cannot be removed.
         # INFO: tests/it/it_pwrforge_commands_flow.py should be rewritten, to not rely on stdout.
         print(line.decode(), end="")
-        logger.info(line.decode().removesuffix("\n"))
         output_str += line.decode()
     result = container.wait()
     container.remove()
