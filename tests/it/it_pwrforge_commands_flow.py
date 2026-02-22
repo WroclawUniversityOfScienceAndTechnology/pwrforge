@@ -296,7 +296,7 @@ class TestBinProjectFlow:
         if test_state.target_id != pwrforgeTarget.x86:
             pytest.skip("Test only for x86 target")
 
-        result = test_state.runner.invoke(cli, ["run"])
+        result = test_state.runner.invoke(cli, ["run", "--profile", "Release", "--native"])
 
         assert result.exit_code == 0
         assert "Hello World!" in result.output
