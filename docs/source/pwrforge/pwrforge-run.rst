@@ -16,7 +16,11 @@ Usage
 Description
 ^^^^^^^^^^^
 
-Run pwrforge build and execute the binary file generated.
+Run the generated binary file for x86 target.
+
+By default, this command does not build. Use ``--build`` to build before run.
+By default, run environment follows ``build-env`` from ``pwrforge.toml``.
+Use ``--docker`` or ``--native`` to override the environment for this invocation.
 
 Parameters passed after "--" will be passed to the binary.
 
@@ -34,13 +38,25 @@ Relative path to a binary file to run.
 -p, --profile PROFILE     [default: Debug]
 
 Profile to run  [default: Debug]
-This option specifies which profile binary should be built and run.
+This option specifies which profile binary should be run.
 
 ::
 
---skip-build
+--build
 
-Skip running pwrforge build.
+Run pwrforge build before running the binary.
+
+::
+
+--docker
+
+Force running ``pwrforge run`` inside docker in interactive mode.
+
+::
+
+--native
+
+Force running ``pwrforge run`` in native environment.
 
 ::
 
