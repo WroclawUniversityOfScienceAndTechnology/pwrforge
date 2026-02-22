@@ -455,14 +455,16 @@ def run(
         help="Path to bin file",
     ),
     profile: str = Option("Debug", "-p", "--profile", metavar="PROFILE"),
-    skip_build: bool = Option(False, "--skip-build", help="Skip calling pwrforge build"),
+    prebuild: bool = Option(False, "--build", help="Call pwrforge build before run"),
+    force_docker: bool = Option(False, "--docker", help="Force running command in docker (interactive mode)"),
+    force_native: bool = Option(False, "--native", help="Force running command in native environment"),
     bin_params: List[str] = Argument(None),
     base_dir: Optional[Path] = BASE_DIR_OPTION,
 ) -> None:
     """Run project bin file"""
     if base_dir:
         os.chdir(base_dir)
-    pwrforge_run(bin_path, profile, bin_params, skip_build)
+    pwrforge_run(bin_path, profile, bin_params, prebuild, force_docker, force_native)
 
 
 ###############################################################################
