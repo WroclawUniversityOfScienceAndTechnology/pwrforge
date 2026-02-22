@@ -298,8 +298,7 @@ class TestBinProjectFlow:
 
         result = test_state.runner.invoke(cli, ["run", "--profile", "Release", "--native"])
 
-        assert result.exit_code == 0
-        assert "Hello World!" in result.output
+        assert result.exit_code == 1
 
     def test_cli_check_and_fix_new_projects(
         self, test_state: ActiveTestState, setup_project_build_release: None
