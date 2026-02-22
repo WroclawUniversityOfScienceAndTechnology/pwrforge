@@ -68,10 +68,12 @@ Running the binary
 
 To run the binary we can simply use :doc:`pwrforge run command </pwrforge/pwrforge-run>`: ::
 
-    pwrforge run --profile Release --skip-build
+    pwrforge run --profile Release
 
 After running the command we will see *Hello world!* text in the terminal.
-If the project wasn't built for the profile that we want to run, pwrforge will automatically build it first.
+If the project wasn't built for the profile that we want to run yet, run it with ``--build``.
+By default, run environment follows ``build-env`` from ``pwrforge.toml``.
+Use ``--docker`` or ``--native`` to override it.
 
 Debugging
 ---------
@@ -80,4 +82,3 @@ pwrforge also supports debugging through gdb cli. We will first build our projec
 
     pwrforge build --profile Debug
     pwrforge debug
-
