@@ -98,6 +98,12 @@ COPY pwrforge-*-py3-none-any.whl /opt/pwrforge-0-py3-none-any.whl
 RUN /opt/venv/bin/pip install /opt/pwrforge-0-py3-none-any.whl
 
 RUN usermod -a -G dialout ${DEV_USER}
+{% if project.is_stm32() %}
+RUN install -d -m 0775 -o ${DEV_USER} -g "$GID_NUMBER" {{ stm32_cube_cache_dir }} && \
+    touch {{ stm32_cube_cache_dir }}/.keep && \
+    chown ${DEV_USER}:$GID_NUMBER {{ stm32_cube_cache_dir }}/.keep
+{% endif %}
+ENV HOME=/home/${DEV_USER}
 USER ${DEV_USER}
 {% if project.is_esp32() %}
 RUN /bin/bash -c "echo 'source $IDF_PATH/export.sh'" >> ~/.bashrc

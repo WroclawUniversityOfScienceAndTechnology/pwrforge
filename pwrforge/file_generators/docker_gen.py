@@ -10,7 +10,11 @@ from pwrforge.file_generators.base_gen import create_file_from_template
 from pwrforge.global_values import PWRFORGE_PKG_PATH
 from pwrforge.logger import get_logger
 from pwrforge.target_helpers import atsam_helper, stm32_helper
-from pwrforge.utils.docker_utils import get_host_supplementary_group_ids
+from pwrforge.utils.docker_utils import (
+    STM32CUBE_CACHE_DIR,
+    STM32CUBE_CACHE_VOLUME_NAME,
+    get_host_supplementary_group_ids,
+)
 
 logger = get_logger()
 
@@ -59,6 +63,8 @@ class _DockerComposeTemplate:
                 "config": self._config,
                 "pwrforge_path": pwrforge_path,
                 "supplementary_group_ids": get_host_supplementary_group_ids(),
+                "stm32_cube_cache_dir": STM32CUBE_CACHE_DIR,
+                "stm32_cube_cache_volume_name": STM32CUBE_CACHE_VOLUME_NAME,
             },
         )
         self._create_file_from_template(
@@ -82,6 +88,7 @@ class _DockerComposeTemplate:
                 "pwrforge_package_version": pwrforge_package_version,
                 "custom_docker": custom_docker,
                 "supplementary_group_ids": get_host_supplementary_group_ids(),
+                "stm32_cube_cache_dir": STM32CUBE_CACHE_DIR,
             },
         )
 

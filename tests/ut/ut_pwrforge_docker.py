@@ -14,6 +14,9 @@ from pwrforge.commands.docker import (
 )
 from pwrforge.config import Config
 from pwrforge.utils.docker_utils import (
+    STM32CUBE_CACHE_DIR,
+    STM32CUBE_CACHE_VOLUME_NAME,
+    get_docker_volumes,
     get_host_supplementary_group_ids,
     run_command_in_docker,
 )
@@ -173,8 +176,17 @@ def test_get_host_supplementary_group_ids(monkeypatch: pytest.MonkeyPatch) -> No
     assert get_host_supplementary_group_ids() == ["20", "46", "998"]
 
 
+def test_get_docker_volumes_adds_stm32_cache() -> None:
+    volumes = get_docker_volumes(Path("/tmp/project"), use_stm32_cube_cache=True)
+
+    assert volumes[str(Path("/tmp/project"))] == {"bind": "/workspace/", "mode": "rw"}
+    assert volumes["/dev/"] == {"bind": "/dev/", "mode": "rw"}
+    assert volumes[STM32CUBE_CACHE_VOLUME_NAME] == {"bind": STM32CUBE_CACHE_DIR, "mode": "rw"}
+
+
 def test_run_command_in_docker_passes_host_groups() -> None:
     fake_client = FakeDockerRunClient()
+    volumes = get_docker_volumes(Path("/tmp/project"), use_stm32_cube_cache=True)
 
     result = run_command_in_docker(
         command=["pwrforge", "flash"],
@@ -182,9 +194,10 @@ def test_run_command_in_docker_passes_host_groups() -> None:
         docker_tag="test-image:latest",
         entrypoint="",
         group_add=["20", "46"],
-        project_path=Path("/tmp/project"),
+        volumes=volumes,
         path_in_docker=PurePosixPath("/workspace"),
     )
 
     assert result["StatusCode"] == 0
     assert fake_client.run_kwargs["group_add"] == ["20", "46"]
+    assert fake_client.run_kwargs["volumes"] == volumes

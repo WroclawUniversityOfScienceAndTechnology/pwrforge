@@ -1,4 +1,10 @@
-set(FETCHCONTENT_BASE_DIR "${CMAKE_SOURCE_DIR}/build/.cmake_fetch_cache")
+if(DEFINED ENV{HOME} AND NOT "$ENV{HOME}" STREQUAL "")
+    set(FETCHCONTENT_BASE_DIR "$ENV{HOME}/.cache/pwrforge/stm32cube")
+elseif(DEFINED ENV{pwrforge_PROJECT_ROOT} AND NOT "$ENV{pwrforge_PROJECT_ROOT}" STREQUAL "")
+    set(FETCHCONTENT_BASE_DIR "$ENV{pwrforge_PROJECT_ROOT}/build/.cmake_fetch_cache")
+else()
+    set(FETCHCONTENT_BASE_DIR "${CMAKE_SOURCE_DIR}/build/.cmake_fetch_cache")
+endif()
 
 include($ENV{pwrforge_PROJECT_ROOT}/third-party/stm32-cmake/cmake/stm32_gcc.cmake)
 

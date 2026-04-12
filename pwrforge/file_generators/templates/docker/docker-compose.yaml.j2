@@ -21,6 +21,9 @@ services:
     volumes:
       - ..:/workspace
       - /dev:/dev
+  {% if config.project.is_stm32() %}
+      - {{ stm32_cube_cache_volume_name }}:{{ stm32_cube_cache_dir }}
+  {% endif %}
     command: sleep infinity
   {% if config.docker_compose.ports %}
     ports:
@@ -28,3 +31,8 @@ services:
       - "{{ port_ranges }}"
     {% endfor %}
   {% endif %}
+{% if config.project.is_stm32() %}
+volumes:
+  {{ stm32_cube_cache_volume_name }}:
+    name: {{ stm32_cube_cache_volume_name }}
+{% endif %}

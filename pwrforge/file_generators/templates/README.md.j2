@@ -234,6 +234,7 @@ Please change is according to your needs.
 
 Some of the external dependencies such as CMSIS or HAL are added to the project configuration by default. They will be managed by cmake.
 We call stm32-cmake functions for fetch content. Please check the stm32-cmake project to get knowledge of how to use HAL and CMSIS dependencies (https://github.com/ObKo/stm32-cmake#hal)
+Fetched STM32Cube sources are cached in `~/.cache/pwrforge/stm32cube`. In the devcontainer this path is backed by a named Docker volume, so the cache survives `pwrforge clean` and container recreation.
 
 ## Debug
 

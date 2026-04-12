@@ -198,6 +198,34 @@ def test_update_project_with_docker_adds_host_groups(
     assert '"remoteUser": "ubuntu"' in devcontainer_text
 
 
+def test_update_project_stm32_uses_named_volume_cache(tmp_path: Path, fp: FakeProcess) -> None:
+    os.chdir(tmp_path)
+    pwrforge_new(TEST_PROJECT_NAME, None, None, [pwrforgeTarget.stm32], True, False, [])
+    os.chdir(TEST_PROJECT_NAME)
+    called_subprocess_cmd = get_docker_compose_command()
+    called_subprocess_cmd.extend(["pull"])
+    fp.register(called_subprocess_cmd)
+    fp.register(["conan", "profile", "list"])
+    fp.register(["conan", "profile", "detect"])
+    fp.register(["pip", "show", "pwrforge"])
+
+    pwrforge_update(Path(PWRFORGE_DEFAULT_CONFIG_FILE))
+
+    docker_compose_text = Path(".devcontainer/docker-compose.yaml").read_text(encoding="utf-8")
+    dockerfile_text = Path(".devcontainer/Dockerfile").read_text(encoding="utf-8")
+    toolchain_text = Path("config/conan/profiles/stm32_gcc_toolchain.cmake").read_text(encoding="utf-8")
+
+    assert "pwrforge_stm32cube_cache:/home/ubuntu/.cache/pwrforge/stm32cube" in docker_compose_text
+    assert "name: pwrforge_stm32cube_cache" in docker_compose_text
+    assert (
+        'install -d -m 0775 -o ${DEV_USER} -g "$GID_NUMBER" /home/ubuntu/.cache/pwrforge/stm32cube' in dockerfile_text
+    )
+    assert "ENV HOME=/home/${DEV_USER}" in dockerfile_text
+    assert 'set(FETCHCONTENT_BASE_DIR "$ENV{HOME}/.cache/pwrforge/stm32cube")' in toolchain_text
+    assert 'set(FETCHCONTENT_BASE_DIR "$ENV{pwrforge_PROJECT_ROOT}/build/.cmake_fetch_cache")' in toolchain_text
+    assert 'set(FETCHCONTENT_BASE_DIR "${CMAKE_SOURCE_DIR}/build/.cmake_fetch_cache")' in toolchain_text
+
+
 def test_update_project_docker_pull_fails(tmp_path: Path, fp: FakeProcess) -> None:
     os.chdir(tmp_path)
     project_name = "test_project_with_docker"

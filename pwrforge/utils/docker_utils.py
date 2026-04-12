@@ -11,6 +11,9 @@ from pwrforge.logger import get_logger
 
 logger = get_logger()
 
+STM32CUBE_CACHE_DIR = "/home/ubuntu/.cache/pwrforge/stm32cube"
+STM32CUBE_CACHE_VOLUME_NAME = "pwrforge_stm32cube_cache"
+
 
 def get_host_supplementary_group_ids() -> List[str]:
     """
@@ -29,6 +32,16 @@ def get_host_supplementary_group_ids() -> List[str]:
     return [str(group_id) for group_id in sorted(group_ids)]
 
 
+def get_docker_volumes(project_path: Path, use_stm32_cube_cache: bool = False) -> Dict[str, Dict[str, str]]:
+    volumes = {
+        str(project_path): {"bind": "/workspace/", "mode": "rw"},
+        "/dev/": {"bind": "/dev/", "mode": "rw"},
+    }
+    if use_stm32_cube_cache:
+        volumes[STM32CUBE_CACHE_VOLUME_NAME] = {"bind": STM32CUBE_CACHE_DIR, "mode": "rw"}
+    return volumes
+
+
 def prepare_docker(project_config: ProjectConfig, project_path: Path) -> Dict[str, Any]:
     relative_path = Path.cwd().relative_to(project_path)
     path_in_docker = PurePosixPath("/workspace", relative_path)
@@ -41,12 +54,12 @@ def prepare_docker(project_config: ProjectConfig, project_path: Path) -> Dict[st
     client = dock.from_env()
 
     return {
-        "project_path": project_path,
         "client": client,
         "path_in_docker": path_in_docker,
         "entrypoint": entrypoint,
         "docker_tag": docker_tag,
         "group_add": get_host_supplementary_group_ids(),
+        "volumes": get_docker_volumes(project_path, project_config.is_stm32()),
     }
 
 
@@ -77,14 +90,14 @@ def run_command_in_docker(  # type: ignore[no-any-unimported]
     docker_tag: str,
     entrypoint: str,
     group_add: List[str],
-    project_path: Path,
+    volumes: Dict[str, Dict[str, str]],
     path_in_docker: PurePosixPath,
 ) -> Dict[str, Any]:
     logger.info(f"Running '{' '.join(command)}' command in docker.")
     container = client.containers.run(
         docker_tag,
         command,
-        volumes=[f"{project_path}:/workspace/", "/dev/:/dev/"],
+        volumes=volumes,
         entrypoint=entrypoint,
         group_add=group_add,
         privileged=True,
