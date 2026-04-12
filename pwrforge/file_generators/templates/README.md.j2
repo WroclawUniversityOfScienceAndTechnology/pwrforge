@@ -49,9 +49,13 @@ Project relies on internal conan package repository. Compilation work only when 
 Add to `.devcontainer/.env` variables with conan credentials. (File might not exist as it is ignored by git - it contains local settings of developer machine):
 
 ```bash
+UID_NUMBER="1000"                               # Local user uid used for writable bind-mounted files
+GID_NUMBER="1000"                               # Local user gid used for writable bind-mounted files
 CONAN_LOGIN_USERNAME="<gitlab_user>"            # Usually three letters
 CONAN_PASSWORD="<gitlab_personal_access_token>" # Access token generated in gitlab  gui EditProfile -> Access Tokens
 ```
+
+Container login is always `ubuntu` and `sudo` is passwordless inside the devcontainer. Local username/password are not copied into the image.
 
 Remember that changing .env file **REQUIRE REBUILD OF DEVCONTAINER**.
 Variables should be visible inside containers.
@@ -230,12 +234,18 @@ Please change is according to your needs.
 
 Some of the external dependencies such as CMSIS or HAL are added to the project configuration by default. They will be managed by cmake.
 We call stm32-cmake functions for fetch content. Please check the stm32-cmake project to get knowledge of how to use HAL and CMSIS dependencies (https://github.com/ObKo/stm32-cmake#hal)
+The devcontainer image preloads the selected STM32Cube family into `/opt/pwrforge-cache/stm32cube`. The runtime cache path `~/.cache/pwrforge/stm32cube` is backed by a named Docker volume, so fetched content can survive `pwrforge clean` and container recreation too.
 
 ## Debug
 
 ### debug in the console
 
-openocd gdb
+`pwrforge debug`
+
+If OpenOCD fails to start, check `.devcontainer/openocd-debug.log`.
+
+To run only the OpenOCD server, use `pwrforge debug --openocd`.
+To run only GDB and attach to an already running server, use `pwrforge debug --gdb`.
 
 ### debug in vsc
 

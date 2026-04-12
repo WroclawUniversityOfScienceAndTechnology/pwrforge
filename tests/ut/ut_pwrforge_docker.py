@@ -1,5 +1,5 @@
 import os
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import Any, List, Sequence
 from unittest.mock import MagicMock
 
@@ -13,6 +13,13 @@ from pwrforge.commands.docker import (
     pwrforge_docker_run,
 )
 from pwrforge.config import Config
+from pwrforge.utils.docker_utils import (
+    STM32CUBE_CACHE_DIR,
+    STM32CUBE_CACHE_VOLUME_NAME,
+    get_docker_volumes,
+    get_host_supplementary_group_ids,
+    run_command_in_docker,
+)
 from tests.ut.utils import get_test_project_config
 
 
@@ -70,7 +77,7 @@ def test_docker_run(
 
     service_name = f"{pwrforge_docker_test_setup.project.name}_dev"
     called_subprocess_cmd = get_docker_compose_command()
-    called_subprocess_cmd.extend(["run"])
+    called_subprocess_cmd.extend(["run", "--service-ports"])
 
     called_subprocess_cmd.extend(command_args)
     called_subprocess_cmd.append(service_name)
@@ -89,6 +96,7 @@ def test_docker_run_with_command(mock_subprocess_run: MagicMock, pwrforge_docker
     called_subprocess_cmd.extend(
         [
             "run",
+            "--service-ports",
             rm,
             service_name,
             "bash",
@@ -96,6 +104,17 @@ def test_docker_run_with_command(mock_subprocess_run: MagicMock, pwrforge_docker
             command,
         ]
     )
+    assert mock_subprocess_run.call_args.args[0] == called_subprocess_cmd
+
+
+def test_docker_run_does_not_duplicate_service_ports(
+    mock_subprocess_run: MagicMock, pwrforge_docker_test_setup: Config
+) -> None:
+    pwrforge_docker_run(docker_opts=["--service-ports", "--rm"])
+
+    service_name = f"{pwrforge_docker_test_setup.project.name}_dev"
+    called_subprocess_cmd = get_docker_compose_command()
+    called_subprocess_cmd.extend(["run", "--service-ports", "--rm", service_name])
     assert mock_subprocess_run.call_args.args[0] == called_subprocess_cmd
 
 
@@ -114,6 +133,29 @@ class FakeDockerClient:
 
         def list(self, *args: Any, **kwargs: Any) -> List[FakeContainer]:
             return self.container_list
+
+
+class FakeContainerRunResult:
+    def attach(self, *args: Any, **kwargs: Any) -> List[bytes]:
+        return []
+
+    def wait(self) -> dict[str, Any]:
+        return {"StatusCode": 0}
+
+    def remove(self) -> None:
+        return None
+
+
+class FakeDockerRunClient:
+    def __init__(self) -> None:
+        self.containers = self
+        self.run_args: Any = None
+        self.run_kwargs: Any = None
+
+    def run(self, *args: Any, **kwargs: Any) -> FakeContainerRunResult:
+        self.run_args = args
+        self.run_kwargs = kwargs
+        return FakeContainerRunResult()
 
 
 def test_docker_exec(
@@ -137,3 +179,37 @@ def test_docker_exec_no_container(
     monkeypatch.setattr("docker.from_env", lambda: FakeDockerClient())
     with pytest.raises(SystemExit):
         pwrforge_docker_exec([])
+
+
+def test_get_host_supplementary_group_ids(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr("pwrforge.utils.docker_utils.os.getgid", lambda: 1000)
+    monkeypatch.setattr("pwrforge.utils.docker_utils.os.getgroups", lambda: [20, 46, 1000, 20, 998])
+
+    assert get_host_supplementary_group_ids() == ["20", "46", "998"]
+
+
+def test_get_docker_volumes_adds_stm32_cache() -> None:
+    volumes = get_docker_volumes(Path("/tmp/project"), use_stm32_cube_cache=True)
+
+    assert volumes[str(Path("/tmp/project"))] == {"bind": "/workspace/", "mode": "rw"}
+    assert volumes["/dev/"] == {"bind": "/dev/", "mode": "rw"}
+    assert volumes[STM32CUBE_CACHE_VOLUME_NAME] == {"bind": STM32CUBE_CACHE_DIR, "mode": "rw"}
+
+
+def test_run_command_in_docker_passes_host_groups() -> None:
+    fake_client = FakeDockerRunClient()
+    volumes = get_docker_volumes(Path("/tmp/project"), use_stm32_cube_cache=True)
+
+    result = run_command_in_docker(
+        command=["pwrforge", "flash"],
+        client=fake_client,
+        docker_tag="test-image:latest",
+        entrypoint="",
+        group_add=["20", "46"],
+        volumes=volumes,
+        path_in_docker=PurePosixPath("/workspace"),
+    )
+
+    assert result["StatusCode"] == 0
+    assert fake_client.run_kwargs["group_add"] == ["20", "46"]
+    assert fake_client.run_kwargs["volumes"] == volumes

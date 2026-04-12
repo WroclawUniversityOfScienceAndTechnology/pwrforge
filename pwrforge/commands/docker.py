@@ -14,6 +14,13 @@ from pwrforge.logger import get_logger
 logger = get_logger()
 
 
+def _ensure_service_ports_flag(docker_opts: Sequence[str]) -> List[str]:
+    docker_opts_list = list(docker_opts)
+    if "--service-ports" in docker_opts_list or "-P" in docker_opts_list:
+        return docker_opts_list
+    return ["--service-ports", *docker_opts_list]
+
+
 def pwrforge_docker_build(docker_opts: Sequence[str], project_root: Optional[Path] = None) -> None:
     """
     Build docker
@@ -67,6 +74,7 @@ def pwrforge_docker_run(
 
     if not docker_opts:
         docker_opts = []
+    docker_opts = _ensure_service_ports_flag(docker_opts)
 
     cmd = get_docker_compose_command()
     cmd.extend(
