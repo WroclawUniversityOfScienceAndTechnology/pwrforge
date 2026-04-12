@@ -1,3 +1,4 @@
+import os
 import sys
 from pathlib import Path, PurePosixPath
 from typing import Any, Dict, List
@@ -9,6 +10,23 @@ from pwrforge.config import ProjectConfig
 from pwrforge.logger import get_logger
 
 logger = get_logger()
+
+
+def get_host_supplementary_group_ids() -> List[str]:
+    """
+    Return host supplementary group IDs as strings.
+
+    Docker bind-mounts host device nodes with their original numeric ownership,
+    so the container process needs the same supplemental groups as the invoking
+    user to access USB serial/debug devices without sudo.
+    """
+
+    if os.name == "nt":
+        return []
+
+    primary_gid = os.getgid()
+    group_ids = {group_id for group_id in os.getgroups() if group_id != primary_gid}
+    return [str(group_id) for group_id in sorted(group_ids)]
 
 
 def prepare_docker(project_config: ProjectConfig, project_path: Path) -> Dict[str, Any]:
@@ -28,6 +46,7 @@ def prepare_docker(project_config: ProjectConfig, project_path: Path) -> Dict[st
         "path_in_docker": path_in_docker,
         "entrypoint": entrypoint,
         "docker_tag": docker_tag,
+        "group_add": get_host_supplementary_group_ids(),
     }
 
 
@@ -57,6 +76,7 @@ def run_command_in_docker(  # type: ignore[no-any-unimported]
     client: DockerClient,
     docker_tag: str,
     entrypoint: str,
+    group_add: List[str],
     project_path: Path,
     path_in_docker: PurePosixPath,
 ) -> Dict[str, Any]:
@@ -66,6 +86,7 @@ def run_command_in_docker(  # type: ignore[no-any-unimported]
         command,
         volumes=[f"{project_path}:/workspace/", "/dev/:/dev/"],
         entrypoint=entrypoint,
+        group_add=group_add,
         privileged=True,
         detach=True,
         working_dir=str(path_in_docker),

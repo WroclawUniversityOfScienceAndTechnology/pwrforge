@@ -1,5 +1,5 @@
 import os
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import Any, List, Sequence
 from unittest.mock import MagicMock
 
@@ -13,6 +13,10 @@ from pwrforge.commands.docker import (
     pwrforge_docker_run,
 )
 from pwrforge.config import Config
+from pwrforge.utils.docker_utils import (
+    get_host_supplementary_group_ids,
+    run_command_in_docker,
+)
 from tests.ut.utils import get_test_project_config
 
 
@@ -116,6 +120,29 @@ class FakeDockerClient:
             return self.container_list
 
 
+class FakeContainerRunResult:
+    def attach(self, *args: Any, **kwargs: Any) -> List[bytes]:
+        return []
+
+    def wait(self) -> dict[str, Any]:
+        return {"StatusCode": 0}
+
+    def remove(self) -> None:
+        return None
+
+
+class FakeDockerRunClient:
+    def __init__(self) -> None:
+        self.containers = self
+        self.run_args: Any = None
+        self.run_kwargs: Any = None
+
+    def run(self, *args: Any, **kwargs: Any) -> FakeContainerRunResult:
+        self.run_args = args
+        self.run_kwargs = kwargs
+        return FakeContainerRunResult()
+
+
 def test_docker_exec(
     mock_subprocess_run: MagicMock,
     monkeypatch: pytest.MonkeyPatch,
@@ -137,3 +164,27 @@ def test_docker_exec_no_container(
     monkeypatch.setattr("docker.from_env", lambda: FakeDockerClient())
     with pytest.raises(SystemExit):
         pwrforge_docker_exec([])
+
+
+def test_get_host_supplementary_group_ids(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr("pwrforge.utils.docker_utils.os.getgid", lambda: 1000)
+    monkeypatch.setattr("pwrforge.utils.docker_utils.os.getgroups", lambda: [20, 46, 1000, 20, 998])
+
+    assert get_host_supplementary_group_ids() == ["20", "46", "998"]
+
+
+def test_run_command_in_docker_passes_host_groups() -> None:
+    fake_client = FakeDockerRunClient()
+
+    result = run_command_in_docker(
+        command=["pwrforge", "flash"],
+        client=fake_client,
+        docker_tag="test-image:latest",
+        entrypoint="",
+        group_add=["20", "46"],
+        project_path=Path("/tmp/project"),
+        path_in_docker=PurePosixPath("/workspace"),
+    )
+
+    assert result["StatusCode"] == 0
+    assert fake_client.run_kwargs["group_add"] == ["20", "46"]

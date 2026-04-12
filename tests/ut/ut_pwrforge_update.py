@@ -159,6 +159,43 @@ def test_update_project_with_docker(tmp_path: Path, fp: FakeProcess) -> None:
     pwrforge_update(Path(PWRFORGE_DEFAULT_CONFIG_FILE))
 
 
+def test_update_project_with_docker_adds_host_groups(
+    tmp_path: Path, fp: FakeProcess, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    os.chdir(tmp_path)
+    pwrforge_new(TEST_PROJECT_NAME, None, None, [pwrforgeTarget.x86], True, False, [])
+    os.chdir(TEST_PROJECT_NAME)
+    called_subprocess_cmd = get_docker_compose_command()
+    called_subprocess_cmd.extend(["pull"])
+    fp.register(called_subprocess_cmd)
+    fp.register(["conan", "profile", "list"])
+    fp.register(["conan", "profile", "detect"])
+    fp.register(["pip", "show", "pwrforge"])
+    monkeypatch.setattr("pwrforge.file_generators.docker_gen.get_host_supplementary_group_ids", lambda: ["20", "46"])
+
+    pwrforge_update(Path(PWRFORGE_DEFAULT_CONFIG_FILE))
+
+    docker_compose_text = Path(".devcontainer/docker-compose.yaml").read_text(encoding="utf-8")
+    dockerfile_text = Path(".devcontainer/Dockerfile").read_text(encoding="utf-8")
+    env_text = Path(".devcontainer/.env").read_text(encoding="utf-8")
+    devcontainer_text = Path(".devcontainer/devcontainer.json").read_text(encoding="utf-8")
+
+    assert "group_add:" in docker_compose_text
+    assert '      - "20"' in docker_compose_text
+    assert '      - "46"' in docker_compose_text
+    assert "USER_NAME:" not in docker_compose_text
+    assert "USER_PASSWORD:" not in docker_compose_text
+    assert "ARG DEV_USER=ubuntu" in dockerfile_text
+    assert 'echo "$DEV_USER ALL=(ALL) NOPASSWD:ALL"' in dockerfile_text
+    assert "ARG USER_NAME" not in dockerfile_text
+    assert "ARG USER_PASSWORD" not in dockerfile_text
+    assert "USER_NAME=" not in env_text
+    assert "USER_PASSWORD=" not in env_text
+    assert "UID_NUMBER=" in env_text
+    assert "GID_NUMBER=" in env_text
+    assert '"remoteUser": "ubuntu"' in devcontainer_text
+
+
 def test_update_project_docker_pull_fails(tmp_path: Path, fp: FakeProcess) -> None:
     os.chdir(tmp_path)
     project_name = "test_project_with_docker"

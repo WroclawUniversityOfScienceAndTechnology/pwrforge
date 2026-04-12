@@ -81,6 +81,7 @@ def run_custom_command_in_docker(command: List[str], config: Config) -> str:
         command,
         volumes=[f"{config.project_root}:/workspace/", "/dev/:/dev/"],
         entrypoint=docker_settings["entrypoint"],
+        group_add=docker_settings["group_add"],
         privileged=True,
         remove=True,
         working_dir=str(docker_settings["path_in_docker"]),

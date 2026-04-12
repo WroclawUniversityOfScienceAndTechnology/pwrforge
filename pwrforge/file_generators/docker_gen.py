@@ -10,6 +10,7 @@ from pwrforge.file_generators.base_gen import create_file_from_template
 from pwrforge.global_values import PWRFORGE_PKG_PATH
 from pwrforge.logger import get_logger
 from pwrforge.target_helpers import atsam_helper, stm32_helper
+from pwrforge.utils.docker_utils import get_host_supplementary_group_ids
 
 logger = get_logger()
 
@@ -57,6 +58,7 @@ class _DockerComposeTemplate:
             template_params={
                 "config": self._config,
                 "pwrforge_path": pwrforge_path,
+                "supplementary_group_ids": get_host_supplementary_group_ids(),
             },
         )
         self._create_file_from_template(

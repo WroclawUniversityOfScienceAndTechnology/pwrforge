@@ -6,14 +6,18 @@ services:
       context: .
       # in case of missing .env file (eg. CI/CD) system will use default values
       args:
-        USER_NAME: ${USER_NAME:-user}
-        USER_PASSWORD: ${USER_PASSWORD:-user}
         GID_NUMBER: ${GID_NUMBER:-1000}
         UID_NUMBER: ${UID_NUMBER:-1000}
         DOCKER_IMAGE_ROOT: ${DOCKER_IMAGE_ROOT:-ubuntu:24.04}
         CONAN_LOGIN_USERNAME: ${CONAN_LOGIN_USERNAME:-""}
         CONAN_PASSWORD: ${CONAN_PASSWORD:-""}
     privileged: true
+  {% if supplementary_group_ids %}
+    group_add:
+  {% for group_id in supplementary_group_ids %}
+      - "{{ group_id }}"
+  {% endfor %}
+  {% endif %}
     volumes:
       - ..:/workspace
       - /dev:/dev
