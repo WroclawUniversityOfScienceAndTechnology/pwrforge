@@ -13,6 +13,7 @@ from pwrforge.target_helpers import atsam_helper, stm32_helper
 from pwrforge.utils.docker_utils import (
     STM32CUBE_CACHE_DIR,
     STM32CUBE_CACHE_VOLUME_NAME,
+    STM32CUBE_IMAGE_CACHE_DIR,
     get_host_supplementary_group_ids,
 )
 
@@ -89,6 +90,8 @@ class _DockerComposeTemplate:
                 "custom_docker": custom_docker,
                 "supplementary_group_ids": get_host_supplementary_group_ids(),
                 "stm32_cube_cache_dir": STM32CUBE_CACHE_DIR,
+                "stm32_cube_image_cache_dir": STM32CUBE_IMAGE_CACHE_DIR,
+                "stm32_cube_family": self._get_stm32_cube_family(),
             },
         )
 
@@ -121,6 +124,11 @@ class _DockerComposeTemplate:
             shutil.copy(whl_path, self.docker_path)
             return whl_path.name
         return f"pwrforge=={__version__}"
+
+    def _get_stm32_cube_family(self) -> str:
+        if not self._config.project.is_stm32():
+            return ""
+        return self._config.get_stm32_config().chip[5:7].upper()
 
 
 def generate_docker_compose(docker_path: Path, config: Config) -> None:

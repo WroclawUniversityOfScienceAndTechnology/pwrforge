@@ -99,9 +99,14 @@ RUN /opt/venv/bin/pip install /opt/pwrforge-0-py3-none-any.whl
 
 RUN usermod -a -G dialout ${DEV_USER}
 {% if project.is_stm32() %}
-RUN install -d -m 0775 -o ${DEV_USER} -g "$GID_NUMBER" {{ stm32_cube_cache_dir }} && \
-    touch {{ stm32_cube_cache_dir }}/.keep && \
-    chown ${DEV_USER}:$GID_NUMBER {{ stm32_cube_cache_dir }}/.keep
+RUN install -d -m 0775 {{ stm32_cube_image_cache_dir }} && \
+    if [ ! -d "{{ stm32_cube_image_cache_dir }}/stm32cube{{ stm32_cube_family|lower }}-src/.git" ]; then \
+        git clone --depth 1 --recurse-submodules --shallow-submodules \
+            https://github.com/STMicroelectronics/STM32Cube{{ stm32_cube_family }}.git \
+            {{ stm32_cube_image_cache_dir }}/stm32cube{{ stm32_cube_family|lower }}-src; \
+    fi && \
+    install -d -m 0775 {{ stm32_cube_cache_dir }} && \
+    chown -R ${DEV_USER}:$GID_NUMBER {{ stm32_cube_cache_dir }} {{ stm32_cube_image_cache_dir }}
 {% endif %}
 ENV HOME=/home/${DEV_USER}
 USER ${DEV_USER}

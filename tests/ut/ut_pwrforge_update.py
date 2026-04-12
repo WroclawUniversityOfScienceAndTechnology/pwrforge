@@ -217,11 +217,33 @@ def test_update_project_stm32_uses_named_volume_cache(tmp_path: Path, fp: FakePr
 
     assert "pwrforge_stm32cube_cache:/home/ubuntu/.cache/pwrforge/stm32cube" in docker_compose_text
     assert "name: pwrforge_stm32cube_cache" in docker_compose_text
+    assert "https://github.com/STMicroelectronics/STM32CubeL4.git" in dockerfile_text
+    assert "/opt/pwrforge-cache/stm32cube/stm32cubel4-src" in dockerfile_text
+    assert "install -d -m 0775 /home/ubuntu/.cache/pwrforge/stm32cube" in dockerfile_text
     assert (
-        'install -d -m 0775 -o ${DEV_USER} -g "$GID_NUMBER" /home/ubuntu/.cache/pwrforge/stm32cube' in dockerfile_text
+        "chown -R ${DEV_USER}:$GID_NUMBER /home/ubuntu/.cache/pwrforge/stm32cube /opt/pwrforge-cache/stm32cube"
+        in dockerfile_text
     )
     assert "ENV HOME=/home/${DEV_USER}" in dockerfile_text
     assert 'set(FETCHCONTENT_BASE_DIR "$ENV{HOME}/.cache/pwrforge/stm32cube")' in toolchain_text
+    assert (
+        'set(PWRFORGE_STM32_CUBE_SOURCE_DIR "${FETCHCONTENT_BASE_DIR}/stm32cube${STM32_FAMILY_LOWER}-src")'
+        in toolchain_text
+    )
+    assert (
+        'set(PWRFORGE_STM32_CUBE_IMAGE_SOURCE_DIR "/opt/pwrforge-cache/stm32cube/stm32cube${STM32_FAMILY_LOWER}-src")'
+        in toolchain_text
+    )
+    assert 'set("STM32_CUBE_${STM32_FAMILY}_PATH" "${PWRFORGE_STM32_CUBE_SOURCE_DIR}")' in toolchain_text
+    assert (
+        'message(STATUS "Using preloaded stm32 cube for stm32 ${STM32_FAMILY} '
+        'family from ${PWRFORGE_STM32_CUBE_SOURCE_DIR}")' in toolchain_text
+    )
+    assert 'set("STM32_CUBE_${STM32_FAMILY}_PATH" "${PWRFORGE_STM32_CUBE_IMAGE_SOURCE_DIR}")' in toolchain_text
+    assert (
+        'message(STATUS "Using image stm32 cube for stm32 ${STM32_FAMILY} '
+        'family from ${PWRFORGE_STM32_CUBE_IMAGE_SOURCE_DIR}")' in toolchain_text
+    )
     assert 'set(FETCHCONTENT_BASE_DIR "$ENV{pwrforge_PROJECT_ROOT}/build/.cmake_fetch_cache")' in toolchain_text
     assert 'set(FETCHCONTENT_BASE_DIR "${CMAKE_SOURCE_DIR}/build/.cmake_fetch_cache")' in toolchain_text
 

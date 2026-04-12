@@ -13,6 +13,7 @@ logger = get_logger()
 
 STM32CUBE_CACHE_DIR = "/home/ubuntu/.cache/pwrforge/stm32cube"
 STM32CUBE_CACHE_VOLUME_NAME = "pwrforge_stm32cube_cache"
+STM32CUBE_IMAGE_CACHE_DIR = "/opt/pwrforge-cache/stm32cube"
 
 
 def get_host_supplementary_group_ids() -> List[str]:
