@@ -33,7 +33,7 @@ jobs:
         branch: ${{fromJson(needs.prepare_matrix.outputs.matrix)}}
     steps:
         - name: Checkout
-          uses: actions/checkout@v3
+          uses: actions/checkout@v5
           with:
             ref: "${{ matrix.branch }}"
         - name: Apt install dependencies
@@ -74,7 +74,7 @@ jobs:
         branch: ${{fromJson(needs.prepare_matrix.outputs.matrix)}}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
 
         with:
           submodules: recursive
@@ -107,7 +107,7 @@ jobs:
           echo "report_file_name=unit-${{ matrix.target }}-${{ matrix.branch }}-${{ github.run_id }}-test-report" >> $GITHUB_ENV
 
       - name: Archive unit-tests results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         if: always()
         with:
           name: $report_file_name
@@ -125,7 +125,7 @@ jobs:
         target: [esp32, x86, stm32, atsam]
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
         with:
           submodules: recursive
           ref: "${{ matrix.branch }}"
@@ -170,7 +170,7 @@ jobs:
         branch: ${{fromJson(needs.prepare_matrix.outputs.matrix)}}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
         with:
           ref: "${{ matrix.branch }}"
       - name: Apt install dependencies
@@ -186,6 +186,6 @@ jobs:
           pip install --upgrade pip
           pip install -r ci/requirements.txt
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
       - name: Generate HTML documentation
         run: ./run.py --doc
