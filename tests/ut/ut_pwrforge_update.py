@@ -213,10 +213,17 @@ def test_update_project_stm32_uses_named_volume_cache(tmp_path: Path, fp: FakePr
 
     docker_compose_text = Path(".devcontainer/docker-compose.yaml").read_text(encoding="utf-8")
     dockerfile_text = Path(".devcontainer/Dockerfile").read_text(encoding="utf-8")
+    openocd_script_text = Path(".devcontainer/openocd-script.cfg").read_text(encoding="utf-8")
+    vscode_tasks_text = Path(".vscode/tasks.json").read_text(encoding="utf-8")
     toolchain_text = Path("config/conan/profiles/stm32_gcc_toolchain.cmake").read_text(encoding="utf-8")
 
     assert "pwrforge_stm32cube_cache:/home/ubuntu/.cache/pwrforge/stm32cube" in docker_compose_text
     assert "name: pwrforge_stm32cube_cache" in docker_compose_text
+    assert "source [find interface/stlink.cfg]" in openocd_script_text
+    assert '"command": "pwrforge"' in vscode_tasks_text
+    assert '"debug"' in vscode_tasks_text
+    assert '"--openocd"' in vscode_tasks_text
+    assert '"command": "pkill"' in vscode_tasks_text
     assert "https://github.com/STMicroelectronics/STM32CubeL4.git" in dockerfile_text
     assert "/opt/pwrforge-cache/stm32cube/stm32cubel4-src" in dockerfile_text
     assert "install -d -m 0775 /home/ubuntu/.cache/pwrforge/stm32cube" in dockerfile_text

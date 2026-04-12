@@ -4,11 +4,10 @@
         {
             "type": "shell",
             "label": "Start-OpenOCD",
-            "command": "sudo",
+            "command": "pwrforge",
             "args": [
-                "openocd",
-                "-f",
-                ".devcontainer/openocd-script.cfg"
+                "debug",
+                "--openocd"
             ],
             "problemMatcher": {
                 "pattern": {
@@ -29,9 +28,8 @@
         },
         {
             "label": "Kill-OpenOCD",
-            "command": "sudo",
+            "command": "pkill",
             "args": [
-                "pkill",
                 "openocd"
             ],
             "type": "shell"

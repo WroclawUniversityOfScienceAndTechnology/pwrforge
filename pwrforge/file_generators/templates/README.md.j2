@@ -240,7 +240,12 @@ The devcontainer image preloads the selected STM32Cube family into `/opt/pwrforg
 
 ### debug in the console
 
-openocd gdb
+`pwrforge debug`
+
+If OpenOCD fails to start, check `.devcontainer/openocd-debug.log`.
+
+To run only the OpenOCD server, use `pwrforge debug --openocd`.
+To run only GDB and attach to an already running server, use `pwrforge debug --gdb`.
 
 ### debug in vsc
 
