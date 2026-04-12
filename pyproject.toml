@@ -137,7 +137,7 @@ disable = [
 extension-pkg-whitelist = ["pydantic"]
 
 [tool.mypy]
-python_version = 3.10
+python_version = "3.10"
 strict = true
 disallow_any_unimported = true
 no_implicit_optional = true

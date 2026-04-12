@@ -1,4 +1,3 @@
-import getpass
 import os
 from dataclasses import dataclass
 from pathlib import Path
@@ -10,8 +9,6 @@ from pwrforge.global_values import ENV_DEFAULT_NAME
 
 @dataclass
 class _EnvironmentDescriptor:
-    user_name: str = getpass.getuser()
-    user_passwd: str = "user"
     user_gid: int = 1000 if os.name == "nt" else os.getgid()
     user_uid: int = 1000 if os.name == "nt" else os.getuid()
     ssh_port: int = 2000

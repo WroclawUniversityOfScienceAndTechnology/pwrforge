@@ -24,10 +24,7 @@ def create_stm32_config(chip: Optional[str]) -> Optional[Stm32Config]:
 
 def generate_openocd_script(outdir: Path, config: Config) -> None:
     chip = config.get_stm32_config().chip
-
     chip_script = f"target/{chip[:7].lower()}x.cfg"
-    if not Path("/usr/share/openocd/scripts", chip_script).exists():
-        chip_script = f"target/{chip[:7].lower()}.cfg"
 
     write_template(
         outdir / STM32Scrips.openocd_cfg,
