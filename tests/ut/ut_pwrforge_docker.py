@@ -77,7 +77,7 @@ def test_docker_run(
 
     service_name = f"{pwrforge_docker_test_setup.project.name}_dev"
     called_subprocess_cmd = get_docker_compose_command()
-    called_subprocess_cmd.extend(["run"])
+    called_subprocess_cmd.extend(["run", "--service-ports"])
 
     called_subprocess_cmd.extend(command_args)
     called_subprocess_cmd.append(service_name)
@@ -96,6 +96,7 @@ def test_docker_run_with_command(mock_subprocess_run: MagicMock, pwrforge_docker
     called_subprocess_cmd.extend(
         [
             "run",
+            "--service-ports",
             rm,
             service_name,
             "bash",
@@ -103,6 +104,17 @@ def test_docker_run_with_command(mock_subprocess_run: MagicMock, pwrforge_docker
             command,
         ]
     )
+    assert mock_subprocess_run.call_args.args[0] == called_subprocess_cmd
+
+
+def test_docker_run_does_not_duplicate_service_ports(
+    mock_subprocess_run: MagicMock, pwrforge_docker_test_setup: Config
+) -> None:
+    pwrforge_docker_run(docker_opts=["--service-ports", "--rm"])
+
+    service_name = f"{pwrforge_docker_test_setup.project.name}_dev"
+    called_subprocess_cmd = get_docker_compose_command()
+    called_subprocess_cmd.extend(["run", "--service-ports", "--rm", service_name])
     assert mock_subprocess_run.call_args.args[0] == called_subprocess_cmd
 
 

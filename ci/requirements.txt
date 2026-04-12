@@ -147,7 +147,7 @@ libclang==18.1.1
     # via pwrforge (/home/aak/rep/pwr/pwrforge/pyproject.toml)
 lizard==1.17.10
     # via pwrforge (/home/aak/rep/pwr/pwrforge/pyproject.toml)
-lxml==6.0.3
+lxml==6.0.4
     # via
     #   gcovr
     #   unittest-xml-reporting

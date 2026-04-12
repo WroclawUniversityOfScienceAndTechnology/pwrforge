@@ -92,11 +92,11 @@ def build_wheel_and_copy() -> None:
         cwd=ROOT,
     )
 
-    # Locate newest wheel
-    wheels = sorted(DIST_DIR.glob("pwrforge-*-py3-none-any.whl"))
+    # Locate newest wheel by mtime. Filename sorting breaks for versions like 0.0.9 vs 0.0.10.
+    wheels = list(DIST_DIR.glob("pwrforge-*-py3-none-any.whl"))
     if not wheels:
         raise SystemExit("No pwrforge wheel found in dist/")
-    wheel = wheels[-1]
+    wheel = max(wheels, key=lambda candidate: candidate.stat().st_mtime_ns)
 
     # Remove old wheels from templates
     for old in DOCKER_TEMPLATES_DIR.glob("pwrforge-*-py3-none-any.whl"):

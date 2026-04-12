@@ -219,6 +219,9 @@ def test_update_project_stm32_uses_named_volume_cache(tmp_path: Path, fp: FakePr
 
     assert "pwrforge_stm32cube_cache:/home/ubuntu/.cache/pwrforge/stm32cube" in docker_compose_text
     assert "name: pwrforge_stm32cube_cache" in docker_compose_text
+    assert '      - "3333:3333"' in docker_compose_text
+    assert '      - "4444:4444"' in docker_compose_text
+    assert '      - "6666:6666"' in docker_compose_text
     assert "source [find interface/stlink.cfg]" in openocd_script_text
     assert '"command": "pwrforge"' in vscode_tasks_text
     assert '"debug"' in vscode_tasks_text

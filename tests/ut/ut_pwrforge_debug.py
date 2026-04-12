@@ -56,6 +56,7 @@ def test_debug_gdb_x86(mock_debug_config: MagicMock, mocker: MockerFixture) -> N
     pwrforge_debug(None, None, gdb_only=True)
 
     interactive_mock.assert_called_once_with(["gdb", *GDB_COMMON_SETTINGS, bin_path.absolute()], check=False)
+    mock_debug_config.assert_called_once_with(run_in_docker=False)
 
 
 def test_run_interactive_command_restores_terminal_state(mocker: MockerFixture) -> None:

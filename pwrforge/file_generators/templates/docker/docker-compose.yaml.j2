@@ -25,9 +25,9 @@ services:
       - {{ stm32_cube_cache_volume_name }}:{{ stm32_cube_cache_dir }}
   {% endif %}
     command: sleep infinity
-  {% if config.docker_compose.ports %}
+  {% if docker_port_mappings %}
     ports:
-    {% for port_ranges in config.docker_compose.ports %}
+    {% for port_ranges in docker_port_mappings %}
       - "{{ port_ranges }}"
     {% endfor %}
   {% endif %}

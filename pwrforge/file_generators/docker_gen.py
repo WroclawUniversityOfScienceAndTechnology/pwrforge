@@ -19,6 +19,8 @@ from pwrforge.utils.docker_utils import (
 
 logger = get_logger()
 
+OPENOCD_PORT_MAPPINGS = ("3333:3333", "4444:4444", "6666:6666")
+
 
 class _DockerComposeTemplate:
     """
@@ -62,6 +64,7 @@ class _DockerComposeTemplate:
             "docker-compose.yaml",
             template_params={
                 "config": self._config,
+                "docker_port_mappings": self._get_docker_port_mappings(),
                 "pwrforge_path": pwrforge_path,
                 "supplementary_group_ids": get_host_supplementary_group_ids(),
                 "stm32_cube_cache_dir": STM32CUBE_CACHE_DIR,
@@ -129,6 +132,22 @@ class _DockerComposeTemplate:
         if not self._config.project.is_stm32():
             return ""
         return self._config.get_stm32_config().chip[5:7].upper()
+
+    def _get_docker_port_mappings(self) -> list[str]:
+        docker_ports = list(self._config.docker_compose.ports)
+        if self._config.project.is_stm32() or self._config.project.is_atsam() or self._config.project.is_esp32():
+            for openocd_port_mapping in OPENOCD_PORT_MAPPINGS:
+                container_port = openocd_port_mapping.rsplit(":", maxsplit=1)[-1]
+                if not any(
+                    port_mapping.split("/")[-1].split(":")[-1] == container_port for port_mapping in docker_ports
+                ):
+                    docker_ports.append(openocd_port_mapping)
+
+        unique_ports: list[str] = []
+        for port_mapping in docker_ports:
+            if port_mapping not in unique_ports:
+                unique_ports.append(port_mapping)
+        return unique_ports
 
 
 def generate_docker_compose(docker_path: Path, config: Config) -> None:

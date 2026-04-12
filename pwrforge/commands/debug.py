@@ -21,6 +21,8 @@ from pwrforge.utils.sys_utils import find_program_path
 
 logger = get_logger()
 
+CommandArg = str | os.PathLike[str]
+
 
 GDB_COMMON_SETTINGS = [
     "--quiet",
@@ -63,7 +65,7 @@ def _restore_default_sigint() -> None:
 
 
 # pylint: disable=consider-using-with,subprocess-popen-preexec-fn
-def _run_interactive_command(command: Sequence[str], check: bool) -> None:
+def _run_interactive_command(command: Sequence[CommandArg], check: bool) -> None:
     with _preserve_terminal_state():
         if platform.system() == "Windows":
             subprocess.run(command, check=check)
@@ -177,19 +179,19 @@ class _pwrforgeDebug:
     def run_openocd(self) -> None:
         _run_interactive_command(self.get_openocd_command(), check=False)
 
-    def get_gdb_command(self) -> list[str]:
+    def get_gdb_command(self) -> list[CommandArg]:
         if self._target.id == pwrforgeTarget.x86:
-            return ["gdb", *GDB_COMMON_SETTINGS, str(self._require_bin_path())]
+            return ["gdb", *GDB_COMMON_SETTINGS, self._require_bin_path()]
 
         return [
             self._get_gdb_bin(),
             *GDB_COMMON_SETTINGS,
-            str(self._require_bin_path()),
+            self._require_bin_path(),
             EMEDDED_GDB_SETTINGS,
         ]
 
-    def get_openocd_command(self) -> list[str]:
-        return [str(find_program_path("openocd")), *self._get_openocd_args()]
+    def get_openocd_command(self) -> list[CommandArg]:
+        return [find_program_path("openocd"), *self._get_openocd_args()]
 
     def _get_gdb_bin(self) -> str:
         if self._target.id in [pwrforgeTarget.stm32, pwrforgeTarget.atsam]:
@@ -222,10 +224,11 @@ def pwrforge_debug(
     openocd_only: bool = False,
     gdb_only: bool = False,
 ) -> None:
-    config = prepare_config()
     if openocd_only and gdb_only:
         logger.error("Options --openocd and --gdb are mutually exclusive.")
         sys.exit(1)
+
+    config = prepare_config(run_in_docker=not gdb_only)
 
     if openocd_only:
         debug = _pwrforgeDebug(
