@@ -6,21 +6,33 @@ services:
       context: .
       # in case of missing .env file (eg. CI/CD) system will use default values
       args:
-        USER_NAME: ${USER_NAME:-user}
-        USER_PASSWORD: ${USER_PASSWORD:-user}
         GID_NUMBER: ${GID_NUMBER:-1000}
         UID_NUMBER: ${UID_NUMBER:-1000}
         DOCKER_IMAGE_ROOT: ${DOCKER_IMAGE_ROOT:-ubuntu:24.04}
         CONAN_LOGIN_USERNAME: ${CONAN_LOGIN_USERNAME:-""}
         CONAN_PASSWORD: ${CONAN_PASSWORD:-""}
     privileged: true
+  {% if supplementary_group_ids %}
+    group_add:
+  {% for group_id in supplementary_group_ids %}
+      - "{{ group_id }}"
+  {% endfor %}
+  {% endif %}
     volumes:
       - ..:/workspace
       - /dev:/dev
+  {% if config.project.is_stm32() %}
+      - {{ stm32_cube_cache_volume_name }}:{{ stm32_cube_cache_dir }}
+  {% endif %}
     command: sleep infinity
-  {% if config.docker_compose.ports %}
+  {% if docker_port_mappings %}
     ports:
-    {% for port_ranges in config.docker_compose.ports %}
+    {% for port_ranges in docker_port_mappings %}
       - "{{ port_ranges }}"
     {% endfor %}
   {% endif %}
+{% if config.project.is_stm32() %}
+volumes:
+  {{ stm32_cube_cache_volume_name }}:
+    name: {{ stm32_cube_cache_volume_name }}
+{% endif %}

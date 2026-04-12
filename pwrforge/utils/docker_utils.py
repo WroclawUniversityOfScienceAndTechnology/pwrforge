@@ -1,3 +1,4 @@
+import os
 import sys
 from pathlib import Path, PurePosixPath
 from typing import Any, Dict, List
@@ -9,6 +10,37 @@ from pwrforge.config import ProjectConfig
 from pwrforge.logger import get_logger
 
 logger = get_logger()
+
+STM32CUBE_CACHE_DIR = "/home/ubuntu/.cache/pwrforge/stm32cube"
+STM32CUBE_CACHE_VOLUME_NAME = "pwrforge_stm32cube_cache"
+STM32CUBE_IMAGE_CACHE_DIR = "/opt/pwrforge-cache/stm32cube"
+
+
+def get_host_supplementary_group_ids() -> List[str]:
+    """
+    Return host supplementary group IDs as strings.
+
+    Docker bind-mounts host device nodes with their original numeric ownership,
+    so the container process needs the same supplemental groups as the invoking
+    user to access USB serial/debug devices without sudo.
+    """
+
+    if os.name == "nt":
+        return []
+
+    primary_gid = os.getgid()
+    group_ids = {group_id for group_id in os.getgroups() if group_id != primary_gid}
+    return [str(group_id) for group_id in sorted(group_ids)]
+
+
+def get_docker_volumes(project_path: Path, use_stm32_cube_cache: bool = False) -> Dict[str, Dict[str, str]]:
+    volumes = {
+        str(project_path): {"bind": "/workspace/", "mode": "rw"},
+        "/dev/": {"bind": "/dev/", "mode": "rw"},
+    }
+    if use_stm32_cube_cache:
+        volumes[STM32CUBE_CACHE_VOLUME_NAME] = {"bind": STM32CUBE_CACHE_DIR, "mode": "rw"}
+    return volumes
 
 
 def prepare_docker(project_config: ProjectConfig, project_path: Path) -> Dict[str, Any]:
@@ -23,11 +55,12 @@ def prepare_docker(project_config: ProjectConfig, project_path: Path) -> Dict[st
     client = dock.from_env()
 
     return {
-        "project_path": project_path,
         "client": client,
         "path_in_docker": path_in_docker,
         "entrypoint": entrypoint,
         "docker_tag": docker_tag,
+        "group_add": get_host_supplementary_group_ids(),
+        "volumes": get_docker_volumes(project_path, project_config.is_stm32()),
     }
 
 
@@ -57,15 +90,17 @@ def run_command_in_docker(  # type: ignore[no-any-unimported]
     client: DockerClient,
     docker_tag: str,
     entrypoint: str,
-    project_path: Path,
+    group_add: List[str],
+    volumes: Dict[str, Dict[str, str]],
     path_in_docker: PurePosixPath,
 ) -> Dict[str, Any]:
     logger.info(f"Running '{' '.join(command)}' command in docker.")
     container = client.containers.run(
         docker_tag,
         command,
-        volumes=[f"{project_path}:/workspace/", "/dev/:/dev/"],
+        volumes=volumes,
         entrypoint=entrypoint,
+        group_add=group_add,
         privileged=True,
         detach=True,
         working_dir=str(path_in_docker),

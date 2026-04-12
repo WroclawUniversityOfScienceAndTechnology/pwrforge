@@ -117,6 +117,8 @@ def clean(base_dir: Optional[Path] = BASE_DIR_OPTION) -> None:
 
 @cli.command()
 def debug(
+    openocd_only: bool = Option(False, "--openocd", help="Run OpenOCD only."),
+    gdb_only: bool = Option(False, "--gdb", help="Run GDB only."),
     bin_path: Optional[Path] = Option(
         None,
         "--bin",
@@ -137,7 +139,7 @@ def debug(
     """Use gdb cli to debug"""
     if base_dir:
         os.chdir(base_dir)
-    pwrforge_debug(bin_path, target)
+    pwrforge_debug(bin_path, target, openocd_only=openocd_only, gdb_only=gdb_only)
 
 
 ###############################################################################

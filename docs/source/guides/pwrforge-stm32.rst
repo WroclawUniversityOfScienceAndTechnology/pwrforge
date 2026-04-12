@@ -30,6 +30,11 @@ To use it in your cmake libraries please add proper includes in target_link_libr
         bsp
     )
 
+STM32Cube fetch cache
+---------------------
+The devcontainer image preloads the selected STM32Cube family into ``/opt/pwrforge-cache/stm32cube``.
+The runtime cache path ``~/.cache/pwrforge/stm32cube`` is backed by a named Docker volume, so the cache is reused by subsequent builds and is not removed by ``pwrforge clean`` or container recreation.
+
 Generate a certs
 ---------------------
 Generate certs needed by azure base on dev id

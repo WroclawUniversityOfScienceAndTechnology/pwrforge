@@ -159,6 +159,105 @@ def test_update_project_with_docker(tmp_path: Path, fp: FakeProcess) -> None:
     pwrforge_update(Path(PWRFORGE_DEFAULT_CONFIG_FILE))
 
 
+def test_update_project_with_docker_adds_host_groups(
+    tmp_path: Path, fp: FakeProcess, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    os.chdir(tmp_path)
+    pwrforge_new(TEST_PROJECT_NAME, None, None, [pwrforgeTarget.x86], True, False, [])
+    os.chdir(TEST_PROJECT_NAME)
+    called_subprocess_cmd = get_docker_compose_command()
+    called_subprocess_cmd.extend(["pull"])
+    fp.register(called_subprocess_cmd)
+    fp.register(["conan", "profile", "list"])
+    fp.register(["conan", "profile", "detect"])
+    fp.register(["pip", "show", "pwrforge"])
+    monkeypatch.setattr("pwrforge.file_generators.docker_gen.get_host_supplementary_group_ids", lambda: ["20", "46"])
+
+    pwrforge_update(Path(PWRFORGE_DEFAULT_CONFIG_FILE))
+
+    docker_compose_text = Path(".devcontainer/docker-compose.yaml").read_text(encoding="utf-8")
+    dockerfile_text = Path(".devcontainer/Dockerfile").read_text(encoding="utf-8")
+    env_text = Path(".devcontainer/.env").read_text(encoding="utf-8")
+    devcontainer_text = Path(".devcontainer/devcontainer.json").read_text(encoding="utf-8")
+
+    assert "group_add:" in docker_compose_text
+    assert '      - "20"' in docker_compose_text
+    assert '      - "46"' in docker_compose_text
+    assert "USER_NAME:" not in docker_compose_text
+    assert "USER_PASSWORD:" not in docker_compose_text
+    assert "ARG DEV_USER=ubuntu" in dockerfile_text
+    assert 'echo "$DEV_USER ALL=(ALL) NOPASSWD:ALL"' in dockerfile_text
+    assert 'groupadd -g "20" "hostgrp_20"' in dockerfile_text
+    assert 'groupadd -g "46" "hostgrp_46"' in dockerfile_text
+    assert "ARG USER_NAME" not in dockerfile_text
+    assert "ARG USER_PASSWORD" not in dockerfile_text
+    assert "USER_NAME=" not in env_text
+    assert "USER_PASSWORD=" not in env_text
+    assert "UID_NUMBER=" in env_text
+    assert "GID_NUMBER=" in env_text
+    assert '"remoteUser": "ubuntu"' in devcontainer_text
+
+
+def test_update_project_stm32_uses_named_volume_cache(tmp_path: Path, fp: FakeProcess) -> None:
+    os.chdir(tmp_path)
+    pwrforge_new(TEST_PROJECT_NAME, None, None, [pwrforgeTarget.stm32], True, False, [])
+    os.chdir(TEST_PROJECT_NAME)
+    called_subprocess_cmd = get_docker_compose_command()
+    called_subprocess_cmd.extend(["pull"])
+    fp.register(called_subprocess_cmd)
+    fp.register(["conan", "profile", "list"])
+    fp.register(["conan", "profile", "detect"])
+    fp.register(["pip", "show", "pwrforge"])
+
+    pwrforge_update(Path(PWRFORGE_DEFAULT_CONFIG_FILE))
+
+    docker_compose_text = Path(".devcontainer/docker-compose.yaml").read_text(encoding="utf-8")
+    dockerfile_text = Path(".devcontainer/Dockerfile").read_text(encoding="utf-8")
+    openocd_script_text = Path(".devcontainer/openocd-script.cfg").read_text(encoding="utf-8")
+    vscode_tasks_text = Path(".vscode/tasks.json").read_text(encoding="utf-8")
+    toolchain_text = Path("config/conan/profiles/stm32_gcc_toolchain.cmake").read_text(encoding="utf-8")
+
+    assert "pwrforge_stm32cube_cache:/home/ubuntu/.cache/pwrforge/stm32cube" in docker_compose_text
+    assert "name: pwrforge_stm32cube_cache" in docker_compose_text
+    assert '      - "3333:3333"' in docker_compose_text
+    assert '      - "4444:4444"' in docker_compose_text
+    assert '      - "6666:6666"' in docker_compose_text
+    assert "source [find interface/stlink.cfg]" in openocd_script_text
+    assert '"command": "pwrforge"' in vscode_tasks_text
+    assert '"debug"' in vscode_tasks_text
+    assert '"--openocd"' in vscode_tasks_text
+    assert '"command": "pkill"' in vscode_tasks_text
+    assert "https://github.com/STMicroelectronics/STM32CubeL4.git" in dockerfile_text
+    assert "/opt/pwrforge-cache/stm32cube/stm32cubel4-src" in dockerfile_text
+    assert "install -d -m 0775 /home/ubuntu/.cache/pwrforge/stm32cube" in dockerfile_text
+    assert (
+        "chown -R ${DEV_USER}:$GID_NUMBER /home/ubuntu/.cache/pwrforge/stm32cube /opt/pwrforge-cache/stm32cube"
+        in dockerfile_text
+    )
+    assert "ENV HOME=/home/${DEV_USER}" in dockerfile_text
+    assert 'set(FETCHCONTENT_BASE_DIR "$ENV{HOME}/.cache/pwrforge/stm32cube")' in toolchain_text
+    assert (
+        'set(PWRFORGE_STM32_CUBE_SOURCE_DIR "${FETCHCONTENT_BASE_DIR}/stm32cube${STM32_FAMILY_LOWER}-src")'
+        in toolchain_text
+    )
+    assert (
+        'set(PWRFORGE_STM32_CUBE_IMAGE_SOURCE_DIR "/opt/pwrforge-cache/stm32cube/stm32cube${STM32_FAMILY_LOWER}-src")'
+        in toolchain_text
+    )
+    assert 'set("STM32_CUBE_${STM32_FAMILY}_PATH" "${PWRFORGE_STM32_CUBE_SOURCE_DIR}")' in toolchain_text
+    assert (
+        'message(STATUS "Using preloaded stm32 cube for stm32 ${STM32_FAMILY} '
+        'family from ${PWRFORGE_STM32_CUBE_SOURCE_DIR}")' in toolchain_text
+    )
+    assert 'set("STM32_CUBE_${STM32_FAMILY}_PATH" "${PWRFORGE_STM32_CUBE_IMAGE_SOURCE_DIR}")' in toolchain_text
+    assert (
+        'message(STATUS "Using image stm32 cube for stm32 ${STM32_FAMILY} '
+        'family from ${PWRFORGE_STM32_CUBE_IMAGE_SOURCE_DIR}")' in toolchain_text
+    )
+    assert 'set(FETCHCONTENT_BASE_DIR "$ENV{pwrforge_PROJECT_ROOT}/build/.cmake_fetch_cache")' in toolchain_text
+    assert 'set(FETCHCONTENT_BASE_DIR "${CMAKE_SOURCE_DIR}/build/.cmake_fetch_cache")' in toolchain_text
+
+
 def test_update_project_docker_pull_fails(tmp_path: Path, fp: FakeProcess) -> None:
     os.chdir(tmp_path)
     project_name = "test_project_with_docker"

@@ -10,8 +10,16 @@ from pwrforge.file_generators.base_gen import create_file_from_template
 from pwrforge.global_values import PWRFORGE_PKG_PATH
 from pwrforge.logger import get_logger
 from pwrforge.target_helpers import atsam_helper, stm32_helper
+from pwrforge.utils.docker_utils import (
+    STM32CUBE_CACHE_DIR,
+    STM32CUBE_CACHE_VOLUME_NAME,
+    STM32CUBE_IMAGE_CACHE_DIR,
+    get_host_supplementary_group_ids,
+)
 
 logger = get_logger()
+
+OPENOCD_PORT_MAPPINGS = ("3333:3333", "4444:4444", "6666:6666")
 
 
 class _DockerComposeTemplate:
@@ -56,7 +64,11 @@ class _DockerComposeTemplate:
             "docker-compose.yaml",
             template_params={
                 "config": self._config,
+                "docker_port_mappings": self._get_docker_port_mappings(),
                 "pwrforge_path": pwrforge_path,
+                "supplementary_group_ids": get_host_supplementary_group_ids(),
+                "stm32_cube_cache_dir": STM32CUBE_CACHE_DIR,
+                "stm32_cube_cache_volume_name": STM32CUBE_CACHE_VOLUME_NAME,
             },
         )
         self._create_file_from_template(
@@ -79,6 +91,10 @@ class _DockerComposeTemplate:
                 "project": self._config.project,
                 "pwrforge_package_version": pwrforge_package_version,
                 "custom_docker": custom_docker,
+                "supplementary_group_ids": get_host_supplementary_group_ids(),
+                "stm32_cube_cache_dir": STM32CUBE_CACHE_DIR,
+                "stm32_cube_image_cache_dir": STM32CUBE_IMAGE_CACHE_DIR,
+                "stm32_cube_family": self._get_stm32_cube_family(),
             },
         )
 
@@ -111,6 +127,27 @@ class _DockerComposeTemplate:
             shutil.copy(whl_path, self.docker_path)
             return whl_path.name
         return f"pwrforge=={__version__}"
+
+    def _get_stm32_cube_family(self) -> str:
+        if not self._config.project.is_stm32():
+            return ""
+        return self._config.get_stm32_config().chip[5:7].upper()
+
+    def _get_docker_port_mappings(self) -> list[str]:
+        docker_ports = list(self._config.docker_compose.ports)
+        if self._config.project.is_stm32() or self._config.project.is_atsam() or self._config.project.is_esp32():
+            for openocd_port_mapping in OPENOCD_PORT_MAPPINGS:
+                container_port = openocd_port_mapping.rsplit(":", maxsplit=1)[-1]
+                if not any(
+                    port_mapping.split("/")[-1].split(":")[-1] == container_port for port_mapping in docker_ports
+                ):
+                    docker_ports.append(openocd_port_mapping)
+
+        unique_ports: list[str] = []
+        for port_mapping in docker_ports:
+            if port_mapping not in unique_ports:
+                unique_ports.append(port_mapping)
+        return unique_ports
 
 
 def generate_docker_compose(docker_path: Path, config: Config) -> None:

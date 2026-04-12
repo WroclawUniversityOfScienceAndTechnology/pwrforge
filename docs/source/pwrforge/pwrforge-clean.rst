@@ -15,7 +15,7 @@ Usage
 Description
 ^^^^^^^^^^^
 
-Clean build directory. Keeps cmake fetched content in build/.cmake_fetch_cache.
+Clean build directory. Keeps the project-local ``build/.cmake_fetch_cache`` directory and does not touch user cache locations such as ``~/.cache/pwrforge/stm32cube``.
 
 Options
 ^^^^^^^

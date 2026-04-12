@@ -20,11 +20,10 @@ WORKDIR /opt
 
 FROM cpp AS pwrforge
 
-ARG USER_NAME
-ARG USER_PASSWORD
 ARG UID_NUMBER
 ARG GID_NUMBER
 ARG SSH_PORT
+ARG DEV_USER=ubuntu
 
 ARG CONAN_USERNAME
 ARG CONAN_PASS_KEY
@@ -40,18 +39,30 @@ RUN apt install -y openssh-server && \
 
 EXPOSE $SSH_PORT
 
-RUN printf "\n\nADDING USER $USER_NAME TO SUDOERS - DEV ENV ONLY!\n\n" >&2 && \
+RUN printf "\n\nCONFIGURING USER $DEV_USER - DEV ENV ONLY!\n\n" >&2 && \
     apt -y install sudo && \
-    groupadd $USER_NAME -g $GID_NUMBER; \
-    useradd -m -s /bin/bash -N -u $UID_NUMBER $USER_NAME -g $GID_NUMBER && \
-    echo "$USER_NAME:$USER_PASSWORD" | chpasswd && \
-    echo "$USER_NAME ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+    if ! getent group "$GID_NUMBER" >/dev/null; then \
+        if getent group "$DEV_USER" >/dev/null; then \
+            groupmod -g "$GID_NUMBER" "$DEV_USER"; \
+        else \
+            groupadd -g "$GID_NUMBER" "$DEV_USER"; \
+        fi; \
+    fi && \
+    if ! id -u "$DEV_USER" >/dev/null 2>&1; then \
+        useradd -m -s /bin/bash -N -o -u "$UID_NUMBER" -g "$GID_NUMBER" "$DEV_USER"; \
+    else \
+        usermod -o -u "$UID_NUMBER" -g "$GID_NUMBER" "$DEV_USER"; \
+    fi && \
+    mkdir -p /etc/sudoers.d && \
+    echo "$DEV_USER ALL=(ALL) NOPASSWD:ALL" > "/etc/sudoers.d/90-$DEV_USER" && \
+    chmod 0440 "/etc/sudoers.d/90-$DEV_USER" && \
+    passwd -d "$DEV_USER" || true
 
 # install pwrforge from pwr rep (temporarly before pip repo will be available)
 COPY requirements.txt requirements.txt
 RUN pip3 install -r requirements.txt && \
     rm requirements.txt
 
-RUN usermod -a -G dialout ${USER_NAME}
-USER ${USER_NAME}
+RUN usermod -a -G dialout ${DEV_USER}
+USER ${DEV_USER}
 WORKDIR /repo
