@@ -187,6 +187,8 @@ def test_update_project_with_docker_adds_host_groups(
     assert "USER_PASSWORD:" not in docker_compose_text
     assert "ARG DEV_USER=ubuntu" in dockerfile_text
     assert 'echo "$DEV_USER ALL=(ALL) NOPASSWD:ALL"' in dockerfile_text
+    assert 'groupadd -g "20" "hostgrp_20"' in dockerfile_text
+    assert 'groupadd -g "46" "hostgrp_46"' in dockerfile_text
     assert "ARG USER_NAME" not in dockerfile_text
     assert "ARG USER_PASSWORD" not in dockerfile_text
     assert "USER_NAME=" not in env_text

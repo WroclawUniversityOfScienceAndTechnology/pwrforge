@@ -81,6 +81,7 @@ class _DockerComposeTemplate:
                 "project": self._config.project,
                 "pwrforge_package_version": pwrforge_package_version,
                 "custom_docker": custom_docker,
+                "supplementary_group_ids": get_host_supplementary_group_ids(),
             },
         )
 

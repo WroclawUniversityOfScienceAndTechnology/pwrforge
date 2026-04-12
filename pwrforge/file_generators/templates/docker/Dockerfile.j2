@@ -81,6 +81,11 @@ RUN printf "\n\nCONFIGURING USER $DEV_USER - DEV ENV ONLY!\n\n" >&2 && \
     echo "$DEV_USER ALL=(ALL) NOPASSWD:ALL" > "/etc/sudoers.d/90-$DEV_USER" && \
     chmod 0440 "/etc/sudoers.d/90-$DEV_USER" && \
     passwd -d "$DEV_USER" || true
+{% for group_id in supplementary_group_ids %}
+RUN if ! getent group "{{ group_id }}" >/dev/null; then \
+        groupadd -g "{{ group_id }}" "hostgrp_{{ group_id }}"; \
+    fi
+{% endfor %}
 
 COPY requirements.txt requirements.txt
 RUN python3 -m venv /opt/venv && \
