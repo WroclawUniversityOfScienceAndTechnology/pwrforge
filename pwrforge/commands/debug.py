@@ -62,6 +62,7 @@ def _restore_default_sigint() -> None:
     signal.signal(signal.SIGINT, signal.SIG_DFL)
 
 
+# pylint: disable=consider-using-with,subprocess-popen-preexec-fn
 def _run_interactive_command(command: Sequence[str], check: bool) -> None:
     with _preserve_terminal_state():
         if platform.system() == "Windows":
@@ -71,7 +72,7 @@ def _run_interactive_command(command: Sequence[str], check: bool) -> None:
         previous_sigint_handler = signal.getsignal(signal.SIGINT)
         try:
             signal.signal(signal.SIGINT, signal.SIG_IGN)
-            process = subprocess.Popen(  # pylint: disable=consider-using-with,subprocess-popen-preexec-fn
+            process = subprocess.Popen(
                 command,
                 preexec_fn=_restore_default_sigint,
             )
