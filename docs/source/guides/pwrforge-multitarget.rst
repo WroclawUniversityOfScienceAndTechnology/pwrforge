@@ -6,7 +6,7 @@ Multitarget support in pwrforge
 Creating a project
 ------------------
 With pwrforge you are able to create multitarget project by specifying --target option multiple times.
-For [atsam, esp32, stm32] targets if --chip option is not specified, default chip will be used. It's
+For [atsam, esp32, pic18, stm32] targets if --chip option is not specified, default chip will be used. It's
 also possible to specify --chip option instead (or with) --target option to specify the chip for each target.
 
 Let's say we want to create a project for atsam and stm32 targets. We can do it by running the following command:

@@ -8,4 +8,5 @@ Guides
    pwrforge with ESP32 project <pwrforge-esp32>
    pwrforge with STM32 project <pwrforge-stm32>
    pwrforge with Atmel SAM series project <pwrforge-atsam>
+   pwrforge with PIC18 project <pwrforge-pic18>
    pwrforge with multitarget project <pwrforge-multitarget>

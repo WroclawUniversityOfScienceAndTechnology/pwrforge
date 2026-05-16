@@ -18,7 +18,7 @@ This section describes possible options which can be set in the pwrforge.toml fi
 
 **homepage-url** = (string) <project www as url e.g. "https://example.com">
 
-**target** = (string or list of targets) <target to build the project e.g. "esp32", "x86" or ["atsam", "stm32"]>
+**target** = (string or list of targets) <target to build the project e.g. "esp32", "pic18", "x86" or ["atsam", "stm32"]>
 
 **build-env** = (string) <"docker" or "native">
 
@@ -171,6 +171,12 @@ key-value pairs of short names and conan remote urls, e.g.
 **chip** = (string)(e.g. ATSAML10E16A)
 
 **cpu** = (string)(e.g. cortex-m23)
+
+[pic18]
+-------------------------
+(Applicable for PIC18 only)
+
+**chip** = (string)(e.g. PIC18F4580)
 
 [pwrforge]
 ----------

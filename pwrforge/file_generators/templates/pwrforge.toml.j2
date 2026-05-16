@@ -142,6 +142,11 @@ chip = "{{ stm32_config.chip|upper }}"
 flash-start = 0x{{ "%08x" % stm32_config.flash_start }}
 
 {% endif %}
+{% if pic18_config %}
+[pic18]
+chip = "{{ pic18_config.chip|upper }}"
+
+{% endif %}
 {% if atsam_config %}
 [atsam]
 chip = "{{ atsam_config.chip }}"

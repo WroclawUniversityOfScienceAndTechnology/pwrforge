@@ -33,7 +33,7 @@ Flash base on previously built profile  [default: Debug]
 
 ::
 
--t, --target [atsam|esp32|stm32|x86]
+-t, --target [atsam|esp32|pic18|stm32|x86]
 
 Flash specified target. Releavant only for multitarget projects.
 

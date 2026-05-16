@@ -1,0 +1,7 @@
+{% if config.project.bin_name %}
+add_executable(${PROJECT_NAME}
+  ${CMAKE_CURRENT_SOURCE_DIR}/{{ config.project.bin_name|lower }}.{{ config.project.bin_source_extension }}
+)
+{% elif config.project.lib_name %}
+message(FATAL_ERROR "PIC18 target currently supports generated binary projects only.")
+{% endif %}

@@ -10,11 +10,22 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 if(NOT DEFINED ENV{pwrforge_BUILD_TARGET})
     set(ENV{pwrforge_BUILD_TARGET} "ESP32")
 endif()
+string(TOLOWER "$ENV{pwrforge_BUILD_TARGET}" pwrforge_BUILD_TARGET_LOWER)
 
 {# This could be put in profile or toolchain if we were able to resolve issues with esp32 toolchain not loading #}
-# Add definiton [ATSAM, ESP32, STM32, X86] depending on current build target
+# Add definiton [ATSAM, ESP32, PIC18, STM32, X86] depending on current build target
 string(TOUPPER $ENV{pwrforge_BUILD_TARGET} pwrforge_BUILD_TARGET)
 add_definitions(-D${pwrforge_BUILD_TARGET})
+
+{% if config.project.is_pic18() %}
+if("${pwrforge_BUILD_TARGET_LOWER}" STREQUAL "pic18")
+  set(pwrforge_PROJECT_LANGUAGES C)
+else()
+  set(pwrforge_PROJECT_LANGUAGES C CXX ASM)
+endif()
+{% else %}
+set(pwrforge_PROJECT_LANGUAGES C CXX ASM)
+{% endif %}
 
 {% if config.project.is_esp32()  %}
 string(FIND "${pwrforge_BUILD_TARGET}" "ESP32" position)
@@ -42,7 +53,7 @@ project(
   {% if config.project.homepage_url %}
   HOMEPAGE_URL "{{ config.project.homepage_url }}"
   {% endif %}
-  LANGUAGES C CXX ASM)
+  LANGUAGES ${pwrforge_PROJECT_LANGUAGES})
 
 {% for key, value in config.project.cmake_variables.items() %}
 set({{ key }} "{{ value }}")
@@ -59,8 +70,7 @@ endif()
     {% endif %}
 {% endfor -%}
 
-if(NOT ${pwrforge_BUILD_TARGET} STREQUAL ESP32)
+if(NOT "${pwrforge_BUILD_TARGET}" STREQUAL "ESP32")
   set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
   add_subdirectory({{ config.source_dir_path.relative_to(config.project_root) }})
 endif()
-

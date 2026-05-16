@@ -37,6 +37,12 @@ FROM {{ previous_base }} AS atsam
 {% include 'docker/Dockerfile-arm.j2' %}
 {% endif %}
 
+{% if project.is_pic18() %}
+FROM {{ previous_base }} AS pic18
+{% set previous_base = 'pic18' %}
+{% include 'docker/Dockerfile-pic18.j2' %}
+{% endif %}
+
 WORKDIR /opt
 
 FROM {{ previous_base }} AS custom_{{ project.name }}

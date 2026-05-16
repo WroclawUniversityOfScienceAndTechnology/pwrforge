@@ -17,7 +17,7 @@ endif()
 
 {% if  config.project.bin_name %}
 add_executable(${PROJECT_NAME}
-     {{ config.project.bin_name|lower }}.cpp
+     {{ config.project.bin_name|lower }}.{{ config.project.bin_source_extension }}
 )
 {% elif config.project.lib_name%}
 add_library(${PROJECT_NAME} STATIC

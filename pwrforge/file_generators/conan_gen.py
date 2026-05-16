@@ -38,6 +38,14 @@ def generate_conanprofile(config: Config) -> None:
             config=config,
         )
 
+    if config.project.is_pic18():
+        create_file_from_template(
+            "conan/toolchain/pic18_sdcc_toolchain.cmake.j2",
+            "config/conan/profiles/pic18_sdcc_toolchain.cmake",
+            template_params={"config": config},
+            config=config,
+        )
+
     for target in config.project.target:
         for profile in profiles:
             profile_name = target.get_conan_profile_name(profile)

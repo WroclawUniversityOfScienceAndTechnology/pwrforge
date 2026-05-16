@@ -20,7 +20,7 @@ find_file(
 
 {% if  config.project.bin_name %}
 add_executable(${PROJECT_NAME}
-  {{ config.project.bin_name|lower }}.cpp
+  {{ config.project.bin_name|lower }}.{{ config.project.bin_source_extension }}
   ${STARTUP_SRC}
   ${SYSTEM_SRC}
 )

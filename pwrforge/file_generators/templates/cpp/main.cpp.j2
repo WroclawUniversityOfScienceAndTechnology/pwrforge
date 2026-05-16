@@ -1,3 +1,52 @@
+{% if project.is_pic18() %}
+#if defined(X86)
+#include <stdio.h>
+#endif
+
+#if defined(ATSAM)
+#include <sam.h>
+#endif
+
+#if defined(ESP32)
+#include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
+#include <esp_log.h>
+#endif
+
+#if defined(ESP32)
+void app_main(void)  /* NOLINT(readability-identifier-naming): name required by freertos */
+{
+    for (;;)
+    {
+        vTaskDelay(pdMS_TO_TICKS(50));
+    }
+}
+#elif defined(PIC18)
+void main(void)
+{
+    while (1)
+    {
+    }
+}
+#else
+/**
+ * @brief This is example function doc
+ *
+ * @return int 0 if all good
+ */
+int main(void)
+{
+#if defined(X86)
+    printf("Hello World!\n");
+#else
+    while (1)
+    {
+    }
+#endif
+    return 0;
+}
+#endif
+{% else %}
 {% if project.is_x86() %}
 #include <cstdio>
 {% endif %}
@@ -43,4 +92,5 @@ int main()
     {% endif %}
     return 0;
 }
+{% endif %}
 {% endif %}

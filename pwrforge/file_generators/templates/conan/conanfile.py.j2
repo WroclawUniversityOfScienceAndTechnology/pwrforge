@@ -43,7 +43,7 @@ class {{ config.project.name|capitalize|replace("-", "") }}Conan(ConanFile):  # 
     {% if config.project.is_atsam() %}
         self._source_atsam()
     {% endif %}
-    {% if config.project.is_x86() or config.project.is_esp32() %}
+    {% if config.project.is_x86() or config.project.is_esp32() or config.project.is_pic18() %}
         pass
     {% endif %}
 
@@ -62,6 +62,7 @@ class {{ config.project.name|capitalize|replace("-", "") }}Conan(ConanFile):  # 
     {% else %}
         copy("*.bin")
         copy("*.elf")
+        copy("*.hex")
     {% endif %}
     {% if config.project.lib_name %}
     def package_info(self) -> None:

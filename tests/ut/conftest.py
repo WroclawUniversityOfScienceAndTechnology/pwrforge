@@ -91,6 +91,7 @@ def config(fs: FakeFilesystem) -> Config:
         atsam=None,
         stm32=None,
         esp32=None,
+        pic18=None,
         pwrforge=pwrforgeConfig(  # type: ignore
             console_log_level="INFO",
             file_log_level="WARNING",

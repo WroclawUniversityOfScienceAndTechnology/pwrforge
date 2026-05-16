@@ -1,0 +1,91 @@
+[project]
+name = "pic18proj"
+version = "0.1.0"
+description = "Project description."
+homepage-url = "www.hello-world.com"
+
+bin_name = "pic18proj"
+target = "pic18"
+build-env = "native"
+docker-file = ".devcontainer/Dockerfile-custom"
+docker-image-tag = "pic18proj-dev:1.0"
+
+cxxstandard = "17"
+
+cflags   = "-Wall -Wextra"
+cxxflags = "-Wall -Wextra"
+
+in-repo-conan-cache = false
+
+[profile.Debug]
+cflags   = "-g"
+cxxflags = "-g"
+
+[profile.Release]
+cflags   = "-O3 -DNDEBUG"
+cxxflags = "-O3 -DNDEBUG"
+
+[profile.RelWithDebInfo]
+cflags   = "-O2 -g -DNDEBUG"
+cxxflags = "-O2 -g -DNDEBUG"
+
+[profile.MinSizeRel]
+cflags   = "-Os -DNDEBUG"
+cxxflags = "-Os -DNDEBUG"
+
+[check]
+exclude = []
+
+[check.pragma]
+exclude = []
+
+[check.copyright]
+description = "Copyright"
+exclude = []
+
+[check.todo]
+keywords = ["tbd", "todo", "TODO", "fixme"]
+exclude = []
+
+[check.cppcheck]
+directories = []
+suppress = []
+
+[check.clang-format]
+exclude = []
+
+[check.clang-tidy]
+exclude = []
+
+[check.cyclomatic]
+exclude = []
+
+[tests]
+cc  = "gcc"
+cxx = "g++"
+
+cflags   = "-Wall -Wextra -Og --coverage -fkeep-inline-functions -fkeep-static-consts"
+cxxflags = "-Wall -Wextra -Og --coverage -fkeep-inline-functions -fkeep-static-consts"
+
+gcov-executable = ""
+
+[dependencies]
+general = []
+build = []
+tool = []
+test = [
+    "gtest/1.13.0"
+]
+
+[conan.repo]
+
+[pic18]
+chip = "PIC18F4580"
+
+[pwrforge]
+console-log-level = "INFO"
+file-log-level = "WARNING"
+update-exclude = []
+
+[docker-compose]
+ports = []

@@ -20,6 +20,7 @@ from pwrforge.global_values import (
 from pwrforge.logger import get_logger
 from pwrforge.target_helpers.atsam_helper import create_atsam_config
 from pwrforge.target_helpers.esp32_helper import create_esp32_config
+from pwrforge.target_helpers.pic18_helper import create_pic18_config
 from pwrforge.target_helpers.stm32_helper import create_stm32_config
 
 logger = get_logger()
@@ -111,9 +112,10 @@ def pwrforge_new(
         sys.exit(1)
 
     build_env = get_build_env(create_docker)
-    targets_ids = ", ".join([f'"{t.name}"' for t in targets])
-    if len(targets_ids) > 1:
-        targets_ids = f"[{targets_ids}]"
+    target_id_values = [f'"{t.name}"' for t in targets]
+    targets_ids = target_id_values[0]
+    if len(target_id_values) > 1:
+        targets_ids = f"[{', '.join(target_id_values)}]"
 
     toml_path = project_dir / PWRFORGE_DEFAULT_CONFIG_FILE
     generate_toml(
@@ -130,6 +132,7 @@ def pwrforge_new(
         header_extensions=PWRFORGE_HEADER_EXTENSIONS_DEFAULT,
         atsam_config=create_atsam_config(targets_chips.get("atsam")),
         esp32_config=create_esp32_config(targets_chips.get("esp32")),
+        pic18_config=create_pic18_config(targets_chips.get("pic18")),
         stm32_config=create_stm32_config(targets_chips.get("stm32")),
     )
 

@@ -29,7 +29,7 @@ If this option is not used, then the default profile is Debug.
 
 ::
 
--t, --target [atsam|esp32|stm32|x86]
+-t, --target [atsam|esp32|pic18|stm32|x86]
 
 Build project for specified target. Releavant only for multitarget projects.
 

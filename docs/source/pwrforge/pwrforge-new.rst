@@ -25,22 +25,24 @@ Options
 
 
 ::
-Creates binary target template project with "[BIN_NAME].cpp" in directory "src".
+Creates binary target template project with "[BIN_NAME].cpp" in directory "src" (or "[BIN_NAME].c" for PIC18).
 
     --lib LIB_NAME
 
 Creates library target template project file "[LIB_NAME].cpp" in directory "src"
 and "[LIB_NAME].h" in directory "include".
+Generated PIC18 support is intended for binary firmware projects.
 
 ::
 
-    -t, --target [atsam|esp32|stm32|x86]           [default: x86]
+    -t, --target [atsam|esp32|pic18|stm32|x86]           [default: x86]
 
 
 Chose the target on which you would like to build and manage the project.
  - ESP32 support: Presently following models are supported 'esp32'. Specify chip using --chip or use default (esp32).
  - STM32 support: Specify chip using --chip or use default (STM32L496AG).
  - Atmel SAM series support: Presently pwrforge supports Atmel SAM series. Specify chip using --chip or use default (ATSAML10E16A).
+ - PIC18 support: Presently pwrforge supports SDCC based PIC18 builds. Specify chip using --chip or use default (PIC18F4580).
 
 
 This options can be specified multiple times to create mulittarget project.
@@ -56,6 +58,7 @@ Defaults:
 * esp32: esp32
 * stm32: STM32L496AG
 * atsam: ATSAML10E16A
+* pic18: PIC18F4580
 
 ::
 

@@ -300,6 +300,9 @@ class ClangTidyChecker(CheckerFixer):
             cmd = self.__get_cmd_esp32(file_path)
         elif self._config.project.is_stm32() or self._config.project.is_atsam():
             cmd = self.__get_cmd_arm(file_path)
+        elif self._config.project.is_pic18():
+            logger.warning("clang-tidy is not supported for PIC18/SDCC targets yet.")
+            return CheckResult(0, fix=False)
         elif self._config.project.is_x86():
             cmd = self.__get_cmd_x86(file_path)
 

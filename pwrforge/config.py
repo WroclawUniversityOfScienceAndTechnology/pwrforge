@@ -11,6 +11,7 @@ from pwrforge.global_values import PWRFORGE_DEFAULT_BUILD_ENV, PWRFORGE_DOCKER_E
 class pwrforgeTarget(Enum):
     atsam = "atsam"
     esp32 = "esp32"
+    pic18 = "pic18"
     stm32 = "stm32"
     x86 = "x86"
 
@@ -29,6 +30,7 @@ CHIP_DEFAULTS = {
     "x86": "",
     "esp32": "esp32",
     "atsam": "ATSAML10E16A",
+    "pic18": "PIC18F4580",
     "stm32": "STM32L496AG",
 }
 
@@ -58,6 +60,7 @@ class Config(BaseModel):
     atsam: Optional["ATSAMConfig"]
     stm32: Optional["Stm32Config"]
     esp32: Optional["Esp32Config"]
+    pic18: Optional["Pic18Config"]
     pwrforge: "pwrforgeConfig" = Field(default_factory=lambda: pwrforgeConfig())  # pylint: disable=unnecessary-lambda
     docker_compose: "DockerComposeConfig" = Field(
         default_factory=lambda: DockerComposeConfig(),  # pylint: disable=unnecessary-lambda
@@ -93,6 +96,11 @@ class Config(BaseModel):
             raise ConfigError("No [esp32] section in config")
         return self.esp32
 
+    def get_pic18_config(self) -> "Pic18Config":
+        if not self.pic18:
+            raise ConfigError("No [pic18] section in config")
+        return self.pic18
+
     @root_validator(skip_on_failure=True)
     def validate_special_configs(cls, values: Dict[str, Any]) -> Dict[str, Any]:  # pylint: disable=no-self-argument
         if "project" in values:
@@ -101,6 +109,7 @@ class Config(BaseModel):
                 pwrforgeTarget.stm32.value,
                 pwrforgeTarget.esp32.value,
                 pwrforgeTarget.atsam.value,
+                pwrforgeTarget.pic18.value,
             ]
             for target in targets_for_validation:
                 if target in target_id and not values.get(target):
@@ -178,8 +187,15 @@ class ProjectConfig(BaseModel):
     def is_atsam(self) -> bool:
         return "atsam" in self.target_id  # pylint: disable=unsupported-membership-test
 
+    def is_pic18(self) -> bool:
+        return "pic18" in self.target_id  # pylint: disable=unsupported-membership-test
+
     def is_multitarget(self) -> bool:
         return isinstance(self.target_id, list) and len(self.target_id) > 1
+
+    @property
+    def bin_source_extension(self) -> str:
+        return "c" if self.is_pic18() else "cpp"
 
 
 class Target(BaseModel):
@@ -226,6 +242,7 @@ TARGETS = {
     pwrforgeTarget.stm32.value: Target(id=pwrforgeTarget.stm32.value, elf_file_extension=".elf"),
     pwrforgeTarget.esp32.value: Target(id=pwrforgeTarget.esp32.value, elf_file_extension=".elf"),
     pwrforgeTarget.atsam.value: Target(id=pwrforgeTarget.atsam.value, elf_file_extension=""),
+    pwrforgeTarget.pic18.value: Target(id=pwrforgeTarget.pic18.value, elf_file_extension=".hex"),
 }
 
 
@@ -334,6 +351,14 @@ class Esp32Config(BaseModel):
     partitions: List[str] = Field(default=ESP32_DEFAULT_PARTITIONS)
 
 
+class Pic18Config(BaseModel):
+    chip: str = Field(default=CHIP_DEFAULTS.get("pic18"))
+
+    @property
+    def sdcc_processor(self) -> str:
+        return self.chip.lower().removeprefix("pic")
+
+
 class pwrforgeConfig(BaseModel):
     console_log_level: str = Field(default="INFO", alias="console-log-level")
     file_log_level: str = Field(default="ERROR", alias="file-log-level")
@@ -352,6 +377,7 @@ FixesConfig.update_forward_refs()
 FixConfig.update_forward_refs()
 Stm32Config.update_forward_refs()
 Esp32Config.update_forward_refs()
+Pic18Config.update_forward_refs()
 LicenseCheckConfig.update_forward_refs()
 
 

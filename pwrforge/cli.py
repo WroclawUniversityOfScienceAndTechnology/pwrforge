@@ -381,7 +381,7 @@ def new(
         "-c",
         "--chip",
         help="Specify full chip label for a target (Uses default if not specified)",
-        metavar="[stm32...|atsam...|esp32...]",
+        metavar="[stm32...|atsam...|esp32...|pic18...]",
         prompt=True,
         prompt_required=False,
     ),

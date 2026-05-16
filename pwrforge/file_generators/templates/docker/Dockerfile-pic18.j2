@@ -1,0 +1,7 @@
+WORKDIR /opt/
+
+RUN apt-get update -q -y && \
+    apt-get install -y --no-install-recommends sdcc sdcc-libraries gputils && \
+    rm -rf /var/lib/apt/lists/*
+
+ENV LC_ALL=C

@@ -16,7 +16,7 @@ class _CppTemplateGen:
         """Function which creates main.cpp file using jinja"""
         self._create_file_from_template(
             "cpp/main.cpp.j2",
-            f"{bin_name.lower()}.cpp",
+            f"{bin_name.lower()}.{self._config.project.bin_source_extension}",
             template_params={
                 "project": self._config.project,
                 "bin_name": bin_name,

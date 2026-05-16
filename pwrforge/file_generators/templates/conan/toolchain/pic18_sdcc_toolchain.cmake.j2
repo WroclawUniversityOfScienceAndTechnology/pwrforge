@@ -1,0 +1,38 @@
+set(CMAKE_SYSTEM_NAME Generic)
+set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
+
+set(PIC18_CHIP "$ENV{PIC18_CHIP}" CACHE STRING "PIC18 chip selected for the build")
+set(PIC18_SDCC_PROCESSOR "$ENV{PIC18_SDCC_PROCESSOR}" CACHE STRING "SDCC PIC processor selected for the build")
+
+if(NOT PIC18_CHIP)
+  set(PIC18_CHIP "{{ config.pic18.chip|lower }}" CACHE STRING "PIC18 chip selected for the build" FORCE)
+endif()
+
+if(NOT PIC18_SDCC_PROCESSOR)
+  string(TOLOWER "${PIC18_CHIP}" PIC18_CHIP_LOWER)
+  string(REGEX REPLACE "^pic" "" PIC18_SDCC_PROCESSOR "${PIC18_CHIP_LOWER}")
+endif()
+
+find_program(PIC18_SDCC sdcc REQUIRED)
+find_program(PIC18_GPLINK gplink)
+find_program(PIC18_GPLIB gplib)
+
+set(CMAKE_C_COMPILER ${PIC18_SDCC})
+set(CMAKE_C_COMPILER_WORKS TRUE)
+
+if(PIC18_GPLINK)
+  set(CMAKE_LINKER ${PIC18_GPLINK})
+endif()
+
+if(PIC18_GPLIB)
+  set(CMAKE_AR ${PIC18_GPLIB})
+endif()
+
+set(CMAKE_EXECUTABLE_SUFFIX ".hex")
+
+set(PIC18_SDCC_FLAGS -mpic16 -p${PIC18_SDCC_PROCESSOR})
+set(CMAKE_C_FLAGS_INIT "-mpic16 -p${PIC18_SDCC_PROCESSOR}")
+set(CMAKE_EXE_LINKER_FLAGS_INIT "-mpic16 -p${PIC18_SDCC_PROCESSOR}")
+
+add_compile_options(${PIC18_SDCC_FLAGS})
+add_link_options(${PIC18_SDCC_FLAGS})

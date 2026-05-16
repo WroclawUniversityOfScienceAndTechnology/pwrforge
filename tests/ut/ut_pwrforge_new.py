@@ -33,6 +33,30 @@ def test_src_content(tmpdir: Path) -> None:
     assert os.path.exists(f"test_project/src/{project_name}.cpp")
 
 
+def test_pic18_project_content(tmpdir: Path) -> None:
+    os.chdir(tmpdir)
+    project_name = "test_project"
+
+    pwrforge_new(project_name, None, None, [pwrforgeTarget.pic18], False, False, [])
+
+    toml_content = Path("test_project/pwrforge.toml").read_text(encoding="utf-8")
+    assert 'target = "pic18"' in toml_content
+    assert "[pic18]" in toml_content
+    assert 'chip = "PIC18F4580"' in toml_content
+    assert os.path.exists(f"test_project/src/{project_name}.c")
+    assert not os.path.exists(f"test_project/src/{project_name}.cpp")
+
+
+def test_pic18_project_from_chip(tmpdir: Path) -> None:
+    os.chdir(tmpdir)
+
+    pwrforge_new("test_project", None, None, [], False, False, ["PIC18F4580"])
+
+    toml_content = Path("test_project/pwrforge.toml").read_text(encoding="utf-8")
+    assert 'target = "pic18"' in toml_content
+    assert 'chip = "PIC18F4580"' in toml_content
+
+
 def test_test_content_dir(tmpdir: Path) -> None:
     list_of_expecting_dir = ["it", "mocks", "ut"]
     os.chdir(tmpdir)
