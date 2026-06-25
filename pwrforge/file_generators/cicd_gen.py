@@ -1,16 +1,21 @@
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any, Dict, Protocol
 
 import yaml
 
-from pwrforge.config import Config
+from pwrforge.config import Config, pwrforgeCi
 from pwrforge.file_generators.base_gen import create_file_from_template
 from pwrforge.logger import get_logger
 
 logger = get_logger()
 
 
-class _CicdTemplate:
+class _CicdTemplate(Protocol):
+    def generate_cicd_env(self) -> None:
+        ...
+
+
+class _GitlabCicdTemplate:
     """
     This class is a container for cicd yaml files creation with multilayer approach
     """
@@ -103,11 +108,61 @@ class _CicdTemplate:
         self._generate_custom_cicd(custom_cicd)
 
 
+class _GithubCicdTemplate:
+    """Generate GitHub Actions workflow files."""
+
+    def __init__(self, config: Config):
+        self._config = config
+
+    def generate_cicd_env(self) -> None:
+        """Generate dirs and files"""
+        create_file_from_template(
+            "github/workflows/workflow-common.yml.j2",
+            ".github/workflows/workflow-common.yml",
+            template_params={},
+            config=self._config,
+        )
+
+        create_file_from_template(
+            "github/workflows/pr.yml.j2",
+            ".github/workflows/pr.yml",
+            template_params={},
+            config=self._config,
+        )
+
+        create_file_from_template(
+            "github/workflows/daily_tests.yml.j2",
+            ".github/workflows/daily_tests.yml",
+            template_params={},
+            config=self._config,
+        )
+
+        create_file_from_template(
+            "github/workflows/release.yml.j2",
+            ".github/workflows/release.yml",
+            template_params={},
+            config=self._config,
+        )
+
+        create_file_from_template(
+            "setup.sh.j2",
+            "setup.sh",
+            template_params={
+                "project": self._config.project,
+            },
+            config=self._config,
+        )
+
+
 def generate_cicd(config: Config) -> None:
     """Generate cicd file with custom user layer
 
     Args:
         config (Config): target configuration
     """
-    cicd_template = _CicdTemplate(config)
+    cicd_template: _CicdTemplate
+    if config.project.ci == pwrforgeCi.github:
+        cicd_template = _GithubCicdTemplate(config)
+    else:
+        cicd_template = _GitlabCicdTemplate(config)
     cicd_template.generate_cicd_env()

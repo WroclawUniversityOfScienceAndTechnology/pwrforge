@@ -1,0 +1,18 @@
+{% raw -%}
+name: pull request ci
+
+on:
+  pull_request:
+    branches:
+      - develop
+      - master
+      - main
+      - 'releases/**'
+
+permissions:
+  contents: read
+
+jobs:
+  call-workflow:
+    uses: ./.github/workflows/workflow-common.yml
+{% endraw -%}

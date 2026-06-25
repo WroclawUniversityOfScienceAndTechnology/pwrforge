@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Dict, List, Optional
 
 from pwrforge import __version__
-from pwrforge.config import CHIP_DEFAULTS, TARGETS, Target, pwrforgeTarget
+from pwrforge.config import CHIP_DEFAULTS, TARGETS, Target, pwrforgeCi, pwrforgeTarget
 from pwrforge.config_utils import get_pwrforge_config_or_exit
 from pwrforge.file_generators.cpp_gen import generate_cpp
 from pwrforge.file_generators.toml_gen import generate_toml
@@ -55,6 +55,7 @@ def process_chips(chips: List[str], targets: List[pwrforgeTarget]) -> Dict[str, 
     return targets_chips
 
 
+# pylint: disable=too-many-locals
 def pwrforge_new(
     name: str,
     bin_name: Optional[str],
@@ -63,6 +64,7 @@ def pwrforge_new(
     create_docker: bool,
     git: bool,
     chip: List[str],
+    ci: pwrforgeCi = pwrforgeCi.gitlab,
 ) -> None:
     """
     Create new project
@@ -74,6 +76,7 @@ def pwrforge_new(
     :param bool create_docker: initialize docker environment
     :param bool git: initialize git repository
     :param List[str] chip: list of chips for targets
+    :param pwrforgeCi ci: CI/CD provider to generate
     :return: None
     :raises FileExistsError: if project with provided name exist
     """
@@ -122,6 +125,7 @@ def pwrforge_new(
         targets_ids=targets_ids,
         target=[Target.get_target_by_id(t.value) for t in targets],
         build_env=build_env,
+        ci=ci.value,
         version=__version__,
         docker_image_tag=f"{name.lower()}-dev:1.0",
         lib_name=lib_name,

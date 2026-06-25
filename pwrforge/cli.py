@@ -27,7 +27,7 @@ from pwrforge.commands.run import pwrforge_run
 from pwrforge.commands.test import pwrforge_test
 from pwrforge.commands.update import pwrforge_update
 from pwrforge.commands.version import pwrforge_version
-from pwrforge.config import pwrforgeTarget
+from pwrforge.config import pwrforgeCi, pwrforgeTarget
 from pwrforge.global_values import DESCRIPTION, PWRFORGE_DEFAULT_CONFIG_FILE
 from pwrforge.logger import get_logger
 from pwrforge.utils.path_utils import get_config_file_path
@@ -387,6 +387,7 @@ def new(
     ),
     create_docker: bool = Option(True, "-d/-nd", "--docker/--no-docker", help="Initialize docker environment."),
     git: bool = Option(True, "--git/--no-git", help="Initialize git repository."),
+    ci: pwrforgeCi = Option(pwrforgeCi.gitlab.value, "--ci", help="CI/CD provider to generate."),
     base_dir: Optional[Path] = BASE_DIR_OPTION,
 ) -> None:
     """Create new project template."""
@@ -401,6 +402,7 @@ def new(
         create_docker,
         git,
         chip,
+        ci,
     )
     project_dir = Path(project_name).absolute()
     pwrforge_update(project_dir / PWRFORGE_DEFAULT_CONFIG_FILE)

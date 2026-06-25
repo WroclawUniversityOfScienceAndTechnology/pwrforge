@@ -25,6 +25,11 @@ class pwrforgeTarget(Enum):
         return super().__hash__()
 
 
+class pwrforgeCi(Enum):
+    gitlab = "gitlab"
+    github = "github"
+
+
 CHIP_DEFAULTS = {
     "x86": "",
     "esp32": "esp32",
@@ -134,6 +139,7 @@ class ProjectConfig(BaseModel):
     lib_name: Optional[str]
     target_id: Union[str, List[str]] = Field(..., alias="target")
     build_env: str = Field(PWRFORGE_DEFAULT_BUILD_ENV, alias="build-env")
+    ci: pwrforgeCi = pwrforgeCi.gitlab
     docker_file: Path = Field(..., alias="docker-file")
     docker_image_tag: str = Field(..., alias="docker-image-tag")
     in_repo_conan_cache: bool = Field(..., alias="in-repo-conan-cache")

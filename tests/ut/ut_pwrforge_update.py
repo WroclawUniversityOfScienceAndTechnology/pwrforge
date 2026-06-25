@@ -9,7 +9,7 @@ from pytest_subprocess import FakeProcess
 from pwrforge.commands.docker import get_docker_compose_command
 from pwrforge.commands.new import pwrforge_new
 from pwrforge.commands.update import pwrforge_update
-from pwrforge.config import pwrforgeTarget
+from pwrforge.config import pwrforgeCi, pwrforgeTarget
 from pwrforge.global_values import PWRFORGE_DEFAULT_CONFIG_FILE
 from pwrforge.utils.conan_utils import DEFAULT_PROFILES
 from tests.ut.utils import get_all_files_recursively
@@ -143,6 +143,37 @@ def test_update_multitarget_project_content(tmp_path: Path) -> None:
     all_files = get_all_files_recursively()
     expected_files = get_expected_files(targets)
     assert_files_match(all_files, expected_files)
+
+
+def test_update_project_content_with_github_ci(tmp_path: Path) -> None:
+    os.chdir(tmp_path)
+    pwrforge_new(
+        TEST_PROJECT_NAME,
+        bin_name=None,
+        lib_name=None,
+        targets=[pwrforgeTarget.x86],
+        create_docker=False,
+        git=False,
+        chip=[],
+        ci=pwrforgeCi.github,
+    )
+    os.chdir(TEST_PROJECT_NAME)
+
+    pwrforge_update(Path(PWRFORGE_DEFAULT_CONFIG_FILE))
+
+    all_files = get_all_files_recursively()
+    assert ".github/workflows/workflow-common.yml" in all_files
+    assert ".github/workflows/pr.yml" in all_files
+    assert ".github/workflows/daily_tests.yml" in all_files
+    assert ".github/workflows/release.yml" in all_files
+    assert ".gitlab-ci.yml" not in all_files
+    assert ".devcontainer/.gitlab-ci-custom.yml" not in all_files
+
+    workflow_text = Path(".github/workflows/workflow-common.yml").read_text(encoding="utf-8")
+    assert "pwrforge update" in workflow_text
+    assert "pwrforge build --profile Debug --all" in workflow_text
+    assert "pwrforge test" in workflow_text
+    assert "pwrforge check --clang-format" in workflow_text
 
 
 def test_update_project_with_docker(tmp_path: Path, fp: FakeProcess) -> None:

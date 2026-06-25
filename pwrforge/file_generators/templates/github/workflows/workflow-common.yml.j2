@@ -1,0 +1,252 @@
+{% raw -%}
+name: Common workflow steps
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+env:
+  CONAN_LOGIN_USERNAME: ${{ github.actor }}
+  CONAN_PASSWORD: ${{ github.token }}
+
+jobs:
+  prepare_matrix:
+    runs-on: ubuntu-24.04
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - id: set-matrix
+        run: |
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            refs="["
+            refs+="\"develop\", "
+            refs+="\"master\""
+            refs+="]"
+          else
+            refs="[\"${{ github.ref }}\"]"
+          fi
+          echo "matrix=$refs" >> "$GITHUB_OUTPUT"
+
+  build:
+    name: Build - ${{ matrix.branch }}
+    runs-on: ubuntu-24.04
+    needs: prepare_matrix
+    strategy:
+      fail-fast: false
+      matrix:
+        branch: ${{ fromJson(needs.prepare_matrix.outputs.matrix) }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          submodules: recursive
+          ref: ${{ matrix.branch }}
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Install pwrforge
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f .devcontainer/requirements.txt ] && compgen -G ".devcontainer/pwrforge-*-py3-none-any.whl" > /dev/null; then
+            python -m pip install -r .devcontainer/requirements.txt
+            python -m pip install .devcontainer/pwrforge-*-py3-none-any.whl
+          else
+            python -m pip install pwrforge
+          fi
+      - name: Generate project files
+        run: pwrforge update
+      - name: Build project
+        run: pwrforge build --profile Debug --all
+      - name: Prepare artifact suffix
+        if: always()
+        run: |
+          suffix=$(printf '%s' "${{ matrix.branch }}" | tr -c 'A-Za-z0-9._-' '-')
+          echo "ARTIFACT_SUFFIX=${suffix}-${{ github.run_id }}" >> "$GITHUB_ENV"
+      - name: Archive build artifacts
+        uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: build-${{ env.ARTIFACT_SUFFIX }}
+          path: |
+            build/**/Debug/bin
+            build/**/Debug/lib
+          if-no-files-found: ignore
+          overwrite: true
+
+  tests:
+    name: Tests - ${{ matrix.branch }}
+    runs-on: ubuntu-24.04
+    needs: prepare_matrix
+    strategy:
+      fail-fast: false
+      matrix:
+        branch: ${{ fromJson(needs.prepare_matrix.outputs.matrix) }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          submodules: recursive
+          ref: ${{ matrix.branch }}
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Install pwrforge
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f .devcontainer/requirements.txt ] && compgen -G ".devcontainer/pwrforge-*-py3-none-any.whl" > /dev/null; then
+            python -m pip install -r .devcontainer/requirements.txt
+            python -m pip install .devcontainer/pwrforge-*-py3-none-any.whl
+          else
+            python -m pip install pwrforge
+          fi
+      - name: Generate project files
+        run: pwrforge update
+      - name: Run tests
+        run: pwrforge test
+      - name: Prepare artifact suffix
+        if: always()
+        run: |
+          suffix=$(printf '%s' "${{ matrix.branch }}" | tr -c 'A-Za-z0-9._-' '-')
+          echo "ARTIFACT_SUFFIX=${suffix}-${{ github.run_id }}" >> "$GITHUB_ENV"
+      - name: Archive test artifacts
+        uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: tests-${{ env.ARTIFACT_SUFFIX }}
+          path: build/tests/ut-coverage*
+          if-no-files-found: ignore
+          overwrite: true
+
+  checks:
+    name: Checks - ${{ matrix.branch }}
+    runs-on: ubuntu-24.04
+    needs: prepare_matrix
+    strategy:
+      fail-fast: false
+      matrix:
+        branch: ${{ fromJson(needs.prepare_matrix.outputs.matrix) }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          submodules: recursive
+          ref: ${{ matrix.branch }}
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Install pwrforge
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f .devcontainer/requirements.txt ] && compgen -G ".devcontainer/pwrforge-*-py3-none-any.whl" > /dev/null; then
+            python -m pip install -r .devcontainer/requirements.txt
+            python -m pip install .devcontainer/pwrforge-*-py3-none-any.whl
+          else
+            python -m pip install pwrforge
+          fi
+      - name: Generate project files
+        run: pwrforge update
+      - name: Build project for clang-tidy
+        run: pwrforge build --profile Debug --all
+      - name: Check clang-format
+        run: pwrforge check --clang-format
+      - name: Check cppcheck
+        run: pwrforge check --cppcheck
+      - name: Check clang-tidy
+        continue-on-error: true
+        run: pwrforge check --clang-tidy
+      - name: Check TODO
+        continue-on-error: true
+        run: pwrforge check --todo
+      - name: Check cyclomatic complexity
+        continue-on-error: true
+        run: pwrforge check --cyclomatic
+      - name: Check pragma once
+        run: pwrforge check --pragma
+      - name: Check copyrights
+        continue-on-error: true
+        run: pwrforge check --copyright
+      - name: Prepare artifact suffix
+        if: always()
+        run: |
+          suffix=$(printf '%s' "${{ matrix.branch }}" | tr -c 'A-Za-z0-9._-' '-')
+          echo "ARTIFACT_SUFFIX=${suffix}-${{ github.run_id }}" >> "$GITHUB_ENV"
+      - name: Archive check artifacts
+        uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: checks-${{ env.ARTIFACT_SUFFIX }}
+          path: |
+            build/*.log
+            build/filtered_compile_commands
+          if-no-files-found: ignore
+          overwrite: true
+
+  documentation:
+    name: Documentation - ${{ matrix.branch }}
+    runs-on: ubuntu-24.04
+    needs: prepare_matrix
+    strategy:
+      fail-fast: false
+      matrix:
+        branch: ${{ fromJson(needs.prepare_matrix.outputs.matrix) }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          submodules: recursive
+          ref: ${{ matrix.branch }}
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Install pwrforge
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f .devcontainer/requirements.txt ] && compgen -G ".devcontainer/pwrforge-*-py3-none-any.whl" > /dev/null; then
+            python -m pip install -r .devcontainer/requirements.txt
+            python -m pip install .devcontainer/pwrforge-*-py3-none-any.whl
+          else
+            python -m pip install pwrforge
+          fi
+      - name: Generate project files
+        run: pwrforge update
+      - name: Generate documentation
+        run: pwrforge doc
+      - name: Prepare artifact suffix
+        if: always()
+        run: |
+          suffix=$(printf '%s' "${{ matrix.branch }}" | tr -c 'A-Za-z0-9._-' '-')
+          echo "ARTIFACT_SUFFIX=${suffix}-${{ github.run_id }}" >> "$GITHUB_ENV"
+      - name: Archive documentation
+        uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: documentation-${{ env.ARTIFACT_SUFFIX }}
+          path: build/doc
+          if-no-files-found: ignore
+          overwrite: true
+
+  check_tag:
+    name: Check release tag
+    runs-on: ubuntu-24.04
+    if: github.event_name == 'pull_request' && (github.base_ref == 'master' || github.base_ref == 'main')
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - name: Check release tag
+        run: |
+          version=$(python -c "import tomllib; print(tomllib.load(open('pwrforge.lock','rb'))['project']['version'])")
+          tag="release_${version}"
+          if git ls-remote --exit-code --tags origin "refs/tags/${tag}" >/dev/null 2>&1; then
+            echo "tag ${tag} exists"
+            exit 1
+          fi
+          echo "tag ${tag} does not exist"
+{% endraw -%}

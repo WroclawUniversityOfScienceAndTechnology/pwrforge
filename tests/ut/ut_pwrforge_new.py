@@ -4,13 +4,19 @@ from pathlib import Path
 import pytest
 
 from pwrforge.commands.new import pwrforge_new
-from pwrforge.config import pwrforgeTarget
+from pwrforge.config import pwrforgeCi, pwrforgeTarget
 
 
 def test_create_toml_file(tmpdir: Path) -> None:
     os.chdir(tmpdir)
     pwrforge_new("test_project", None, None, [pwrforgeTarget.x86], False, False, [])
     assert os.path.exists("test_project/pwrforge.toml")
+
+
+def test_create_toml_file_with_github_ci(tmpdir: Path) -> None:
+    os.chdir(tmpdir)
+    pwrforge_new("test_project", None, None, [pwrforgeTarget.x86], False, False, [], ci=pwrforgeCi.github)
+    assert 'ci = "github"' in Path("test_project/pwrforge.toml").read_text(encoding="utf-8")
 
 
 def test_create_src_dir(tmpdir: Path) -> None:

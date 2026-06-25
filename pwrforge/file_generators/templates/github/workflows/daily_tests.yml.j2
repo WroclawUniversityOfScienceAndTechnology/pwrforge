@@ -1,0 +1,15 @@
+{% raw -%}
+name: Daily tests
+
+on:
+  schedule:
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  call-workflow:
+    uses: ./.github/workflows/workflow-common.yml
+{% endraw -%}

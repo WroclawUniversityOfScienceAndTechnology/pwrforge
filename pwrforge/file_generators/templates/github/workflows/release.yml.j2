@@ -1,0 +1,48 @@
+{% raw -%}
+name: Release
+
+on:
+  push:
+    branches:
+      - master
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  create-release:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    outputs:
+      tag_name: ${{ steps.version.outputs.tag_name }}
+      should_release: ${{ steps.version.outputs.should_release }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - name: Read version
+        id: version
+        run: |
+          version=$(python -c "import tomllib; print(tomllib.load(open('pwrforge.lock','rb'))['project']['version'])")
+          tag_name="release_${version}"
+          if git ls-remote --exit-code --tags origin "refs/tags/${tag_name}" >/dev/null 2>&1; then
+            should_release="false"
+          else
+            should_release="true"
+          fi
+          echo "tag_name=${tag_name}" >> "$GITHUB_OUTPUT"
+          echo "should_release=${should_release}" >> "$GITHUB_OUTPUT"
+      - name: Create release
+        if: steps.version.outputs.should_release == 'true'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.tag_name }}
+          target_commitish: ${{ github.sha }}
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+{% endraw -%}
