@@ -15,6 +15,10 @@ Description
 
 Flash what is available to be flashed. This option is the default if no other options are specified.
 
+For projects configured with ``build-env = "docker"``, ``pwrforge flash`` runs natively on Windows and macOS
+instead of re-entering Docker, because Docker Desktop does not expose serial/debug USB devices reliably on those
+hosts. Linux keeps the existing Docker execution path.
+
 Options
 ^^^^^^^
 

@@ -19,6 +19,12 @@ else:
 
 logger = get_logger()
 
+HOST_NATIVE_FLASH_SYSTEMS = {"Darwin", "Windows"}
+
+
+def _should_run_flash_in_docker() -> bool:
+    return platform.system() not in HOST_NATIVE_FLASH_SYSTEMS
+
 
 class _pwrforgeFlash:
     FLASH_SUPPORTED_TARGETS = [
@@ -44,7 +50,7 @@ class _pwrforgeFlash:
         self._erase_memory = erase_memory
         self._bank = bank
 
-        self._config = prepare_config()
+        self._config = prepare_config(run_in_docker=_should_run_flash_in_docker())
         self._target = self._initialize_target(target)
         self._validate_target()
         self._validate_erase_memory()
@@ -52,7 +58,7 @@ class _pwrforgeFlash:
     def _initialize_target(self, target: Optional[pwrforgeTarget]) -> Target:
         if target:
             if target.value not in self._config.project.target_id:
-                logger.error(f"Target {target.value} not defined in pwrforge toml")
+                logger.error(f"Target {target.value} is undefined in pwrforge toml")
                 sys.exit(1)
             return Target.get_target_by_id(target.value)
         return self._get_first_supported_target()
