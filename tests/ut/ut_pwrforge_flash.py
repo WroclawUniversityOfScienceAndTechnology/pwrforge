@@ -47,7 +47,7 @@ def test_flash_target_argument_not_in_config(mock_debug_config: MagicMock, caplo
         pwrforge_flash("Debug", None, pwrforgeTarget.stm32, False, False, False, None)
     assert (
         "ERROR",
-        "Target stm32 not defined in pwrforge toml",
+        "Target stm32 is undefined in pwrforge toml",
     ) in get_log_data(caplog.records)
 
 
