@@ -47,8 +47,30 @@ def test_flash_target_argument_not_in_config(mock_debug_config: MagicMock, caplo
         pwrforge_flash("Debug", None, pwrforgeTarget.stm32, False, False, False, None)
     assert (
         "ERROR",
-        "Target stm32 not defined in pwrforge toml",
+        "Target stm32 is undefined in pwrforge toml",
     ) in get_log_data(caplog.records)
+
+
+@pytest.mark.parametrize(
+    ("system", "expected_run_in_docker"),
+    [
+        ("Linux", True),
+        ("Darwin", False),
+        ("Windows", False),
+    ],
+)
+def test_flash_docker_policy_depends_on_host_os(
+    system: str,
+    expected_run_in_docker: bool,
+    mock_debug_config: MagicMock,
+    mocker: MockerFixture,
+) -> None:
+    mocker.patch(f"{pwrforge_flash.__module__}.platform.system", return_value=system)
+
+    with pytest.raises(SystemExit):
+        pwrforge_flash("Debug", None, None, False, False, False, None)
+
+    mock_debug_config.assert_called_once_with(run_in_docker=expected_run_in_docker)
 
 
 @pytest.mark.parametrize("mock_debug_config", ["stm32"], indirect=True)
