@@ -96,11 +96,20 @@ def pwrforge_run(  # pylint: disable=too-many-locals,too-many-branches
         x86_target = Target.get_target_by_id(pwrforgeTarget.x86.value)
         bin_dir = config.project_root / x86_target.get_profile_build_dir(profile) / "bin"
         if bin_dir.is_dir():
-            first_bin = next(bin_dir.iterdir())
+            bin_name = config.project.bin_name
+            if not bin_name:
+                logger.error("No project binary is configured.")
+                return
+
+            bin_file = bin_dir / bin_name
+            if not bin_file.is_file():
+                logger.error("Bin file '%s' not found!", bin_file)
+                return
+
             # Run project
             try:
                 subprocess.run(
-                    [f"./{first_bin.name}"] + params,
+                    [f"./{bin_file.name}"] + params,
                     cwd=bin_dir,
                     check=True,
                     stdin=sys.stdin,
