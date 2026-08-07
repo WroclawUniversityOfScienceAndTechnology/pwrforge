@@ -15,7 +15,7 @@ from pwrforge.logger import get_logger
 logger = get_logger()
 
 
-def pwrforge_run(  # pylint: disable=too-many-locals,too-many-branches
+def pwrforge_run(  # pylint: disable=too-many-locals,too-many-branches,too-many-statements
     bin_path: Optional[Path],
     profile: str,
     params: List[str],
@@ -94,13 +94,22 @@ def pwrforge_run(  # pylint: disable=too-many-locals,too-many-branches
             logger.error(f"Bin file '{bin_path}' not found!")
     else:
         x86_target = Target.get_target_by_id(pwrforgeTarget.x86.value)
-        bin_dir = config.project_root / x86_target.get_profile_build_dir(profile) / "bin"
+        bin_dir = config.project_root / x86_target.get_bin_dir_path(profile)
         if bin_dir.is_dir():
-            first_bin = next(bin_dir.iterdir())
+            bin_name = config.project.bin_name
+            if not bin_name:
+                logger.error("No project binary is configured.")
+                return
+
+            bin_file = config.project_root / x86_target.get_bin_path(bin_name, profile)
+            if not bin_file.is_file():
+                logger.error("Bin file '%s' not found!", bin_file)
+                return
+
             # Run project
             try:
                 subprocess.run(
-                    [f"./{first_bin.name}"] + params,
+                    [f"./{bin_file.name}"] + params,
                     cwd=bin_dir,
                     check=True,
                     stdin=sys.stdin,

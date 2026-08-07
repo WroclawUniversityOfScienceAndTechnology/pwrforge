@@ -3,6 +3,10 @@ add_executable(${PROJECT_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}/{{ config.project.bin_name|lower }}.cpp
 )
 
+# Keep the debugger artifact name consistent with embedded targets and with
+# Target.get_bin_path(), which pwrforge uses to locate the executable.
+set_target_properties(${PROJECT_NAME} PROPERTIES SUFFIX ".elf")
+
 {% endif %}
 {% if config.project.lib_name %}
 add_library(${PROJECT_NAME} STATIC

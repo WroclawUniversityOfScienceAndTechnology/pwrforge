@@ -6,9 +6,10 @@ cmake_minimum_required(VERSION 3.16)
 list(APPEND CMAKE_PREFIX_PATH "${CMAKE_BINARY_DIR}/generators/")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-# To support pure idf usage
+# Allow a generated project to be built directly with CMake, without the
+# environment variables supplied by a pwrforge/Conan profile.
 if(NOT DEFINED ENV{pwrforge_BUILD_TARGET})
-    set(ENV{pwrforge_BUILD_TARGET} "ESP32")
+    set(ENV{pwrforge_BUILD_TARGET} "{{ config.project.default_target.id }}")
 endif()
 
 {# This could be put in profile or toolchain if we were able to resolve issues with esp32 toolchain not loading #}
@@ -63,4 +64,3 @@ if(NOT ${pwrforge_BUILD_TARGET} STREQUAL ESP32)
   set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
   add_subdirectory({{ config.source_dir_path.relative_to(config.project_root) }})
 endif()
-
