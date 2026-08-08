@@ -1,5 +1,6 @@
 import os
 import platform
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -18,6 +19,12 @@ else:
     from subprocess import PIPE
 
 logger = get_logger()
+
+HOST_NATIVE_FLASH_SYSTEMS = {"Darwin", "Windows"}
+
+
+def _should_run_flash_in_docker() -> bool:
+    return platform.system() not in HOST_NATIVE_FLASH_SYSTEMS
 
 
 class _pwrforgeFlash:
@@ -44,7 +51,7 @@ class _pwrforgeFlash:
         self._erase_memory = erase_memory
         self._bank = bank
 
-        self._config = prepare_config()
+        self._config = prepare_config(run_in_docker=_should_run_flash_in_docker())
         self._target = self._initialize_target(target)
         self._validate_target()
         self._validate_erase_memory()
@@ -52,7 +59,7 @@ class _pwrforgeFlash:
     def _initialize_target(self, target: Optional[pwrforgeTarget]) -> Target:
         if target:
             if target.value not in self._config.project.target_id:
-                logger.error(f"Target {target.value} not defined in pwrforge toml")
+                logger.error(f"Target {target.value} is undefined in pwrforge toml")
                 sys.exit(1)
             return Target.get_target_by_id(target.value)
         return self._get_first_supported_target()
@@ -118,7 +125,11 @@ class _pwrforgeFlash:
                 "--command=.devcontainer/atsam-gdb.script",
                 "--batch",
             ]
-            subprocess.run(gdb_command, cwd=self._config.project_root, check=True)
+            subprocess.run(
+                self._fix_command_for_windows(gdb_command, self._config.project_root),
+                cwd=self._config.project_root,
+                check=True,
+            )
         except subprocess.CalledProcessError as e:
             logger.error("Failed to flash atsam target: %s", e.stderr)
             sys.exit(1)
@@ -184,20 +195,62 @@ class _pwrforgeFlash:
             else:
                 os.system(f"sudo pkill -9 -P {openocd_process.pid}")
 
+    def _fix_command_for_windows(self, command: List[str], cwd: Optional[Path]) -> List[str]:
+        """Ensure commands referencing Python scripts or installed scripts run on Windows.
+
+        - If a command is a `.py` script, try to resolve it on PATH, in cwd, or run as a module
+          using `python -m <module>`.
+        - Otherwise, if a program is on PATH, replace it with the absolute path.
+        """
+        if platform.system() != "Windows":
+            return command
+
+        if not command:
+            return command
+
+        first = command[0]
+        if first.endswith(".py"):
+            # Prefer an executable script on PATH
+            path = shutil.which(first)
+            if path:
+                command[0] = path
+                return command
+
+            # If the script exists in the provided cwd, run it with the current python
+            if cwd is not None:
+                candidate = Path(cwd) / first
+                if candidate.exists():
+                    return [sys.executable, str(candidate)] + command[1:]
+
+            # Fall back to running as a module: `python -m <module>`
+            module = first[:-3]
+            return [sys.executable, "-m", module] + command[1:]
+
+        # Non-.py executables: try to resolve via PATH
+        path = shutil.which(first)
+        if path:
+            command[0] = path
+
+        return command
+
     def _flash_esp32_app(self) -> None:
         bin_dir_path = self._target.get_bin_dir_path(self._flash_profile)
         bin_path = Path(bin_dir_path, f"{self._config.project.name}.bin")
         command = self._build_esp32_flash_command("parttool.py", "ota_0", [f"--input={bin_path}"])
-        subprocess.run(command, cwd=self._config.project_root, check=True)
+        subprocess.run(
+            self._fix_command_for_windows(command, self._config.project_root), cwd=self._config.project_root, check=True
+        )
 
     def _flash_esp32_fs(self) -> None:
         command = self._build_esp32_flash_command("parttool.py", "spiffs", ["--input=build/spiffs.bin"])
-        subprocess.run(command, cwd=self._config.project_root, check=True)
+        subprocess.run(
+            self._fix_command_for_windows(command, self._config.project_root), cwd=self._config.project_root, check=True
+        )
 
     def _flash_esp32_default(self) -> None:
         command = self._build_esp32_flash_command("esptool.py", None, ["write_flash", "@flash_args"])
         bin_dir = self._config.project_root / self._target.get_bin_dir_path(self._flash_profile)
-        subprocess.run(command, cwd=bin_dir, check=True)
+        subprocess.run(self._fix_command_for_windows(command, bin_dir), cwd=bin_dir, check=True)
 
     def _build_esp32_flash_command(self, tool: str, partition_name: Optional[str], extra_args: List[str]) -> List[str]:
         command = [tool]
@@ -218,7 +271,11 @@ class _pwrforgeFlash:
 
         try:
             logger.info("Bank switching to: [%d]", self._bank)
-            subprocess.run(command, cwd=self._config.project_root, check=True)
+            subprocess.run(
+                self._fix_command_for_windows(command, self._config.project_root),
+                cwd=self._config.project_root,
+                check=True,
+            )
         except subprocess.CalledProcessError as e:
             logger.error("Command failed with return code %s", str(e.returncode))
         except Exception as e:  # pylint: disable=broad-except

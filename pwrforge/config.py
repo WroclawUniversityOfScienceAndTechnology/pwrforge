@@ -219,7 +219,7 @@ DEFAULT_INCLUDE_DIR = "include"
 TARGETS = {
     pwrforgeTarget.x86.value: Target(
         id=pwrforgeTarget.x86.value,
-        elf_file_extension="",
+        elf_file_extension=".elf",
         cc="gcc",
         cxx="g++",
     ),

@@ -33,6 +33,22 @@ def test_pwrforge_run(fp: FakeProcess, mock_prepare_config: MagicMock) -> None:
     assert fp_bin.calls[0].returncode == 0
 
 
+def test_pwrforge_run_uses_configured_binary_when_artifacts_exist(
+    fp: FakeProcess, mock_prepare_config: MagicMock
+) -> None:
+    config = mock_prepare_config.return_value
+    target = config.project.default_target
+    bin_path = Path(target.get_bin_path(config.project.bin_name, "Debug"))
+    bin_path.parent.mkdir(parents=True)
+    (bin_path.parent / "file0.bin").touch()
+    bin_path.touch()
+
+    fp_bin = fp.register(f"./{bin_path.name}", stdout="Response")
+    pwrforge_run(None, profile="Debug", params=[], prebuild=False, force_native=True)
+
+    assert fp_bin.calls[0].returncode == 0
+
+
 def test_pwrforge_run_with_build(
     fp: FakeProcess,
     mock_prepare_config: MagicMock,
