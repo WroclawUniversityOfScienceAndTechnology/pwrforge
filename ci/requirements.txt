@@ -98,8 +98,10 @@ flake8==7.3.0
     # via pwrforge (/home/aak/rep/pwr/pwrforge/pyproject.toml)
 flit==3.8.0
     # via pwrforge (/home/aak/rep/pwr/pwrforge/pyproject.toml)
-flit-core==4.0.2
-    # via flit
+flit-core==3.8.0
+    # via
+    #   flit
+    #   pwrforge (/home/aak/rep/pwr/pwrforge/pyproject.toml)
 fonttools==4.63.0
     # via matplotlib
 gcovr==8.2
