@@ -14,6 +14,7 @@ from pwrforge.utils.docker_utils import (
     STM32CUBE_CACHE_DIR,
     STM32CUBE_CACHE_VOLUME_NAME,
     STM32CUBE_IMAGE_CACHE_DIR,
+    get_docker_project_name,
     get_host_supplementary_group_ids,
 )
 
@@ -64,6 +65,7 @@ class _DockerComposeTemplate:
             "docker-compose.yaml",
             template_params={
                 "config": self._config,
+                "docker_project_name": get_docker_project_name(self._config.project_root),
                 "docker_port_mappings": self._get_docker_port_mappings(),
                 "pwrforge_path": pwrforge_path,
                 "supplementary_group_ids": get_host_supplementary_group_ids(),

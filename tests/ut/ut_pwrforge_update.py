@@ -12,6 +12,7 @@ from pwrforge.commands.update import pwrforge_update
 from pwrforge.config import pwrforgeTarget
 from pwrforge.global_values import PWRFORGE_DEFAULT_CONFIG_FILE
 from pwrforge.utils.conan_utils import DEFAULT_PROFILES
+from pwrforge.utils.docker_utils import get_docker_project_name
 from tests.ut.utils import get_all_files_recursively
 
 TEST_PROJECT_NAME = "test_project"
@@ -149,7 +150,7 @@ def test_update_project_with_docker(tmp_path: Path, fp: FakeProcess) -> None:
     os.chdir(tmp_path)
     pwrforge_new(TEST_PROJECT_NAME, None, None, [pwrforgeTarget.x86], True, False, [])
     os.chdir(TEST_PROJECT_NAME)
-    called_subprocess_cmd = get_docker_compose_command()
+    called_subprocess_cmd = get_docker_compose_command(Path.cwd())
     called_subprocess_cmd.extend(["pull"])
     fp.register(called_subprocess_cmd)
     fp.register(["conan", "profile", "list"])
@@ -165,7 +166,7 @@ def test_update_project_with_docker_adds_host_groups(
     os.chdir(tmp_path)
     pwrforge_new(TEST_PROJECT_NAME, None, None, [pwrforgeTarget.x86], True, False, [])
     os.chdir(TEST_PROJECT_NAME)
-    called_subprocess_cmd = get_docker_compose_command()
+    called_subprocess_cmd = get_docker_compose_command(Path.cwd())
     called_subprocess_cmd.extend(["pull"])
     fp.register(called_subprocess_cmd)
     fp.register(["conan", "profile", "list"])
@@ -180,6 +181,7 @@ def test_update_project_with_docker_adds_host_groups(
     env_text = Path(".devcontainer/.env").read_text(encoding="utf-8")
     devcontainer_text = Path(".devcontainer/devcontainer.json").read_text(encoding="utf-8")
 
+    assert docker_compose_text.startswith(f"name: {get_docker_project_name(Path.cwd())}\n")
     assert "group_add:" in docker_compose_text
     assert '      - "20"' in docker_compose_text
     assert '      - "46"' in docker_compose_text
@@ -202,7 +204,7 @@ def test_update_project_stm32_uses_named_volume_cache(tmp_path: Path, fp: FakePr
     os.chdir(tmp_path)
     pwrforge_new(TEST_PROJECT_NAME, None, None, [pwrforgeTarget.stm32], True, False, [])
     os.chdir(TEST_PROJECT_NAME)
-    called_subprocess_cmd = get_docker_compose_command()
+    called_subprocess_cmd = get_docker_compose_command(Path.cwd())
     called_subprocess_cmd.extend(["pull"])
     fp.register(called_subprocess_cmd)
     fp.register(["conan", "profile", "list"])
@@ -263,10 +265,10 @@ def test_update_project_docker_pull_fails(tmp_path: Path, fp: FakeProcess) -> No
     project_name = "test_project_with_docker"
     pwrforge_new(project_name, None, None, [pwrforgeTarget.x86], True, False, [])
     os.chdir(project_name)
-    cmd_pull = get_docker_compose_command()
+    cmd_pull = get_docker_compose_command(Path.cwd())
     cmd_pull.extend(["pull"])
     fp.register(cmd_pull, returncode=1)
-    cmd_build = get_docker_compose_command()
+    cmd_build = get_docker_compose_command(Path.cwd())
     fp.register(["conan", "profile", "list"])
     fp.register(["conan", "profile", "detect"])
     fp.register(["pip", "show", "pwrforge"])

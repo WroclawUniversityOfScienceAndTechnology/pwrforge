@@ -1,4 +1,5 @@
 import os
+import re
 from pathlib import Path, PurePosixPath
 from typing import Any, List, Sequence
 from unittest.mock import MagicMock
@@ -16,6 +17,7 @@ from pwrforge.config import Config
 from pwrforge.utils.docker_utils import (
     STM32CUBE_CACHE_DIR,
     STM32CUBE_CACHE_VOLUME_NAME,
+    get_docker_project_name,
     get_docker_volumes,
     get_host_supplementary_group_ids,
     run_command_in_docker,
@@ -59,7 +61,7 @@ def test_docker_build(
     pwrforge_docker_test_setup: Config,
 ) -> None:
     pwrforge_docker_build(command_args)
-    called_subprocess_cmd = get_docker_compose_command()
+    called_subprocess_cmd = get_docker_compose_command(pwrforge_docker_test_setup.project_root)
     called_subprocess_cmd.extend(["build", *command_args])
     assert mock_subprocess_run.call_args.args[0] == called_subprocess_cmd
 
@@ -76,8 +78,8 @@ def test_docker_run(
     pwrforge_docker_run(command_args)
 
     service_name = f"{pwrforge_docker_test_setup.project.name}_dev"
-    called_subprocess_cmd = get_docker_compose_command()
-    called_subprocess_cmd.extend(["run", "--service-ports"])
+    called_subprocess_cmd = get_docker_compose_command(pwrforge_docker_test_setup.project_root)
+    called_subprocess_cmd.extend(["run"])
 
     called_subprocess_cmd.extend(command_args)
     called_subprocess_cmd.append(service_name)
@@ -91,12 +93,11 @@ def test_docker_run_with_command(mock_subprocess_run: MagicMock, pwrforge_docker
     pwrforge_docker_run(docker_opts=[rm], command=command)
 
     service_name = f"{pwrforge_docker_test_setup.project.name}_dev"
-    called_subprocess_cmd = get_docker_compose_command()
+    called_subprocess_cmd = get_docker_compose_command(pwrforge_docker_test_setup.project_root)
 
     called_subprocess_cmd.extend(
         [
             "run",
-            "--service-ports",
             rm,
             service_name,
             "bash",
@@ -107,14 +108,15 @@ def test_docker_run_with_command(mock_subprocess_run: MagicMock, pwrforge_docker
     assert mock_subprocess_run.call_args.args[0] == called_subprocess_cmd
 
 
-def test_docker_run_does_not_duplicate_service_ports(
-    mock_subprocess_run: MagicMock, pwrforge_docker_test_setup: Config
+@pytest.mark.parametrize("port_args", [["--service-ports"], ["-P"], ["-p", "3334:3333"]])
+def test_docker_run_preserves_explicit_ports(
+    port_args: List[str], mock_subprocess_run: MagicMock, pwrforge_docker_test_setup: Config
 ) -> None:
-    pwrforge_docker_run(docker_opts=["--service-ports", "--rm"])
+    pwrforge_docker_run(docker_opts=[*port_args, "--rm"])
 
     service_name = f"{pwrforge_docker_test_setup.project.name}_dev"
-    called_subprocess_cmd = get_docker_compose_command()
-    called_subprocess_cmd.extend(["run", "--service-ports", "--rm", service_name])
+    called_subprocess_cmd = get_docker_compose_command(pwrforge_docker_test_setup.project_root)
+    called_subprocess_cmd.extend(["run", *port_args, "--rm", service_name])
     assert mock_subprocess_run.call_args.args[0] == called_subprocess_cmd
 
 
@@ -213,3 +215,59 @@ def test_run_command_in_docker_passes_host_groups() -> None:
     assert result["StatusCode"] == 0
     assert fake_client.run_kwargs["group_add"] == ["20", "46"]
     assert fake_client.run_kwargs["volumes"] == volumes
+
+
+@pytest.mark.parametrize("directory", ["My Project!", "___", "Żółć", "a" * 100])
+def test_docker_project_name_is_valid_and_stable(tmp_path: Path, directory: str) -> None:
+    root = tmp_path / directory
+    name = get_docker_project_name(root)
+    assert re.fullmatch(r"[a-z0-9][a-z0-9_-]*", name)
+    assert len(name) <= 63
+    assert name == get_docker_project_name(root / "nested" / "..")
+    assert name != get_docker_project_name(tmp_path / "other" / directory)
+
+
+def test_docker_run_isolates_projects_without_stopping_containers(
+    tmp_path: Path,
+    mock_subprocess_run: MagicMock,
+    pwrforge_docker_test_setup: Config,
+) -> None:
+    for parent in ("first", "second"):
+        pwrforge_docker_test_setup.project_root = tmp_path / parent / "same_name"
+        pwrforge_docker_run([])
+
+    assert mock_subprocess_run.call_count == 2
+    first, second = mock_subprocess_run.call_args_list
+    first_cmd, second_cmd = first.args[0], second.args[0]
+    assert first_cmd[first_cmd.index("--project-name") + 1] != second_cmd[second_cmd.index("--project-name") + 1]
+    for call in (first, second):
+        assert call.args[0][-2:] == ["run", f"{pwrforge_docker_test_setup.project.name}_dev"]
+        assert "--service-ports" not in call.args[0]
+        assert "down" not in call.args[0]
+    assert first.kwargs["cwd"] == tmp_path / "first" / "same_name" / ".devcontainer"
+    assert second.kwargs["cwd"] == tmp_path / "second" / "same_name" / ".devcontainer"
+
+
+def test_docker_exec_filters_by_project_and_service(
+    mock_subprocess_run: MagicMock,
+    monkeypatch: pytest.MonkeyPatch,
+    pwrforge_docker_test_setup: Config,
+) -> None:
+    client = MagicMock()
+    client.containers.list.return_value = [MagicMock(id="project_container")]
+    monkeypatch.setattr("docker.from_env", lambda: client)
+
+    pwrforge_docker_exec([])
+
+    client.containers.list.assert_called_once_with(
+        limit=1,
+        filters={
+            "ancestor": pwrforge_docker_test_setup.project.docker_image_tag,
+            "status": "running",
+            "label": [
+                f"com.docker.compose.project={get_docker_project_name(pwrforge_docker_test_setup.project_root)}",
+                f"com.docker.compose.service={pwrforge_docker_test_setup.project.name}_dev",
+            ],
+        },
+    )
+    assert mock_subprocess_run.call_args.args[0] == ["docker", "exec", "-it", "project_container", "bash"]
