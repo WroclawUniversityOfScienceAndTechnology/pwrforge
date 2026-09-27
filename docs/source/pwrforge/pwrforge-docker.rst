@@ -55,7 +55,35 @@ Quoted text, used to select command which will be executed with `docker run`
 
     exec
 
-Works like ``docker exec`` command. Attach to the existing container, if multiple containers were created then attach to the newest created.
+Works like ``docker exec`` command. Attach to the newest running container belonging to the current project and service.
+
+Running projects in parallel
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Run ``pwrforge docker run`` in each project directory. Each checkout gets a
+separate Compose project name and network. Starting a session leaves existing
+containers running, including other sessions in the same project.
+
+Host ports are no longer published automatically. Debugging tools running inside
+the container can still connect to its internal ports. To connect from the host,
+explicitly publish a port::
+
+    # First project: host GDB port 3333
+    pwrforge docker run -p 3333:3333
+
+    # Second project: host GDB port 3334
+    pwrforge docker run -p 3334:3333
+
+Configure the host debugger for the selected host port (3334 in the second
+example). OpenOCD still listens on port 3333 inside each container. To publish
+all ports from the Compose configuration, use ``pwrforge docker run --service-ports``;
+those host ports must be free. Custom mappings for other services can likewise
+be passed with ``-p HOST_PORT:CONTAINER_PORT``.
+
+The updated CLI also isolates projects using existing generated Compose files.
+Run ``pwrforge update`` to regenerate the Compose file with the project name
+for direct Compose use. Regenerate it again if the checkout is moved or copied.
+Containers started by older versions keep their old names; exit those sessions
+and start new ones before using ``pwrforge docker exec`` with the updated CLI.
 
 Example 1
 ^^^^^^^^^
