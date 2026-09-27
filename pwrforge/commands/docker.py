@@ -10,15 +10,9 @@ import docker
 
 from pwrforge.config_utils import get_pwrforge_config_or_exit
 from pwrforge.logger import get_logger
+from pwrforge.utils.docker_utils import get_docker_project_name
 
 logger = get_logger()
-
-
-def _ensure_service_ports_flag(docker_opts: Sequence[str]) -> List[str]:
-    docker_opts_list = list(docker_opts)
-    if "--service-ports" in docker_opts_list or "-P" in docker_opts_list:
-        return docker_opts_list
-    return ["--service-ports", *docker_opts_list]
 
 
 def pwrforge_docker_build(docker_opts: Sequence[str], project_root: Optional[Path] = None) -> None:
@@ -37,7 +31,7 @@ def pwrforge_docker_build(docker_opts: Sequence[str], project_root: Optional[Pat
     if docker_opts is None:
         docker_opts = []
 
-    cmd = get_docker_compose_command()
+    cmd = get_docker_compose_command(project_root)
     cmd.extend(["build", *docker_opts])
 
     try:
@@ -65,18 +59,10 @@ def pwrforge_docker_run(
     docker_path = _get_docker_path(config.project_root)
     project_config_name = config.project.name
 
-    down_cmd = get_docker_compose_command()
-    down_cmd.extend(["down", "--remove-orphans", "--timeout", "0"])
-    try:
-        subprocess.run(down_cmd, cwd=docker_path, check=True)
-    except subprocess.CalledProcessError:
-        logger.warning("Failed to clean orphan containers.")
-
     if not docker_opts:
         docker_opts = []
-    docker_opts = _ensure_service_ports_flag(docker_opts)
 
-    cmd = get_docker_compose_command()
+    cmd = get_docker_compose_command(config.project_root)
     cmd.extend(
         [
             "run",
@@ -114,9 +100,19 @@ def pwrforge_docker_exec(docker_opts: List[str]) -> None:
         sys.exit(1)
 
     client = docker.from_env()
-    newest_container = client.containers.list(limit=1, filters={"ancestor": image, "status": "running"})
+    newest_container = client.containers.list(
+        limit=1,
+        filters={
+            "ancestor": image,
+            "status": "running",
+            "label": [
+                f"com.docker.compose.project={get_docker_project_name(config.project_root)}",
+                f"com.docker.compose.service={config.project.name}_dev",
+            ],
+        },
+    )
     if not newest_container:
-        logger.error("No running containers using image `%s` to attach to!", image)
+        logger.error("No running containers for this project using image `%s` to attach to!", image)
         logger.info("Use pwrforge docker run to run container.")
         sys.exit(1)
 
@@ -137,7 +133,7 @@ def _get_docker_path(project_path: Path) -> Path:
     return Path(project_path, ".devcontainer")
 
 
-def get_docker_compose_command() -> List[str]:
+def get_docker_compose_command(project_root: Optional[Path] = None) -> List[str]:
     """Get docker command
 
     Returns:
@@ -153,4 +149,6 @@ def get_docker_compose_command() -> List[str]:
         logger.error("Neither docker-compose nor docker compose are available.")
         sys.exit(1)
 
+    if project_root is not None:
+        command.extend(["--project-name", get_docker_project_name(project_root)])
     return command

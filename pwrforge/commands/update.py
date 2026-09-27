@@ -140,7 +140,7 @@ def pwrforge_update(config_file_path: Path) -> None:
 def pull_docker_image(docker_path: Path) -> bool:
     logger.info("Pulling the image from docker registry...")
     try:
-        cmd = get_docker_compose_command()
+        cmd = get_docker_compose_command(docker_path.parent)
         cmd.extend(["pull"])
         result = subprocess.run(
             cmd,

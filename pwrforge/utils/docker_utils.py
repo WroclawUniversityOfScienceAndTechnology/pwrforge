@@ -1,4 +1,6 @@
+import hashlib
 import os
+import re
 import sys
 from pathlib import Path, PurePosixPath
 from typing import Any, Dict, List
@@ -14,6 +16,14 @@ logger = get_logger()
 STM32CUBE_CACHE_DIR = "/home/ubuntu/.cache/pwrforge/stm32cube"
 STM32CUBE_CACHE_VOLUME_NAME = "pwrforge_stm32cube_cache"
 STM32CUBE_IMAGE_CACHE_DIR = "/opt/pwrforge-cache/stm32cube"
+
+
+def get_docker_project_name(project_root: Path) -> str:
+    """Give each checkout a stable, Compose-compatible resource namespace."""
+    resolved_root = project_root.resolve()
+    name = re.sub(r"[^a-z0-9_-]+", "-", resolved_root.name.lower()).strip("-_") or "project"
+    path_hash = hashlib.sha256(str(resolved_root).encode("utf-8")).hexdigest()[:12]
+    return f"pwrforge-{name[:40]}-{path_hash}"
 
 
 def get_host_supplementary_group_ids() -> List[str]:
